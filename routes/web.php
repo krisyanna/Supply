@@ -4,29 +4,74 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\ProcurementController;
 
-// Redirect root & dashboard directly to Logistics
-Route::get('/', function () {
-    return redirect()->route('logistics.dashboard');
-});
+/*
+|--------------------------------------------------------------------------
+| Landing Page
+|--------------------------------------------------------------------------
+*/
 
-Route::view('/welcome', 'welcome')->name('welcome');
+Route::view('/', 'welcome')->name('welcome');
+
+/*
+|--------------------------------------------------------------------------
+| Dashboard / Home
+|--------------------------------------------------------------------------
+*/
 
 Route::view('/home', 'home')->name('home');
 
-Route::get('/dashboard', function () {
-    return redirect()->route('logistics.dashboard');
-})->name('dashboard');
+Route::view('/dashboard', 'home')->name('dashboard');
 
-// Main Logistics Route
-Route::get('/logistics', [LogisticsController::class, 'index'])->name('logistics.dashboard');
+/*
+|--------------------------------------------------------------------------
+| Forecasting
+|--------------------------------------------------------------------------
+*/
 
-// Safe Stubs for Sidebar Links (Prevents Route Not Found errors)
-Route::get('/forecasting/demand', fn() => redirect()->route('logistics.dashboard'))->name('forecasting.demand');
-Route::get('/forecasting/historical', fn() => redirect()->route('logistics.dashboard'))->name('forecasting.historical');
-Route::get('/inventory', fn() => redirect()->route('logistics.dashboard'))->name('inventory');
+Route::view('/forecasting-demand', 'forecasting-demand')
+    ->name('forecasting.demand');
 
-// Procurement Routes (real controller, not stubbed anymore)
-Route::get('/procurement', [ProcurementController::class, 'index'])->name('procurement.index');
-Route::get('/procurement/suppliers', [ProcurementController::class, 'suppliers'])->name('procurement.suppliers');
-Route::get('/procurement/po-management', [ProcurementController::class, 'poManagement'])->name('procurement.po-management');
-Route::get('/procurement/goods-receipt', [ProcurementController::class, 'goodsReceipt'])->name('procurement.goods-receipt');
+/*
+|--------------------------------------------------------------------------
+| Procurement
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/procurement', [ProcurementController::class, 'index'])
+    ->name('procurement.index');
+
+Route::get('/procurement/suppliers', [ProcurementController::class, 'suppliers'])
+    ->name('procurement.suppliers');
+
+Route::get('/procurement/po-management', [ProcurementController::class, 'poManagement'])
+    ->name('procurement.po-management');
+
+Route::get('/procurement/goods-receipt', [ProcurementController::class, 'goodsReceipt'])
+    ->name('procurement.goods-receipt');
+
+/*
+|--------------------------------------------------------------------------
+| Logistics
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/logistics', [LogisticsController::class, 'index'])
+    ->name('logistics.dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| Inventory
+|--------------------------------------------------------------------------
+*/
+
+Route::view('/inventory', 'inventory.index')
+    ->name('inventory');
+
+/*
+|--------------------------------------------------------------------------
+| Reports
+|--------------------------------------------------------------------------
+*/
+
+Route::view('/reports', 'reports.index')
+    ->name('reports');

@@ -98,9 +98,7 @@
                         </svg>
                     </button>
                     <div id="forecasting-submenu" class="submenu-transition max-h-0 opacity-0 pl-9 pr-2 space-y-1">
-                        <a href="{{ route('forecasting.demand') }}" class="block px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white hover:bg-indigo-600/30 transition">Demand Planning</a>
-                        <a href="{{ route('forecasting.historical') }}" class="block px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white hover:bg-indigo-600/30 transition">Historical Sales Analytics</a>
-                    </div>
+                        <a href="{{ route('forecasting.demand') }}" class="block px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white hover:bg-indigo-600/30 transition">Forecasting</a>
                 </div>
 
                 <!-- PROCUREMENT & SUPPLIERS DROPDOWN (ACTIVE & OPEN) -->

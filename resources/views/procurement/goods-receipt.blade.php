@@ -83,8 +83,7 @@
                     </svg>
                     <span>Home Dashboard</span>
                 </a>
-
-                <!-- FORECASTING DROPDOWN -->
+ <!-- FORECASTING SIDE BAR -->
                 <div class="space-y-1">
                     <button type="button" onclick="toggleSubmenu('forecasting-submenu', 'forecasting-chevron')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition font-semibold text-xs group">
                         <div class="flex items-center gap-3">
@@ -97,11 +96,19 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
-                    <div id="forecasting-submenu" class="submenu-transition max-h-0 opacity-0 pl-9 pr-2 space-y-1">
-                        <a href="#" class="block px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white hover:bg-indigo-600/30 transition">Demand Planning</a>
-                        <a href="#" class="block px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white hover:bg-indigo-600/30 transition">Historical Sales Analytics</a>
-                    </div>
-                </div>
+                   <div id="forecasting-submenu" class="submenu-transition max-h-0 opacity-0 pl-9 pr-2 space-y-1">
+
+    <a href="{{ route('forecasting.demand') }}"
+       class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white hover:bg-indigo-600/30 transition">
+             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"  d="M4 20h16M7 16v-4M12 20V8M17 20v-7"/>
+        </svg>
+
+        <span>Forecasting</span>
+
+    </a>
+
+</div>
 
                 <!-- PROCUREMENT & SUPPLIERS DROPDOWN (ACTIVE & OPEN) -->
                 <div class="space-y-1">
