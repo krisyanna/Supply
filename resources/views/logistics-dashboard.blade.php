@@ -100,9 +100,9 @@
                 <span class="font-mono text-slate-400" id="call-timer">00:04</span>
             </div>
 
-            <button onclick="hangUpSimulatedCall()" class="w-12 h-14 bg-rose-600 hover:bg-rose-500 rounded-full flex items-center justify-center text-white shadow-lg transition active:scale-95">
+            <button type="button" onclick="hangUpSimulatedCall()" class="w-12 h-14 bg-rose-600 hover:bg-rose-500 rounded-full flex items-center justify-center text-white shadow-lg transition active:scale-95">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z"></path>
                 </svg>
             </button>
         </div>
@@ -140,7 +140,7 @@
                 </a>
 
                 <div class="space-y-1">
-                    <button onclick="toggleSubmenu('forecasting-submenu', 'forecasting-chevron')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition font-semibold text-xs group">
+                    <button type="button" onclick="toggleSubmenu('forecasting-submenu', 'forecasting-chevron')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition font-semibold text-xs group">
                         <div class="flex items-center gap-3">
                             <svg class="w-4 h-4 text-indigo-400 group-hover:text-indigo-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
@@ -166,7 +166,7 @@
 
                 <!-- LOGISTICS SUB-MODULE DROPDOWN -->
                 <div class="space-y-1">
-                    <button onclick="toggleSubmenu('logistics-submenu', 'logistics-chevron')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-800 text-white font-semibold text-xs border border-slate-700/60 shadow-sm">
+                    <button type="button" onclick="toggleSubmenu('logistics-submenu', 'logistics-chevron')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-800 text-white font-semibold text-xs border border-slate-700/60 shadow-sm">
                         <div class="flex items-center gap-3">
                             <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -179,28 +179,28 @@
                     </button>
 
                     <div id="logistics-submenu" class="submenu-transition max-h-96 opacity-100 pl-7 pr-2 space-y-1">
-                        <button onclick="switchTab('schedules')" id="sub-btn-schedules" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-indigo-600/30 border border-indigo-500/30 transition">
-                            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="button" onclick="switchTab('schedules')" id="sub-btn-schedules" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                             <span>1. Shipment Schedules</span>
                         </button>
                         
-                        <button onclick="switchTab('tracking')" id="sub-btn-tracking" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="button" onclick="switchTab('tracking')" id="sub-btn-tracking" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-indigo-600/30 border border-indigo-500/30 transition">
+                            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                             </svg>
                             <span>2. Delivery Tracking</span>
                         </button>
                         
-                        <button onclick="switchTab('routes')" id="sub-btn-routes" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                        <button type="button" onclick="switchTab('routes')" id="sub-btn-routes" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
                             <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
                             </svg>
                             <span>3. Shipping Routes</span>
                         </button>
                         
-                        <button onclick="switchTab('status')" id="sub-btn-status" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                        <button type="button" onclick="switchTab('status')" id="sub-btn-status" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
                             <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                             </svg>
@@ -239,27 +239,27 @@
 
                 <div class="flex flex-wrap items-center gap-2.5">
                     <div class="relative w-60">
-                        <input type="text" placeholder="Search everywhere..." class="w-full pl-8 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <input type="text" id="global-search-input" onkeyup="globalDashboardSearch()" placeholder="Search everywhere..." class="w-full pl-8 pr-4 py-1.5 bg-slate-50 border border-indigo-300 rounded-full text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-inner">
+                        <svg class="w-3.5 h-3.5 text-indigo-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
 
-                    <button class="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs">
+                    <button type="button" onclick="openFilterModal()" class="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs">
                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                         </svg>
                         <span>Filter</span>
                     </button>
 
-                    <button onclick="alert('Downloading Logistics Report...')" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs">
+                    <button type="button" onclick="downloadLogisticsReport()" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs">
                         <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                         </svg>
                         <span>Download report</span>
                     </button>
 
-                    <button onclick="openModal('addModal')" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs active:scale-95">
+                    <button type="button" onclick="openModal('addModal')" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs active:scale-95">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -325,7 +325,7 @@
                 <!-- ========================================== -->
                 <!-- TAB 1: SHIPMENT SCHEDULES                  -->
                 <!-- ========================================== -->
-                <div id="view-schedules" class="tab-view space-y-6">
+                <div id="view-schedules" class="tab-view space-y-6 hidden">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
                         
                         <!-- LEFT: ACTIVE SHIPMENTS LIST WITH INTERACTIVE FILTER PILLS -->
@@ -335,16 +335,16 @@
 
                                 <!-- INTERACTIVE FILTER PILLS BAR -->
                                 <div class="flex items-center bg-slate-100/90 p-1 rounded-2xl text-[11px] font-bold text-slate-500 gap-1 border border-slate-200/60">
-                                    <button onclick="filterShipments('all')" id="filter-btn-all" class="filter-pill-btn px-3 py-1 bg-white text-indigo-600 rounded-xl shadow-xs transition-all">
+                                    <button type="button" onclick="filterShipments('all')" id="filter-btn-all" class="filter-pill-btn px-3 py-1 bg-white text-indigo-600 rounded-xl shadow-xs transition-all">
                                         All
                                     </button>
-                                    <button onclick="filterShipments('In transit')" id="filter-btn-intransit" class="filter-pill-btn px-3 py-1 hover:text-slate-900 rounded-xl transition-all">
+                                    <button type="button" onclick="filterShipments('In transit')" id="filter-btn-intransit" class="filter-pill-btn px-3 py-1 hover:text-slate-900 rounded-xl transition-all">
                                         In transit
                                     </button>
-                                    <button onclick="filterShipments('Delayed')" id="filter-btn-delayed" class="filter-pill-btn px-3 py-1 hover:text-slate-900 rounded-xl transition-all">
+                                    <button type="button" onclick="filterShipments('Delayed')" id="filter-btn-delayed" class="filter-pill-btn px-3 py-1 hover:text-slate-900 rounded-xl transition-all">
                                         Delayed
                                     </button>
-                                    <button onclick="filterShipments('Delivered')" id="filter-btn-delivered" class="filter-pill-btn px-3 py-1 hover:text-slate-900 rounded-xl transition-all">
+                                    <button type="button" onclick="filterShipments('Delivered')" id="filter-btn-delivered" class="filter-pill-btn px-3 py-1 hover:text-slate-900 rounded-xl transition-all">
                                         Delivered
                                     </button>
                                 </div>
@@ -353,7 +353,7 @@
                             <!-- SHIPMENT ROWS -->
                             <div class="divide-y divide-slate-100 text-xs" id="shipments-container">
                                 @foreach($shipments as $s)
-                                <div class="shipment-row py-3 flex items-center justify-between group transition-all cursor-pointer hover:bg-indigo-50/30 px-2 rounded-xl" onclick="selectAndGoToTransportation('{{ $s['shipment_code'] }}')" data-status="{{ $s['status'] === 'En Route' ? 'In transit' : $s['status'] }}">
+                                <div class="shipment-row py-3 flex items-center justify-between group transition-all cursor-pointer hover:bg-indigo-50/30 px-2 rounded-xl" onclick="selectAndGoToTracking('{{ $s['shipment_code'] }}')" data-status="{{ $s['status'] === 'En Route' ? 'In transit' : $s['status'] }}">
                                     <div class="flex items-center gap-3">
                                         <span class="w-2.5 h-2.5 rounded-full {{ $s['status'] === 'Delivered' ? 'bg-emerald-500' : 'bg-indigo-500 animate-pulse' }}"></span>
                                         <div>
@@ -379,7 +379,7 @@
                                 <!-- EMPTY FILTER STATE MESSAGE -->
                                 <div id="no-shipments-msg" class="py-8 text-center space-y-2 hidden">
                                     <p class="text-xs font-bold text-slate-500">No shipments found under this filter category.</p>
-                                    <button onclick="filterShipments('all')" class="text-[11px] font-extrabold text-indigo-600 hover:underline">Reset to View All</button>
+                                    <button type="button" onclick="filterShipments('all')" class="text-[11px] font-extrabold text-indigo-600 hover:underline">Reset to View All</button>
                                 </div>
                             </div>
                         </div>
@@ -405,8 +405,8 @@
                                 <text x="220" y="230" fill="#1e293b" font-size="10" font-weight="bold">Imus</text>
                             </svg>
 
-                            <button onclick="switchTab('status')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition shadow-lg relative z-10 text-center">
-                                Click to view interactive telemetry map
+                            <button type="button" onclick="switchTab('tracking')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition shadow-lg relative z-10 text-center">
+                                Click to view interactive tracking & map
                             </button>
                         </div>
 
@@ -455,95 +455,167 @@
                 </div>
 
                 <!-- ========================================== -->
-                <!-- TAB 2: ENHANCED DELIVERY TRACKING          -->
+                <!-- TAB 2: ENHANCED DELIVERY TRACKING WITH MAP -->
                 <!-- ========================================== -->
-                <div id="view-tracking" class="tab-view space-y-6 hidden">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-6">
+                <div id="view-tracking" class="tab-view space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         
-                        <!-- SEARCH BAR & FILTER TOOLBAR -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 max-w-3xl">
-                            <div class="relative flex-1">
-                                <input type="text" id="tracking-search-input" onkeyup="searchTrackingCards()" placeholder="Search by Shipment ID (#ABC-01234) or Driver Name..." class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <!-- LEFT SIDE: TRACKING CARDS LIST -->
+                        <div class="lg:col-span-5 space-y-4">
+                            
+                            <!-- SEARCH & FILTER TOOLBAR -->
+                            <div class="flex items-center gap-2">
+                                <div class="relative flex-1">
+                                    <input type="text" id="tracking-search-input" onkeyup="searchTrackingCards()" placeholder="Enter shipment ID..." class="w-full pl-9 pr-8 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs">
+                                    <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                </div>
+                                <button type="button" onclick="alert('Filtering applied')" class="p-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-slate-600 shadow-xs transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                                </button>
                             </div>
-                            <button onclick="alert('Filter parameters applied.')" class="px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-700 text-xs font-bold transition flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                                <span>Filter List</span>
-                            </button>
+
+                            <!-- CARDS LIST -->
+                            <div class="space-y-3" id="tracking-cards-container">
+                                @foreach($shipments as $s)
+                                <div class="tracking-card p-4 rounded-3xl border bg-white space-y-3 shadow-xs hover:border-indigo-400 transition-all cursor-pointer group" onclick="selectAndGoToTracking('{{ $s['shipment_code'] }}')" data-code="{{ $s['shipment_code'] }}" data-driver="{{ $s['driver_name'] }}">
+                                    
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-extrabold text-slate-900 text-sm font-mono group-hover:text-indigo-600 transition">#{{ $s['shipment_code'] }}</span>
+                                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border tracking-wider {{ $s['status'] === 'Delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200' }}">
+                                            {{ $s['status'] }}
+                                        </span>
+                                    </div>
+
+                                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full bg-amber-500 transition-all duration-500" style="width: {{ $s['progress_pct'] }}%"></div>
+                                    </div>
+
+                                    <div class="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                        <span>Cavite</span>
+                                        <span>Laguna</span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between pt-2 border-t border-slate-100" onclick="event.stopPropagation()">
+                                        <div>
+                                            <p class="font-bold text-slate-900 text-xs">{{ $s['driver_name'] }}</p>
+                                            <p class="text-[9px] text-slate-400 font-bold uppercase">{{ $s['courier'] }}</p>
+                                        </div>
+
+                                        <div class="flex items-center gap-1.5">
+                                            <button type="button" onclick="alert('Opening Direct Chat with Driver {{ $s['driver_name'] }}...')" class="p-1.5 bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 rounded-xl transition border border-slate-200/60 shadow-xs" title="Chat">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                            </button>
+                                            <button type="button" onclick="initiateSimulatedCall('{{ $s['driver_name'] }}', '{{ $s['phone_number'] }}')" class="p-1.5 bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 rounded-xl transition border border-slate-200/60 shadow-xs" title="Call">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                            </button>
+                                            <button type="button" onclick="openModal('addModal')" class="p-1.5 bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 rounded-xl transition border border-slate-200/60 shadow-xs" title="Edit">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                            </button>
+                                            <button type="button" onclick="confirmDeleteTrackingCard(this, '{{ $s['shipment_code'] }}')" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition border border-rose-100 shadow-xs" title="Delete">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
                         </div>
 
-                        <!-- TRACKING CARDS LIST (CLICKABLE ROW TO SWITCH TO TAB 4) -->
-                        <div class="space-y-4 max-w-3xl" id="tracking-cards-container">
-                            @foreach($shipments as $s)
-                            <div class="tracking-card p-5 rounded-2xl border border-slate-200/90 bg-white space-y-4 shadow-xs hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer group relative" onclick="selectAndGoToTransportation('{{ $s['shipment_code'] }}')" data-code="{{ $s['shipment_code'] }}" data-driver="{{ $s['driver_name'] }}">
+                        <!-- RIGHT SIDE: STYLIZED DARK MAP WITH COMPACT, HUGGING FLOATING CARD -->
+                        <div class="lg:col-span-7 bg-[#11192e] rounded-3xl border border-slate-800 relative overflow-hidden h-[580px] shadow-2xl flex items-center justify-center p-6">
+                            
+                            <!-- TOP-LEFT FASTEST ROUTE BADGE -->
+                            <div class="absolute top-6 left-6 z-20 bg-indigo-600 text-white px-4 py-2 rounded-2xl shadow-xl border border-indigo-400/30 flex flex-col">
+                                <span class="text-sm font-extrabold" id="map-travel-time">1 hr 29 min</span>
+                                <span class="text-[9px] font-bold text-indigo-200 uppercase tracking-widest">Fastest Route</span>
+                            </div>
+
+                            <!-- CENTER FLOATING DRIVER TELEMETRY CARD (COMPACT HEIGHT - NO EXTRA EMPTY SPACE) -->
+                            <div class="absolute right-6 top-6 w-80 bg-slate-50/95 backdrop-blur-md rounded-3xl p-4 border border-slate-200/80 shadow-2xl z-20 flex flex-col space-y-3 text-xs">
                                 
-                                <!-- CODE & STATUS BADGE -->
-                                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-extrabold flex items-center justify-center text-xs font-mono group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                            {{ strtoupper(substr($s['driver_name'], 0, 2)) }}
-                                        </div>
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-extrabold text-slate-900 text-sm font-mono block group-hover:text-indigo-600 transition">#{{ $s['shipment_code'] }}</span>
-                                                <span class="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">Click to view map &rarr;</span>
-                                            </div>
-                                            <span class="text-[10px] text-slate-400 font-mono">PO Ref: {{ $s['po_reference'] }} | Sales: {{ $s['customer_order'] }}</span>
-                                        </div>
-                                    </div>
-                                    <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase border tracking-wider {{ $s['status'] === 'Delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200' }}">
-                                        {{ $s['status'] }}
-                                    </span>
-                                </div>
-
-                                <!-- DYNAMIC PROGRESS BAR & ROUTE CITIES -->
-                                <div class="space-y-1.5">
-                                    <div class="flex justify-between text-[11px] font-bold text-slate-500">
-                                        <span>Cavite Central Warehouse</span>
-                                        <span class="text-indigo-600 font-mono">{{ $s['progress_pct'] }}% Complete</span>
-                                        <span>Laguna Distribution Hub</span>
-                                    </div>
-                                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden relative">
-                                        <div class="h-full rounded-full transition-all duration-500 {{ $s['status'] === 'Delivered' ? 'bg-emerald-500' : 'bg-gradient-to-r from-indigo-500 to-amber-500' }}" style="width: {{ $s['progress_pct'] }}%"></div>
-                                    </div>
-                                </div>
-
-                                <!-- CARGO DETAILS & DRIVER ACTION BUTTONS -->
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1" onclick="event.stopPropagation()">
+                                <!-- DRIVER & COMPACT CALL BUTTON -->
+                                <div class="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
                                     <div>
-                                        <p class="font-extrabold text-slate-900 text-xs">{{ $s['driver_name'] }}</p>
-                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{{ $s['courier'] }} • {{ $s['phone_number'] }}</p>
+                                        <h4 class="font-extrabold text-slate-900 text-sm tracking-tight" id="float-driver-name">Erich De Torres</h4>
+                                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 block mt-0.5" id="float-courier">JNT EXPRESS</span>
+                                    </div>
+                                    <button type="button" onclick="callCurrentDriver()" class="w-8 h-8 bg-slate-200/80 hover:bg-emerald-500 hover:text-white text-slate-700 rounded-full flex items-center justify-center transition shadow-xs" title="Call Driver">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-widest block mb-0.5">SHIPMENT ID</span>
+                                    <h3 class="text-xs font-extrabold text-slate-900 font-mono tracking-tight" id="float-shipment-id">#ABC-01234</h3>
+                                </div>
+
+                                <!-- COMPACT TIMELINE CHECKPOINTS -->
+                                <div class="space-y-2.5 pt-0.5 relative border-l-2 border-slate-200 ml-2 pl-3">
+                                    <div class="relative">
+                                        <span class="absolute -left-[17px] top-1 w-2 h-2 rounded-full bg-amber-500 ring-4 ring-amber-100"></span>
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="font-extrabold text-slate-800 text-[11px]" id="float-time-eta">Estimated 13 Sept 2026</p>
+                                                <span class="text-[9px] font-extrabold text-amber-600 block" id="float-status-4">En Route</span>
+                                            </div>
+                                            <span class="text-[9px] font-mono text-slate-400">10:20 AM</span>
+                                        </div>
                                     </div>
 
-                                    <!-- ACTION BUTTONS TOOLBAR -->
-                                    <div class="flex items-center gap-1.5">
-                                        <button onclick="alert('Opening Direct Chat with Driver {{ $s['driver_name'] }}...')" class="p-2 bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 rounded-xl transition border border-slate-200/60 shadow-xs" title="Chat Driver">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                                        </button>
-                                        <button onclick="initiateSimulatedCall('{{ $s['driver_name'] }}', '{{ $s['phone_number'] }}')" class="p-2 bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 rounded-xl transition border border-slate-200/60 shadow-xs" title="Call Driver Telemetry">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                        </button>
-                                        <button onclick="openModal('addModal')" class="p-2 bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 rounded-xl transition border border-slate-200/60 shadow-xs" title="Edit Dispatch">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                        </button>
-                                        <button onclick="confirmDeleteTrackingCard(this, '{{ $s['shipment_code'] }}')" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition border border-rose-100 shadow-xs" title="Delete Record">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
+                                    <div class="relative">
+                                        <span class="absolute -left-[17px] top-1 w-2 h-2 rounded-full bg-amber-500"></span>
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="font-extrabold text-slate-800 text-[11px]">12 Sept 2026</p>
+                                                <span class="text-[9px] font-extrabold text-amber-600 block">In Transit</span>
+                                            </div>
+                                            <span class="text-[9px] font-mono text-slate-400">09:15 AM</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative">
+                                        <span class="absolute -left-[17px] top-1 w-2 h-2 rounded-full bg-amber-500"></span>
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="font-extrabold text-slate-800 text-[11px]">11 Sept 2026</p>
+                                                <span class="text-[9px] font-extrabold text-amber-600 block">In Sorting Centre</span>
+                                            </div>
+                                            <span class="text-[9px] font-mono text-slate-400">06:21 AM</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative">
+                                        <span class="absolute -left-[17px] top-1 w-2 h-2 rounded-full bg-amber-500"></span>
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="font-extrabold text-slate-800 text-[11px]">10 Sept 2026</p>
+                                                <span class="text-[9px] font-extrabold text-amber-600 block">Order Confirmed</span>
+                                            </div>
+                                            <span class="text-[9px] font-mono text-slate-400">07:24 AM</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            @endforeach
 
-                            <div id="no-tracking-found" class="py-8 text-center space-y-2 hidden">
-                                <p class="text-xs font-bold text-slate-500">No tracking records match your search criteria.</p>
-                            </div>
+                            <!-- SVG GRAPHIC STYLIZED CURVED MAP VECTORS -->
+                            <svg class="absolute inset-0 w-full h-full p-4 relative z-10" viewBox="0 0 600 500" fill="none">
+                                <path d="M 50 280 Q 200 240, 320 340 T 550 420" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" />
+                                <path d="M 50 360 Q 280 480, 550 420" stroke="#10b981" stroke-width="5" stroke-linecap="round" />
+                                <text x="180" y="220" fill="#475569" font-size="28" font-weight="900" opacity="0.4">Los Baños</text>
+                                <text x="180" y="460" fill="#475569" font-size="24" font-weight="900" opacity="0.4">Alaminos</text>
+                                <g id="status-live-truck" class="cursor-pointer">
+                                    <circle id="truck-circle-ping" cx="480" cy="390" r="16" fill="#ef4444" fill-opacity="0.4" class="animate-ping"/>
+                                    <circle id="truck-circle-main" cx="480" cy="390" r="8" fill="#ef4444" stroke="#ffffff" stroke-width="2"/>
+                                </g>
+                            </svg>
+
                         </div>
 
                     </div>
                 </div>
 
                 <!-- ========================================== -->
-                <!-- TAB 3: INTERACTIVE SHIPPING ROUTES & LEDGER -->
+                <!-- TAB 3: SHIPPING ROUTES & EXACT "SEE LIST"  -->
                 <!-- ========================================== -->
                 <div id="view-routes" class="tab-view space-y-6 hidden">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -556,50 +628,74 @@
                             </div>
 
                             <!-- DRIVERS "SEE ORDER" CARDS -->
-                            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+                            <div class="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs space-y-2.5">
                                 @foreach($shipments as $s)
-                                <div class="flex items-center justify-between text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:border-indigo-200 transition">
+                                <div class="flex items-center justify-between text-xs p-2.5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:border-indigo-200 transition">
                                     <div class="flex items-center gap-2.5">
                                         <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-extrabold flex items-center justify-center text-[10px]">👤</div>
                                         <div>
-                                            <span class="font-bold text-slate-900 block leading-tight">{{ $s['driver_name'] }}</span>
+                                            <span class="font-extrabold text-slate-900 block leading-tight">{{ $s['driver_name'] }}</span>
                                             <span class="text-[10px] text-slate-400 font-mono">#{{ $s['shipment_code'] }}</span>
                                         </div>
                                     </div>
-                                    <!-- FUNCTIONAL "SEE ORDER" BUTTON SWITCHES TO TAB 4 AND LOADS ORDER -->
-                                    <button onclick="selectAndGoToTransportation('{{ $s['shipment_code'] }}')" class="px-3 py-1 bg-white hover:bg-indigo-600 hover:text-white border border-slate-200 text-slate-700 text-[11px] font-extrabold rounded-xl transition shadow-xs">
+                                    <button type="button" onclick="loadOrderDetailsRoute('{{ $s['shipment_code'] }}')" class="px-3.5 py-1.5 bg-white hover:bg-indigo-600 hover:text-white border border-slate-200 text-slate-700 text-[11px] font-extrabold rounded-full transition shadow-xs">
                                         See order
                                     </button>
                                 </div>
                                 @endforeach
                             </div>
 
-                            <!-- PAYMENT CATEGORY FILTERS WITH FUNCTIONAL "SEE LIST" BUTTONS -->
-                            <div class="space-y-2 pt-1">
-                                <div id="cat-card-PAID" class="cat-filter-card bg-indigo-50/70 border border-indigo-300 p-3.5 rounded-2xl flex justify-between items-center text-xs font-extrabold text-indigo-700 transition-all">
-                                    <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> PAID</span>
-                                    <button onclick="filterCategoryList('PAID')" class="px-3 py-1 bg-white hover:bg-indigo-600 hover:text-white text-slate-800 rounded-xl shadow-xs font-bold text-[11px] transition">See List</button>
+                            <!-- EXACT MATCH CATEGORY CARDS FROM USER SCREENSHOT -->
+                            <div class="space-y-3 pt-1">
+                                
+                                <!-- PAID -->
+                                <div id="cat-card-PAID" class="cat-filter-card bg-indigo-50/70 border border-indigo-200/80 p-3.5 rounded-3xl flex justify-between items-center text-xs font-extrabold transition-all">
+                                    <span class="flex items-center gap-2.5 text-indigo-700">
+                                        <span class="w-3 h-3 rounded-full bg-indigo-600"></span> PAID
+                                    </span>
+                                    <button type="button" onclick="filterCategoryList('PAID')" class="px-4 py-1.5 bg-white hover:bg-indigo-600 hover:text-white text-slate-800 rounded-full shadow-xs font-bold text-[11px] transition border border-slate-200/50">
+                                        See List
+                                    </button>
                                 </div>
-                                <div id="cat-card-PENDINGS" class="cat-filter-card bg-white border border-slate-200 p-3.5 rounded-2xl flex justify-between items-center text-xs font-extrabold text-slate-700 transition-all">
-                                    <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> PENDINGS</span>
-                                    <button onclick="filterCategoryList('PENDINGS')" class="px-3 py-1 bg-slate-100 hover:bg-amber-500 hover:text-white text-slate-800 rounded-xl font-bold text-[11px] transition">See List</button>
+
+                                <!-- PENDINGS -->
+                                <div id="cat-card-PENDINGS" class="cat-filter-card bg-white border border-slate-200/90 p-3.5 rounded-3xl flex justify-between items-center text-xs font-extrabold transition-all">
+                                    <span class="flex items-center gap-2.5 text-slate-800">
+                                        <span class="w-3 h-3 rounded-full bg-amber-500"></span> PENDINGS
+                                    </span>
+                                    <button type="button" onclick="filterCategoryList('PENDINGS')" class="px-4 py-1.5 bg-slate-100/90 hover:bg-amber-500 hover:text-white text-slate-800 rounded-full font-bold text-[11px] transition">
+                                        See List
+                                    </button>
                                 </div>
-                                <div id="cat-card-COD" class="cat-filter-card bg-white border border-slate-200 p-3.5 rounded-2xl flex justify-between items-center text-xs font-extrabold text-slate-700 transition-all">
-                                    <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span> CASH ON DELIVERY</span>
-                                    <button onclick="filterCategoryList('COD')" class="px-3 py-1 bg-slate-100 hover:bg-sky-500 hover:text-white text-slate-800 rounded-xl font-bold text-[11px] transition">See List</button>
+
+                                <!-- CASH ON DELIVERY -->
+                                <div id="cat-card-COD" class="cat-filter-card bg-white border border-slate-200/90 p-3.5 rounded-3xl flex justify-between items-center text-xs font-extrabold transition-all">
+                                    <span class="flex items-center gap-2.5 text-slate-800">
+                                        <span class="w-3 h-3 rounded-full bg-sky-500"></span> CASH ON DELIVERY
+                                    </span>
+                                    <button type="button" onclick="filterCategoryList('COD')" class="px-4 py-1.5 bg-slate-100/90 hover:bg-sky-500 hover:text-white text-slate-800 rounded-full font-bold text-[11px] transition">
+                                        See List
+                                    </button>
                                 </div>
-                                <div id="cat-card-IN TRANSIT" class="cat-filter-card bg-white border border-slate-200 p-3.5 rounded-2xl flex justify-between items-center text-xs font-extrabold text-slate-700 transition-all">
-                                    <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> IN TRANSIT</span>
-                                    <button onclick="filterCategoryList('IN TRANSIT')" class="px-3 py-1 bg-slate-100 hover:bg-emerald-500 hover:text-white text-slate-800 rounded-xl font-bold text-[11px] transition">See List</button>
+
+                                <!-- IN TRANSIT -->
+                                <div id="cat-card-IN TRANSIT" class="cat-filter-card bg-white border border-slate-200/90 p-3.5 rounded-3xl flex justify-between items-center text-xs font-extrabold transition-all">
+                                    <span class="flex items-center gap-2.5 text-slate-800">
+                                        <span class="w-3 h-3 rounded-full bg-emerald-500"></span> IN TRANSIT
+                                    </span>
+                                    <button type="button" onclick="filterCategoryList('IN TRANSIT')" class="px-4 py-1.5 bg-slate-100/90 hover:bg-emerald-500 hover:text-white text-slate-800 rounded-full font-bold text-[11px] transition">
+                                        See List
+                                    </button>
                                 </div>
+
                             </div>
                         </div>
 
-                        <!-- RIGHT MAIN LOG LEDGER TABLES -->
+                        <!-- RIGHT MAIN TABLES & ROUTE MAP -->
                         <div class="lg:col-span-8 space-y-6">
                             
-                            <!-- DELIVERY SCHEDULE LOG LEDGER TABLE -->
-                            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden p-5 space-y-4">
+                            <!-- DELIVERY SCHEDULE LOG LEDGER -->
+                            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden p-5 space-y-4">
                                 <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
                                     <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
                                     Delivery Schedule Log Ledger
@@ -620,7 +716,7 @@
                                             @foreach($shipments as $s)
                                             <tr class="hover:bg-slate-50/80 transition">
                                                 <td class="py-3 text-slate-500">{{ $s['date_logged'] }}</td>
-                                                <td class="py-3 font-bold font-mono text-indigo-600 cursor-pointer hover:underline" onclick="selectAndGoToTransportation('{{ $s['shipment_code'] }}')">#{{ $s['shipment_code'] }}</td>
+                                                <td class="py-3 font-bold font-mono text-indigo-600 cursor-pointer hover:underline" onclick="loadOrderDetailsRoute('{{ $s['shipment_code'] }}')">#{{ $s['shipment_code'] }}</td>
                                                 <td class="py-3 font-semibold text-slate-900">{{ $s['driver_name'] }}</td>
                                                 <td class="py-3 font-medium">{{ $s['cargo_details'] }}</td>
                                                 <td class="py-3">
@@ -635,8 +731,8 @@
                                 </div>
                             </div>
 
-                            <!-- DYNAMICALLY FILTERED CATEGORY ORDERS TABLE (DYNAMICALLY UPDATED BY "SEE LIST") -->
-                            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden p-5 space-y-4">
+                            <!-- DYNAMICALLY FILTERED CATEGORY ORDERS TABLE -->
+                            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden p-5 space-y-4">
                                 <h3 id="category-table-title" class="font-bold text-slate-900 text-sm flex items-center gap-2">
                                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                                     List of Paid Orders
@@ -654,38 +750,102 @@
                                             </tr>
                                         </thead>
                                         <tbody id="category-orders-tbody" class="divide-y divide-slate-50 font-medium text-slate-700">
-                                            <!-- DEFAULT SHOWS PAID ORDERS -->
                                             <tr>
                                                 <td class="py-3 font-bold text-slate-500 font-mono">1</td>
                                                 <td class="py-3 font-bold text-slate-900">Erich De Torres</td>
                                                 <td class="py-3">Cavite - Laguna</td>
-                                                <td class="py-3 font-mono font-bold text-emerald-600">₱17,000.00</td>
+                                                <td class="py-3 font-mono font-bold text-emerald-600">₱17,000</td>
                                                 <td class="py-3"><span class="text-xs font-bold text-slate-800">En Route</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="py-3 font-bold text-slate-500 font-mono">2</td>
-                                                <td class="py-3 font-bold text-slate-900">Juliana Aquino</td>
-                                                <td class="py-3">Pangasinan - Laguna</td>
-                                                <td class="py-3 font-mono font-bold text-emerald-600">₱5,000.00</td>
-                                                <td class="py-3"><span class="text-xs font-bold text-emerald-600">Delivered</span></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
+
+                            <!-- ROUTE VECTORS MAP OVERVIEW -->
+                            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-4" id="route-vectors-section">
+                                <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                                    Route Vectors Map Overview
+                                </h3>
+
+                                <div class="bg-[#d5e8d4] rounded-3xl border border-emerald-200 p-4 relative overflow-hidden h-64 flex flex-col justify-between shadow-inner">
+                                    <div class="flex items-center gap-2 relative z-10">
+                                        <span class="px-3 py-1 bg-indigo-600 text-white rounded-full text-[10px] font-extrabold shadow-sm flex items-center gap-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span> GPS Live Vectors Active
+                                        </span>
+                                    </div>
+
+                                    <svg class="absolute inset-0 w-full h-full p-4 relative z-0" viewBox="0 0 500 200" fill="none">
+                                        <path id="vector-map-line" d="M 180 40 L 260 120 L 380 90" stroke="#2563eb" stroke-width="5" stroke-linecap="round" />
+                                        <circle cx="180" cy="40" r="7" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+                                        <text x="185" y="42" fill="#0f172a" font-size="10" font-weight="extrabold">Origin</text>
+                                        <circle cx="380" cy="90" r="8" fill="#10b981" stroke="#ffffff" stroke-width="2"/>
+                                        <text id="vector-dest-text" x="350" y="85" fill="#0f172a" font-size="10" font-weight="extrabold">Laguna</text>
+                                    </svg>
+
+                                    <div class="bg-slate-800/80 backdrop-blur-md text-white p-3 rounded-2xl max-w-xs border border-slate-700 shadow-lg relative z-10 space-y-0.5">
+                                        <p class="font-extrabold text-amber-400 text-xs" id="vector-duration">Estimated duration: 1 hr 7 min</p>
+                                        <p class="text-[10px] text-slate-300 font-mono" id="vector-distance">Total distance: 24.9 km</p>
+                                    </div>
+                                </div>
+
+                                <div class="bg-slate-50 p-5 rounded-3xl border border-slate-200/80 grid grid-cols-2 md:grid-cols-3 gap-4 text-xs font-semibold">
+                                    <div>
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">ORDER ID</span>
+                                        <strong id="dt-order-id" class="text-slate-900 font-mono text-sm">#ABC-01234</strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">CUSTOMER NAME</span>
+                                        <strong id="dt-customer-name" class="text-slate-900 text-sm">Erich De Torres</strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">ORDER STATUS</span>
+                                        <span id="dt-order-status" class="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-extrabold uppercase inline-block mt-0.5">EN ROUTE</span>
+                                    </div>
+
+                                    <div class="col-span-2">
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">DELIVERY ADDRESS</span>
+                                        <p id="dt-delivery-addr" class="text-slate-800 font-medium">137 Gomez St, Brgy 2, Laguna City</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">PHONE #</span>
+                                        <p id="dt-phone" class="text-slate-800 font-mono">+63 912 575 4567</p>
+                                    </div>
+
+                                    <div>
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">ORDER DETAILS</span>
+                                        <p id="dt-cargo" class="text-slate-800 font-medium">Vertex [Mother Board] Ryzen-5</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">QUANTITY</span>
+                                        <p id="dt-qty" class="text-slate-800 font-mono">10</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">PAYMENT STATUS</span>
+                                        <strong id="dt-payment" class="text-emerald-600">Paid</strong>
+                                    </div>
+
+                                    <div class="col-span-3 pt-2 border-t border-slate-200/60">
+                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase block">DELIVERY COST</span>
+                                        <strong id="dt-cost" class="text-indigo-600 font-mono text-sm">Php 17,000</strong>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>
                 </div>
 
                 <!-- ========================================== -->
-                <!-- TAB 4: STYLIZED MAP & TRANSPORTATION TELEMETRY -->
+                <!-- TAB 4: COMPLETE TRANSPORTATION STATUS      -->
                 <!-- ========================================== -->
                 <div id="view-status" class="tab-view space-y-6 hidden">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         
-                        <!-- LEFT SIDE: DYNAMIC SHIPMENT TELEMETRY CARD -->
-                        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-5">
+                        <!-- LEFT SIDE: DYNAMIC SHIPMENT TELEMETRY CARD WITH NEXT/PREV SWITCHER -->
+                        <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-5">
                             
                             <!-- ORDER CODE & NEXT/PREV BUTTONS HEADER -->
                             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -704,17 +864,17 @@
 
                                 <!-- NEXT & PREVIOUS SWITCHER BUTTONS -->
                                 <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-                                    <button onclick="navigateShipment(-1)" class="w-8 h-8 bg-white hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition shadow-xs flex items-center justify-center text-xs active:scale-95" title="Previous Active Shipment">
+                                    <button type="button" onclick="navigateShipment(-1)" class="w-8 h-8 bg-white hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition shadow-xs flex items-center justify-center text-xs active:scale-95" title="Previous Active Shipment">
                                         &lt;
                                     </button>
-                                    <button onclick="navigateShipment(1)" class="w-8 h-8 bg-white hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition shadow-xs flex items-center justify-center text-xs active:scale-95" title="Next Active Shipment">
+                                    <button type="button" onclick="navigateShipment(1)" class="w-8 h-8 bg-white hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition shadow-xs flex items-center justify-center text-xs active:scale-95" title="Next Active Shipment">
                                         &gt;
                                     </button>
                                 </div>
                             </div>
 
                             <!-- DRIVER HOTLINE & ACTION BUTTONS -->
-                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/70 flex items-center justify-between gap-3">
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-3">
                                     <div id="tel-driver-avatar" class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs">
                                         ED
@@ -726,11 +886,11 @@
                                 </div>
 
                                 <div class="flex items-center gap-2">
-                                    <button onclick="callCurrentDriver()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-xs flex items-center gap-1">
+                                    <button type="button" onclick="callCurrentDriver()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-1">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                         Call
                                     </button>
-                                    <button onclick="alert('Customer SMS Notification Dispatched!')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition shadow-xs">
+                                    <button type="button" onclick="alert('Customer SMS Notification Dispatched!')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition shadow-xs">
                                         Notify
                                     </button>
                                 </div>
@@ -738,18 +898,18 @@
 
                             <!-- INTEGRATED DATA SOURCES REFERENCE TAGS -->
                             <div class="grid grid-cols-2 gap-2 text-[11px]">
-                                <div class="bg-blue-50/60 p-2.5 rounded-lg border border-blue-100">
+                                <div class="bg-blue-50/60 p-2.5 rounded-xl border border-blue-100">
                                     <span class="text-[9px] text-blue-500 font-extrabold uppercase block">PROCUREMENT PO</span>
                                     <strong id="tel-po-ref" class="text-blue-900 font-mono">PO-2026-001</strong>
                                 </div>
-                                <div class="bg-purple-50/60 p-2.5 rounded-lg border border-purple-100">
+                                <div class="bg-purple-50/60 p-2.5 rounded-xl border border-purple-100">
                                     <span class="text-[9px] text-purple-500 font-extrabold uppercase block">SALES ORDER</span>
                                     <strong id="tel-sales-ref" class="text-purple-900 font-mono">ORD-001 (SM Prime)</strong>
                                 </div>
                             </div>
 
                             <!-- ORIGIN & DESTINATION CARD -->
-                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/70 space-y-3 text-xs">
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-3 text-xs">
                                 <div class="flex items-start gap-2.5">
                                     <div class="w-3 h-3 rounded-full bg-indigo-600 mt-0.5 flex-shrink-0"></div>
                                     <div>
@@ -771,6 +931,24 @@
                                 </div>
                             </div>
 
+                            <!-- PROGRESS STEPS BAR -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                                    <span class="text-emerald-600">Departure</span>
+                                    <span class="text-emerald-600">Sorting Hub</span>
+                                    <span class="text-indigo-600">In Transit</span>
+                                    <span>Arrival</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex">
+                                    <div id="tel-progress-bar" class="bg-emerald-500 h-full w-[68%]" title="En Route Progress"></div>
+                                    <div class="bg-indigo-500 h-full w-[12%] animate-pulse"></div>
+                                </div>
+                                <div class="flex justify-between text-[10px] font-semibold text-slate-500 pt-1">
+                                    <span id="tel-time-start">Depot Dispatched (08:00 AM)</span>
+                                    <span id="tel-time-eta">Est. Arrival: 13 Sept 2026</span>
+                                </div>
+                            </div>
+
                             <!-- VEHICLE SENSOR METRICS -->
                             <div class="grid grid-cols-3 gap-2 text-center text-xs pt-1 border-t border-slate-100">
                                 <div class="p-2 bg-slate-50 rounded-lg">
@@ -789,99 +967,84 @@
 
                         </div>
 
-                        <!-- RIGHT SIDE: STYLIZED MAP WITH FLOATING TELEMETRY CARD -->
-                        <div class="lg:col-span-7 bg-[#11192e] rounded-3xl border border-slate-800 relative overflow-hidden h-[600px] shadow-2xl flex items-center justify-center p-6">
+                        <!-- RIGHT SIDE: HIGH-TECH LIVE GPS VECTOR RADAR MAP -->
+                        <div class="lg:col-span-7 bg-[#0b1329] rounded-3xl border border-slate-800 p-6 relative overflow-hidden h-[580px] flex flex-col justify-between shadow-2xl">
                             
-                            <!-- TOP-LEFT FASTEST ROUTE BADGE -->
-                            <div class="absolute top-6 left-6 z-20 bg-indigo-600 text-white px-4 py-2 rounded-2xl shadow-xl border border-indigo-400/30 flex flex-col">
-                                <span class="text-sm font-extrabold" id="map-travel-time">1 hr 29 min</span>
-                                <span class="text-[9px] font-bold text-indigo-200 uppercase tracking-widest">Fastest Route</span>
-                            </div>
+                            <!-- GRID OVERLAY -->
+                            <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:35px_35px] opacity-35"></div>
 
-                            <!-- CENTER FLOATING DRIVER TELEMETRY CARD -->
-                            <div class="absolute right-6 top-6 bottom-6 w-80 bg-slate-50/95 backdrop-blur-md rounded-3xl p-6 border border-slate-200 shadow-2xl z-20 flex flex-col justify-between text-xs overflow-y-auto">
-                                <div class="space-y-4">
-                                    <!-- DRIVER & HOTLINE HEADER -->
-                                    <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
-                                        <div>
-                                            <h4 class="font-extrabold text-slate-900 text-sm" id="float-driver-name">Erich De Torres</h4>
-                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400" id="float-courier">JNT EXPRESS</span>
-                                        </div>
-                                        <div class="flex items-center gap-1.5">
-                                            <button onclick="callCurrentDriver()" class="p-2 bg-slate-200 hover:bg-emerald-100 hover:text-emerald-700 text-slate-700 rounded-full transition" title="Call">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest block">SHIPMENT ID</span>
-                                        <h3 class="text-base font-extrabold text-slate-900 font-mono" id="float-shipment-id">#ABC-01234</h3>
-                                    </div>
-
-                                    <!-- TIMELINE CHECKPOINTS WITH ORANGE DOTS -->
-                                    <div class="space-y-4 pt-1 relative border-l-2 border-slate-200 ml-2 pl-4">
-                                        <div class="relative">
-                                            <span class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-4 ring-amber-100"></span>
-                                            <div class="flex justify-between items-start">
-                                                <div>
-                                                    <p class="font-extrabold text-slate-800 text-xs" id="float-time-eta">Estimated 13 Sept 2026</p>
-                                                    <span class="text-[10px] font-extrabold text-amber-600 block" id="float-status-4">En Route</span>
-                                                </div>
-                                                <span class="text-[10px] font-mono text-slate-400">10:20 AM</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="relative">
-                                            <span class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                                            <div class="flex justify-between items-start">
-                                                <div>
-                                                    <p class="font-extrabold text-slate-800 text-xs">12 Sept 2026</p>
-                                                    <span class="text-[10px] font-extrabold text-amber-600 block">In Transit</span>
-                                                </div>
-                                                <span class="text-[10px] font-mono text-slate-400">09:15 AM</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="relative">
-                                            <span class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                                            <div class="flex justify-between items-start">
-                                                <div>
-                                                    <p class="font-extrabold text-slate-800 text-xs">11 Sept 2026</p>
-                                                    <span class="text-[10px] font-extrabold text-amber-600 block">In Sorting Centre</span>
-                                                </div>
-                                                <span class="text-[10px] font-mono text-slate-400">06:21 AM</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="relative">
-                                            <span class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                                            <div class="flex justify-between items-start">
-                                                <div>
-                                                    <p class="font-extrabold text-slate-800 text-xs">10 Sept 2026</p>
-                                                    <span class="text-[10px] font-extrabold text-amber-600 block">Order Confirmed</span>
-                                                </div>
-                                                <span class="text-[10px] font-mono text-slate-400">07:24 AM</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <!-- TOP MAP HUD HEADER -->
+                            <div class="flex justify-between items-center relative z-20">
+                                <div class="bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-slate-700 text-xs shadow-lg flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    <span class="font-extrabold text-white text-[11px]" id="map-hud-title">Live Telemetry GPS Radar View</span>
+                                </div>
+                                <div class="bg-slate-900/90 backdrop-blur-md px-3 py-1 rounded-xl border border-slate-700 text-[10px] font-mono text-indigo-300" id="map-hud-coords">
+                                    LAT: 14.2141° N | LON: 121.0522° E
                                 </div>
                             </div>
 
-                            <!-- SVG GRAPHIC STYLIZED CURVED MAP VECTORS -->
-                            <svg class="absolute inset-0 w-full h-full p-4 relative z-10" viewBox="0 0 600 500" fill="none">
-                                <path d="M 50 280 Q 200 240, 320 340 T 550 420" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" />
-                                <path d="M 50 360 Q 280 480, 550 420" stroke="#10b981" stroke-width="5" stroke-linecap="round" />
+                            <!-- SVG GRAPHIC VECTOR MAP -->
+                            <svg class="absolute inset-0 w-full h-full p-6 relative z-10" viewBox="0 0 600 500" fill="none">
                                 
-                                <text x="180" y="220" fill="#475569" font-size="28" font-weight="900" opacity="0.4">Los Baños</text>
-                                <text x="180" y="460" fill="#475569" font-size="24" font-weight="900" opacity="0.4">Alaminos</text>
+                                <!-- MAIN ROUTE CURVE -->
+                                <path id="status-route-line" d="M 100 380 Q 250 180, 480 120" stroke="#4f46e5" stroke-width="5" stroke-linecap="round" stroke-dasharray="6 6" class="animate-pulse" />
 
-                                <!-- MOVING LIVE TRUCK GPS PIN -->
-                                <g id="status-live-truck" class="cursor-pointer">
-                                    <circle id="truck-circle-ping" cx="480" cy="390" r="16" fill="#ef4444" fill-opacity="0.4" class="animate-ping"/>
-                                    <circle id="truck-circle-main" cx="480" cy="390" r="8" fill="#ef4444" stroke="#ffffff" stroke-width="2"/>
+                                <!-- CHECKPOINT NODE 1: ORIGIN -->
+                                <g class="cursor-pointer" onclick="alert('Checkpoint 1: Origin Depot')">
+                                    <circle cx="100" cy="380" r="14" fill="#4f46e5" fill-opacity="0.3" class="animate-radar"/>
+                                    <circle cx="100" cy="380" r="7" fill="#6366f1" stroke="#ffffff" stroke-width="2"/>
+                                    <text id="map-node-origin" x="100" y="415" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">Origin Hub</text>
                                 </g>
+
+                                <!-- CHECKPOINT NODE 2: INTERMEDIATE TOLLWAY -->
+                                <g class="cursor-pointer" onclick="alert('Checkpoint 2: Toll Plaza Checkpoint')">
+                                    <circle cx="280" cy="240" r="10" fill="#f59e0b" fill-opacity="0.3"/>
+                                    <circle cx="280" cy="240" r="5" fill="#fbbf24" stroke="#ffffff" stroke-width="1.5"/>
+                                    <text x="280" y="220" fill="#cbd5e1" font-size="10" font-weight="bold" text-anchor="middle">Transit Interchange</text>
+                                </g>
+
+                                <!-- CHECKPOINT NODE 3: DESTINATION -->
+                                <g class="cursor-pointer" onclick="alert('Checkpoint 3: Destination Regional Hub')">
+                                    <circle cx="480" cy="120" r="14" fill="#10b981" fill-opacity="0.3" class="animate-radar"/>
+                                    <circle cx="480" cy="120" r="7" fill="#34d399" stroke="#ffffff" stroke-width="2"/>
+                                    <text id="map-node-dest" x="480" y="95" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">Destination Site</text>
+                                </g>
+
+                                <!-- LIVE MOVING TRUCK ICON NODE -->
+                                <g id="status-live-truck" class="cursor-pointer">
+                                    <circle id="truck-circle-ping" cx="280" cy="240" r="18" fill="#ec4899" fill-opacity="0.4" class="animate-ping"/>
+                                    <circle id="truck-circle-main" cx="280" cy="240" r="9" fill="#f43f5e" stroke="#ffffff" stroke-width="2"/>
+                                    <text id="truck-status-label" x="280" y="270" fill="#f43f5e" font-size="10" font-weight="extrabold" text-anchor="middle">🚚 TRK-ABC-01234 (En Route)</text>
+                                </g>
+
                             </svg>
+
+                            <!-- BOTTOM TELEMETRY STATUS HUD FOOTER CARD -->
+                            <div class="bg-slate-900/90 backdrop-blur-md p-4 rounded-xl border border-slate-700 text-xs text-white space-y-2 shadow-2xl relative z-20">
+                                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                    <span id="map-hud-corridor" class="font-extrabold text-indigo-400 uppercase tracking-widest text-[10px]">Active Route Corridor: Cavite ➔ Laguna Transit</span>
+                                    <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 font-mono font-bold rounded text-[10px]">GPS SYNCED</span>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px]">
+                                    <div>
+                                        <span class="text-slate-400 block text-[9px] uppercase font-bold">Assigned Code</span>
+                                        <strong id="map-hud-code" class="text-white font-mono"># ABC-01234</strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block text-[9px] uppercase font-bold">Driver Name</span>
+                                        <strong id="map-hud-driver" class="text-emerald-400 font-mono">Erich De Torres</strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block text-[9px] uppercase font-bold">Estimated Time Left</span>
+                                        <strong id="map-hud-time" class="text-amber-400 font-mono">4h 22m remaining</strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block text-[9px] uppercase font-bold">Telemetry Health</span>
+                                        <strong class="text-indigo-300 font-mono">Normal (99.8%)</strong>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
 
@@ -897,7 +1060,7 @@
         <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg p-6 relative">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
                 <h3 class="text-base font-bold text-slate-800">Add New Logistics Shipment</h3>
-                <button onclick="closeModal('addModal')" class="text-slate-400 font-bold hover:text-slate-700">✕</button>
+                <button type="button" onclick="closeModal('addModal')" class="text-slate-400 font-bold hover:text-slate-700">✕</button>
             </div>
 
             <form onsubmit="event.preventDefault(); alert('Shipment dispatch record created!'); closeModal('addModal');" class="space-y-3 text-xs font-semibold text-slate-600">
@@ -922,7 +1085,23 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT CONTROLLERS & DYNAMIC ENGINE -->
+    <!-- FILTER MODAL POPUP -->
+    <div id="filterModal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-sm p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-sm font-extrabold text-slate-900">Filter Logistics Data</h3>
+                <button type="button" onclick="closeFilterModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+            </div>
+            <div class="space-y-2 text-xs font-semibold text-slate-700">
+                <label class="block cursor-pointer"><input type="checkbox" checked class="mr-2"> En Route Shipments</label>
+                <label class="block cursor-pointer"><input type="checkbox" checked class="mr-2"> Delivered Shipments</label>
+                <label class="block cursor-pointer"><input type="checkbox" checked class="mr-2"> Paid Orders</label>
+            </div>
+            <button type="button" onclick="closeFilterModal(); alert('Filter applied successfully!');" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition">Apply Filter</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT CONTROLLERS & DYNAMIC ENGINES -->
     <script>
         function toggleSubmenu(menuId, chevronId) {
             const menu = document.getElementById(menuId);
@@ -960,6 +1139,30 @@
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
+        function openFilterModal() { document.getElementById('filterModal').classList.remove('hidden'); }
+        function closeFilterModal() { document.getElementById('filterModal').classList.add('hidden'); }
+
+        function downloadLogisticsReport() {
+            alert('Generating and downloading full Logistics ERP Report CSV...');
+        }
+
+        function globalDashboardSearch() {
+            const query = document.getElementById('global-search-input').value.toLowerCase();
+            if(!query) return;
+            const trackingCards = document.querySelectorAll('.tracking-card');
+            let found = false;
+            trackingCards.forEach(card => {
+                const code = card.getAttribute('data-code').toLowerCase();
+                const driver = card.getAttribute('data-driver').toLowerCase();
+                if(code.includes(query) || driver.includes(query)) found = true;
+            });
+            if(found) {
+                switchTab('tracking');
+                document.getElementById('tracking-search-input').value = query;
+                searchTrackingCards();
+            }
+        }
+
         let callInterval = null;
         function initiateSimulatedCall(driverName, phoneNumber) {
             document.getElementById('call-driver-name').innerText = driverName;
@@ -985,93 +1188,154 @@
             document.getElementById('simulated-call-overlay').classList.add('hidden');
         }
 
-        /* INTERACTIVE SHIPMENT FILTER PILLS LOGIC (TAB 1) */
         function filterShipments(category) {
             const rows = document.querySelectorAll('.shipment-row');
-            let matchCount = 0;
-
             rows.forEach(row => {
                 const status = row.getAttribute('data-status');
                 if (category === 'all' || status === category) {
                     row.classList.remove('hidden');
-                    matchCount++;
                 } else {
                     row.classList.add('hidden');
                 }
             });
-
-            const emptyMsg = document.getElementById('no-shipments-msg');
-            if (matchCount === 0) {
-                emptyMsg.classList.remove('hidden');
-            } else {
-                emptyMsg.classList.add('hidden');
-            }
-
-            document.querySelectorAll('.filter-pill-btn').forEach(btn => {
-                btn.className = "filter-pill-btn px-3 py-1 hover:text-slate-900 rounded-xl transition-all text-slate-500 font-bold";
-            });
-
-            const activePillId = category === 'all' ? 'filter-btn-all' : 
-                                 category === 'In transit' ? 'filter-btn-intransit' : 
-                                 category === 'Delayed' ? 'filter-btn-delayed' : 'filter-btn-delivered';
-            
-            const activePill = document.getElementById(activePillId);
-            if (activePill) {
-                activePill.className = "filter-pill-btn px-3 py-1 bg-white text-indigo-600 rounded-xl shadow-xs transition-all font-bold";
-            }
         }
 
-        /* LIVE SEARCH FUNCTION FOR TAB 2 (DELIVERY TRACKING) */
         function searchTrackingCards() {
             const query = document.getElementById('tracking-search-input').value.toLowerCase();
             const cards = document.querySelectorAll('.tracking-card');
-            let foundCount = 0;
-
             cards.forEach(card => {
                 const code = card.getAttribute('data-code').toLowerCase();
                 const driver = card.getAttribute('data-driver').toLowerCase();
-
                 if (code.includes(query) || driver.includes(query)) {
                     card.classList.remove('hidden');
-                    foundCount++;
                 } else {
                     card.classList.add('hidden');
                 }
             });
-
-            const noFound = document.getElementById('no-tracking-found');
-            if (foundCount === 0) {
-                noFound.classList.remove('hidden');
-            } else {
-                noFound.classList.add('hidden');
-            }
         }
 
-        /* CONFIRM & DELETE TRACKING CARD */
         function confirmDeleteTrackingCard(button, code) {
-            if (confirm(`Are you sure you want to remove shipment #${code}?`)) {
-                const card = button.closest('.tracking-card');
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.95)';
-                setTimeout(() => card.remove(), 250);
+            if (confirm(`Remove shipment #${code}?`)) {
+                button.closest('.tracking-card').remove();
             }
         }
 
-        /* DYNAMIC CATEGORY ORDERS FILTER FOR "SEE LIST" (TAB 3) */
+        const activeShipments = [
+            {
+                code: 'ABC-01234', status: 'En Route', statusBg: 'bg-indigo-50 text-indigo-700 border-indigo-200', statusDot: 'bg-indigo-600',
+                shipDate: 'Sept 11, 2026', courier: 'JNT EXPRESS', driverName: 'Erich De Torres', driverPhone: '+63 912 575 4567', avatarText: 'ED',
+                poRef: 'PO-2026-001', salesRef: 'ORD-001 (SM Prime)', origin: 'Cavite Central Warehouse', dest: '137 Gomez St, Brgy 2, Laguna City',
+                cargo: 'Vertex [Mother Board] Ryzen-5', qty: '10', cost: 'Php 17,000', payment: 'Paid', progressPct: '68%',
+                eta: 'Estimated 13 Sept 2026', travelTime: '1 hr 29 min', distance: '24.9 km', speed: '62 km/h', temp: '22°C (Optimal)', fuel: '94% Range',
+                coords: 'LAT: 14.2141° N | LON: 121.0522° E', corridor: 'Active Route Corridor: Cavite ➔ Laguna Transit',
+                pathD: 'M 100 380 Q 250 180, 480 120', originName: 'Cavite Depot (Origin)', destName: 'Laguna Hub (Destination)'
+            },
+            {
+                code: 'DEF-56789', status: 'En Route', statusBg: 'bg-amber-50 text-amber-700 border-indigo-200', statusDot: 'bg-amber-600',
+                shipDate: 'Sept 11, 2026', courier: 'JNT EXPRESS', driverName: 'Kristy Ann Paracale', driverPhone: '+63 920 333 3003', avatarText: 'KP',
+                poRef: 'PO-2026-002', salesRef: 'ORD-002 (Robinsons)', origin: 'Manila Container Port Terminal', dest: 'Bulacan Logistics Warehouse',
+                cargo: 'Ryzen-9 Core Kit Combo', qty: '45', cost: 'Php 12,850', payment: 'Pending', progressPct: '40%',
+                eta: 'Estimated 13 Sept 2026', travelTime: '2 hr 10 min', distance: '64.5 km', speed: '18 km/h (Traffic Watch)', temp: '24°C (Normal)', fuel: '81% Range',
+                coords: 'LAT: 14.5995° N | LON: 120.9842° E', corridor: 'Active Route Corridor: Manila Port ➔ Bulacan Hub',
+                pathD: 'M 120 120 Q 300 350, 500 220', originName: 'Manila Port Terminal', destName: 'Bulacan Hub (Destination)'
+            },
+            {
+                code: 'GHI-10111', status: 'Delivered', statusBg: 'bg-emerald-50 text-emerald-700 border-indigo-200', statusDot: 'bg-emerald-600',
+                shipDate: 'Sept 10, 2026', courier: 'JNT EXPRESS', driverName: 'Juliana Aquino', driverPhone: '+63 912 555 1001', avatarText: 'JA',
+                poRef: 'PO-2026-001', salesRef: 'ORD-001 (SM Prime)', origin: 'Pangasinan Central Depot', dest: 'Calamba Distribution Center',
+                cargo: 'Groceries Logistics Bundle', qty: '300', cost: 'Php 5,000', payment: 'Paid', progressPct: '100%',
+                eta: '13 Sept 2026 (Delivered)', travelTime: '0 hr 00 min', distance: '210.8 km', speed: '0 km/h (Parked)', temp: '20°C (Storage Idle)', fuel: '65% Range',
+                coords: 'LAT: 14.2123° N | LON: 121.1663° E', corridor: 'Route Corridor: Pangasinan ➔ Laguna (Completed)',
+                pathD: 'M 80 400 Q 280 200, 480 120', originName: 'Pangasinan Depot', destName: 'Laguna Hub (Arrived)'
+            }
+        ];
+
+        let currentShipmentIndex = 0;
+
+        function renderShipmentTelemetry(index) {
+            const data = activeShipments[index];
+            if(!data) return;
+
+            document.getElementById('tel-shipment-code').innerText = `# ${data.code}`;
+            document.getElementById('tel-status-badge').className = `px-2.5 py-0.5 font-bold rounded-full text-[10px] uppercase flex items-center gap-1 ${data.statusBg}`;
+            document.getElementById('tel-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${data.statusDot} animate-ping"></span> ${data.status}`;
+            
+            document.getElementById('tel-ship-date').innerText = data.shipDate;
+            document.getElementById('tel-courier').innerText = data.courier;
+            document.getElementById('tel-driver-avatar').innerText = data.avatarText;
+            document.getElementById('tel-driver-name').innerText = data.driverName;
+            document.getElementById('tel-driver-phone').innerText = data.driverPhone;
+            document.getElementById('tel-po-ref').innerText = data.poRef;
+            document.getElementById('tel-sales-ref').innerText = data.salesRef;
+            document.getElementById('tel-origin-addr').innerText = data.origin;
+            document.getElementById('tel-dest-addr').innerText = data.dest;
+            document.getElementById('tel-route-summary').innerText = data.routeSummary;
+            document.getElementById('tel-progress-bar').style.width = data.progressPct;
+            document.getElementById('tel-time-eta').innerText = `Est. Arrival: ${data.eta}`;
+            document.getElementById('tel-speed').innerText = data.speed;
+            document.getElementById('tel-cargo-temp').innerText = data.temp;
+            document.getElementById('tel-fuel-level').innerText = data.fuel;
+
+            document.getElementById('map-hud-coords').innerText = data.coords;
+            document.getElementById('map-hud-corridor').innerText = data.corridor;
+            document.getElementById('map-hud-code').innerText = `# ${data.code}`;
+            document.getElementById('map-hud-driver').innerText = data.driverName;
+            document.getElementById('map-hud-time').innerText = data.eta;
+            document.getElementById('truck-status-label').innerText = `🚚 TRK-${data.code} (${data.status})`;
+            document.getElementById('status-route-line').setAttribute('d', data.pathD);
+            document.getElementById('map-node-origin').textContent = data.originName;
+            document.getElementById('map-node-dest').textContent = data.destName;
+        }
+
+        window.selectAndGoToTracking = function(code) {
+            const cleanCode = code.replace('#', '').trim().toUpperCase();
+            const index = activeShipments.findIndex(s => s.code.trim().toUpperCase() === cleanCode);
+            if (index !== -1) {
+                currentShipmentIndex = index;
+                const data = activeShipments[index];
+                document.getElementById('map-travel-time').innerText = data.travelTime;
+                document.getElementById('float-driver-name').innerText = data.driverName;
+                document.getElementById('float-courier').innerText = data.courier;
+                document.getElementById('float-shipment-id').innerText = `#${data.code}`;
+                document.getElementById('float-time-eta').innerText = data.eta;
+            }
+            switchTab('tracking');
+        };
+
+        window.loadOrderDetailsRoute = function(code) {
+            const cleanCode = code.replace('#', '').trim().toUpperCase();
+            const data = activeShipments.find(s => s.code.trim().toUpperCase() === cleanCode);
+            if (data) {
+                document.getElementById('dt-order-id').innerText = `#${data.code}`;
+                document.getElementById('dt-customer-name').innerText = data.driverName;
+                document.getElementById('dt-order-status').innerText = data.status.toUpperCase();
+                document.getElementById('dt-delivery-addr').innerText = data.dest;
+                document.getElementById('dt-phone').innerText = data.driverPhone;
+                document.getElementById('dt-cargo').innerText = data.cargo;
+                document.getElementById('dt-qty').innerText = data.qty;
+                document.getElementById('dt-payment').innerText = data.payment;
+                document.getElementById('dt-cost').innerText = data.cost;
+                document.getElementById('vector-duration').innerText = `Estimated duration: ${data.travelTime}`;
+                document.getElementById('vector-distance').innerText = `Total distance: ${data.distance}`;
+            }
+            switchTab('routes');
+            document.getElementById('route-vectors-section')?.scrollIntoView({ behavior: 'smooth' });
+        };
+
         const categoryData = {
             'PAID': [
-                { serial: '1', client: 'Erich De Torres', route: 'Cavite - Laguna', cost: '₱17,000.00', status: 'En Route', color: 'text-slate-800' },
-                { serial: '2', client: 'Juliana Aquino', route: 'Pangasinan - Laguna', cost: '₱5,000.00', status: 'Delivered', color: 'text-emerald-600' }
+                { serial: '1', client: 'Erich De Torres', route: 'Cavite - Laguna', cost: '₱17,000', status: 'En Route', color: 'text-slate-800' },
+                { serial: '2', client: 'Juliana Aquino', route: 'Pangasinan - Laguna', cost: '₱5,000', status: 'Delivered', color: 'text-emerald-600' }
             ],
             'PENDINGS': [
-                { serial: '1', client: 'Kristy Ann Paracale', route: 'Manila - Bulacan', cost: '₱12,850.00', status: 'Pending Verification', color: 'text-amber-600' }
+                { serial: '1', client: 'Kristy Ann Paracale', route: 'Manila - Bulacan', cost: '₱12,850', status: 'Pending Verification', color: 'text-amber-600' }
             ],
             'COD': [
-                { serial: '1', client: 'Kristy Ann Paracale', route: 'Manila - Bulacan', cost: '₱12,850.00', status: 'Pending COD Collect', color: 'text-sky-600' }
+                { serial: '1', client: 'Kristy Ann Paracale', route: 'Manila - Bulacan', cost: '₱12,850', status: 'Pending COD Collect', color: 'text-sky-600' }
             ],
             'IN TRANSIT': [
-                { serial: '1', client: 'Erich De Torres', route: 'Cavite - Laguna', cost: '₱17,000.00', status: 'En Route', color: 'text-indigo-600' },
-                { serial: '2', client: 'Kristy Ann Paracale', route: 'Manila - Bulacan', cost: '₱12,850.00', status: 'En Route', color: 'text-indigo-600' }
+                { serial: '1', client: 'Erich De Torres', route: 'Cavite - Laguna', cost: '₱17,000', status: 'En Route', color: 'text-indigo-600' },
+                { serial: '2', client: 'Kristy Ann Paracale', route: 'Manila - Bulacan', cost: '₱12,850', status: 'En Route', color: 'text-indigo-600' }
             ]
         };
 
@@ -1080,154 +1344,33 @@
             const tbody = document.getElementById('category-orders-tbody');
             const records = categoryData[catKey] || [];
 
-            // Update Title Header
-            titleEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> List of ${catKey} Orders`;
+            titleEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> List of ${catKey === 'COD' ? 'Cash on Delivery' : catKey.charAt(0) + catKey.slice(1).toLowerCase()} Orders`;
 
-            // Clear and Render New Rows
             tbody.innerHTML = '';
-            if (records.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">No records found under ${catKey}.</td></tr>`;
-            } else {
-                records.forEach(item => {
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50/80 transition">
-                            <td class="py-3 font-bold text-slate-500 font-mono">${item.serial}</td>
-                            <td class="py-3 font-bold text-slate-900">${item.client}</td>
-                            <td class="py-3">${item.route}</td>
-                            <td class="py-3 font-mono font-bold text-emerald-600">${item.cost}</td>
-                            <td class="py-3"><span class="text-xs font-bold ${item.color}">${item.status}</span></td>
-                        </tr>
-                    `;
-                });
-            }
+            records.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3 font-bold text-slate-500 font-mono">${item.serial}</td>
+                        <td class="py-3 font-bold text-slate-900">${item.client}</td>
+                        <td class="py-3">${item.route}</td>
+                        <td class="py-3 font-mono font-bold text-emerald-600">${item.cost}</td>
+                        <td class="py-3"><span class="text-xs font-bold ${item.color}">${item.status}</span></td>
+                    </tr>
+                `;
+            });
 
-            // Update Card Highlight States
             document.querySelectorAll('.cat-filter-card').forEach(card => {
-                card.className = "cat-filter-card bg-white border border-slate-200 p-3.5 rounded-2xl flex justify-between items-center text-xs font-extrabold text-slate-700 transition-all";
+                card.className = "cat-filter-card bg-white border border-slate-200/90 p-3.5 rounded-3xl flex justify-between items-center text-xs font-extrabold transition-all";
+                const btn = card.querySelector('button');
+                if (btn) btn.className = "px-4 py-1.5 bg-slate-100/90 hover:bg-slate-200 text-slate-800 rounded-full font-bold text-[11px] transition";
             });
 
             const activeCard = document.getElementById(`cat-card-${catKey}`);
             if (activeCard) {
-                activeCard.className = "cat-filter-card bg-indigo-50/70 border border-indigo-300 p-3.5 rounded-2xl flex justify-between items-center text-xs font-extrabold text-indigo-700 transition-all shadow-xs";
+                activeCard.className = "cat-filter-card bg-indigo-50/70 border border-indigo-200/80 p-3.5 rounded-3xl flex justify-between items-center text-xs font-extrabold transition-all";
+                const activeBtn = activeCard.querySelector('button');
+                if (activeBtn) activeBtn.className = "px-4 py-1.5 bg-white hover:bg-indigo-600 hover:text-white text-slate-800 rounded-full shadow-xs font-bold text-[11px] transition border border-slate-200/50";
             }
-        }
-
-        /* DATA ARRAY FOR DYNAMIC SHIPMENT TELEMETRY (TAB 4) */
-        const activeShipments = [
-            {
-                code: 'ABC-01234',
-                status: 'En Route',
-                statusBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                statusDot: 'bg-indigo-600',
-                shipDate: 'Sept 11, 2026',
-                courier: 'JNT EXPRESS',
-                driverName: 'Erich De Torres',
-                driverPhone: '+63 917 888 2002',
-                avatarText: 'ED',
-                poRef: 'PO-2026-001',
-                salesRef: 'ORD-001 (SM Prime)',
-                origin: 'Cavite Central Warehouse — 2118 Ridge St. Cavite, 3564',
-                dest: 'Laguna Distribution Site — 137 Gomez St, Brgy 2, Laguna City',
-                routeSummary: 'Distance: 48.2 km • Route Corridor via Governor Drive',
-                progressPct: '68%',
-                eta: 'Estimated 13 Sept 2026',
-                travelTime: '1 hr 29 min',
-                speed: '62 km/h',
-                temp: '22°C (Optimal)',
-                fuel: '94% Range'
-            },
-            {
-                code: 'DEF-56789',
-                status: 'En Route',
-                statusBg: 'bg-amber-50 text-amber-700 border-amber-200',
-                statusDot: 'bg-amber-600',
-                shipDate: 'Sept 11, 2026',
-                courier: 'JNT EXPRESS',
-                driverName: 'Kristy Ann Paracale',
-                driverPhone: '+63 920 333 3003',
-                avatarText: 'KP',
-                poRef: 'PO-2026-002',
-                salesRef: 'ORD-002 (Robinsons)',
-                origin: 'Manila Container Port Terminal — Port Area, Manila',
-                dest: 'Bulacan Logistics Warehouse — Malolos, Bulacan',
-                routeSummary: 'Distance: 64.5 km • Route Corridor via NLEX Expressway',
-                progressPct: '40%',
-                eta: 'Estimated 13 Sept 2026',
-                travelTime: '2 hr 10 min',
-                speed: '18 km/h (Slow Transit)',
-                temp: '24°C (Normal)',
-                fuel: '81% Range'
-            },
-            {
-                code: 'GHI-10111',
-                status: 'Delivered',
-                statusBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                statusDot: 'bg-emerald-600',
-                shipDate: 'Sept 10, 2026',
-                courier: 'JNT EXPRESS',
-                driverName: 'Juliana Aquino',
-                driverPhone: '+63 912 555 1001',
-                avatarText: 'JA',
-                poRef: 'PO-2026-001',
-                salesRef: 'ORD-001 (SM Prime)',
-                origin: 'Pangasinan Central Depot — Dagupan City',
-                dest: 'Calamba Distribution Center — Calamba, Laguna',
-                routeSummary: 'Distance: 210.8 km • Trip Completed Successfully',
-                progressPct: '100%',
-                eta: '13 Sept 2026 (Delivered)',
-                travelTime: '0 hr 00 min',
-                speed: '0 km/h (Parked)',
-                temp: '20°C (Storage Idle)',
-                fuel: '65% Range'
-            }
-        ];
-
-        let currentShipmentIndex = 0;
-
-        function renderShipmentTelemetry(index) {
-            const data = activeShipments[index];
-
-            document.getElementById('tel-shipment-code').innerText = `# ${data.code}`;
-            document.getElementById('tel-status-badge').className = `px-2.5 py-0.5 font-bold rounded-full text-[10px] uppercase flex items-center gap-1 ${data.statusBg}`;
-            document.getElementById('tel-status-badge').innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${data.statusDot} animate-ping"></span> ${data.status}`;
-            
-            document.getElementById('tel-ship-date').innerText = data.shipDate;
-            document.getElementById('tel-courier').innerText = data.courier;
-            
-            document.getElementById('tel-driver-avatar').innerText = data.avatarText;
-            document.getElementById('tel-driver-name').innerText = data.driverName;
-            document.getElementById('tel-driver-phone').innerText = data.driverPhone;
-
-            document.getElementById('tel-po-ref').innerText = data.poRef;
-            document.getElementById('tel-sales-ref').innerText = data.salesRef;
-
-            document.getElementById('tel-origin-addr').innerText = data.origin;
-            document.getElementById('tel-dest-addr').innerText = data.dest;
-            document.getElementById('tel-route-summary').innerText = data.routeSummary;
-
-            document.getElementById('tel-progress-bar').style.width = data.progressPct;
-
-            document.getElementById('tel-speed').innerText = data.speed;
-            document.getElementById('tel-cargo-temp').innerText = data.temp;
-            document.getElementById('tel-fuel-level').innerText = data.fuel;
-
-            // Update Floating Map Telemetry Overlay
-            document.getElementById('map-travel-time').innerText = data.travelTime;
-            document.getElementById('float-driver-name').innerText = data.driverName;
-            document.getElementById('float-courier').innerText = data.courier;
-            document.getElementById('float-shipment-id').innerText = `#${data.code}`;
-            document.getElementById('float-time-eta').innerText = data.eta;
-            document.getElementById('float-status-4').innerText = data.status;
-        }
-
-        /* CLICK TRACKING CARD OR "SEE ORDER" TO SWITCH TAB AND LOAD DATA */
-        function selectAndGoToTransportation(code) {
-            const index = activeShipments.findIndex(s => s.code === code);
-            if (index !== -1) {
-                currentShipmentIndex = index;
-                renderShipmentTelemetry(currentShipmentIndex);
-            }
-            switchTab('status'); // Switch directly to Tab 4
         }
 
         function navigateShipment(direction) {
@@ -1239,12 +1382,33 @@
 
         function callCurrentDriver() {
             const data = activeShipments[currentShipmentIndex];
-            initiateSimulatedCall(data.driverName, data.driverPhone);
+            if(data) initiateSimulatedCall(data.driverName, data.driverPhone);
+        }
+
+        let truckProgress = 0.45;
+        function animateStatusTruck() {
+            truckProgress += 0.003;
+            if (truckProgress > 0.92) truckProgress = 0.08;
+
+            const path = document.getElementById('status-route-line');
+            if (path && path.getTotalLength) {
+                const len = path.getTotalLength();
+                const pt = path.getPointAtLength(truckProgress * len);
+
+                const cMain = document.getElementById('truck-circle-main');
+                const cPing = document.getElementById('truck-circle-ping');
+                const label = document.getElementById('truck-status-label');
+
+                if (cMain) { cMain.setAttribute('cx', pt.x); cMain.setAttribute('cy', pt.y); }
+                if (cPing) { cPing.setAttribute('cx', pt.x); cPing.setAttribute('cy', pt.y); }
+                if (label) { label.setAttribute('x', pt.x); label.setAttribute('y', pt.y + 30); }
+            }
         }
 
         document.addEventListener("DOMContentLoaded", () => { 
-            switchTab('schedules'); // Default Tab 1 on page load
-            renderShipmentTelemetry(0); // Load initial shipment data
+            switchTab('tracking'); // Default to Tab 2 Delivery Tracking on page load
+            renderShipmentTelemetry(0);
+            setInterval(animateStatusTruck, 80);
         });
     </script>
 </body>
