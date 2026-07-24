@@ -27,3 +27,7 @@ Route::get('/forecasting/demand', fn() => redirect()->route('logistics.dashboard
 Route::get('/forecasting/historical', fn() => redirect()->route('logistics.dashboard'))->name('forecasting.historical');
 Route::get('/procurement', fn() => redirect()->route('logistics.dashboard'))->name('suppliers.index');
 Route::get('/inventory', fn() => redirect()->route('logistics.dashboard'))->name('inventory');
+Route::get('/procurement', [\App\Http\Controllers\ProcurementController::class, 'index']);
+Route::get('/procurement/suppliers', [\App\Http\Controllers\ProcurementController::class, 'suppliers']);
+Route::get('/procurement/po-management', [\App\Http\Controllers\ProcurementController::class, 'poManagement']);
+Route::get('/procurement/goods-receipt', [\App\Http\Controllers\ProcurementController::class, 'goodsReceipt']);
