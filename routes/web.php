@@ -3,18 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogisticsController;
 
-Route::view('/', 'home.home')->name('home');
-/*
-|--------------------------------------------------------------------------
-| Web Routes - Logistics Sub-Module (Standalone Mode)
-|--------------------------------------------------------------------------
-*/
-
 // Redirect root & dashboard directly to Logistics
 Route::get('/', function () {
     return redirect()->route('logistics.dashboard');
 });
 
+Route::view('/home', 'home')->name('home');
 Route::get('/dashboard', function () {
     return redirect()->route('logistics.dashboard');
 })->name('dashboard');
