@@ -28,7 +28,7 @@
                 with effective supply chain management. From sourcing to delivery, we help
                 you manage every step of the process with confidence.
             </p>
-            <a >GET STARTED ></a>
+            <a href="{{ route('home') }}" class="btn-primary">GET STARTED ></a>
         </section>
 
         <section class="hero-image">
