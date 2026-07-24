@@ -1,514 +1,492 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supply Chain ERP — Home</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <title>Home Dashboard | Full ERP Suite</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        sidebarBg: '#0f172a',
+                        sidebarActive: '#1e293b',
+                        brandIndigo: '#4f46e5',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- UNIFORM FONT: Plus Jakarta Sans -->
     <style>
-    :root{
-        --sidebar-bg:#0F172A;
-        --accent:#4F46E5;
-        --accent-light:#6366F1;
-        --teal:#2DD4BF;
-        --orange:#f5a623;
-        --red:#ef5b5b;
-        --green:#2ecc71;
-        --blue:#60A5FA;
-        --text-dark:#1c2033;
-        --text-gray:#8a8fa3;
-        --border:#eef0f6;
-        --bg:#f5f6fa;
-        --card:#ffffff;
-    }
-    *{box-sizing:border-box;}
-    body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text-dark);}
-    .app{display:flex;min-height:100vh;}
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-    /* Sidebar */
-    .sidebar{
-        width:260px;background:var(--sidebar-bg);
-        color:#fff;display:flex;flex-direction:column;padding:24px 16px;flex-shrink:0;
-    }
-    .brand{display:flex;align-items:center;gap:12px;padding:0 8px 28px 8px;}
-    .brand-icon{
-        width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-light));
-        display:flex;align-items:center;justify-content:center;flex-shrink:0;
-    }
-    .brand-icon svg{width:22px;height:22px;stroke:#fff;}
-    .brand-name{font-size:16px;font-weight:700;line-height:1.2;}
-    .brand-sub{font-size:11px;letter-spacing:.06em;color:#8890b5;font-weight:600;}
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    .nav{flex:1;display:flex;flex-direction:column;gap:2px;margin-top:4px;overflow-y:auto;}
-    .nav-section-label{
-        font-size:11px;font-weight:700;letter-spacing:.08em;color:#5b6285;text-transform:uppercase;
-        padding:14px 12px 8px 12px;
-    }
-    .nav-item{
-        display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;
-        color:#c3c7de;font-size:14.5px;font-weight:500;cursor:pointer;text-decoration:none;
-        transition:background .15s;
-    }
-    .nav-item svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;}
-    .nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
-    .nav-item.active{background:rgba(79,70,229,0.3);color:#fff;font-weight:600;}
-    .nav-item.active svg{stroke:#fff !important;}
-    .nav-item.parent-active{background:#1E293B;color:#fff;font-weight:600;}
-    .nav-item .chev{margin-left:auto;width:14px;height:14px;opacity:.7;}
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-    .sub-nav{display:flex;flex-direction:column;gap:2px;padding:2px 0 6px 0;}
-    .sub-nav-item{
-        display:flex;align-items:center;gap:10px;padding:9px 12px 9px 40px;border-radius:10px;
-        color:#c3c7de;font-size:13.5px;font-weight:500;cursor:pointer;text-decoration:none;
-    }
-    .sub-nav-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;}
-    .sub-nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
-    .sub-nav-item.active{background:rgba(79,70,229,0.3);color:#fff;font-weight:600;}
-    .sub-nav-item.active svg{stroke:#fff !important;}
-
-    .nav-footer{margin-top:12px;}
-    .leave-btn{
-        display:flex;align-items:center;gap:10px;justify-content:center;
-        padding:11px;border-radius:10px;border:1.5px solid rgba(239,68,68,.35);
-        color:#F87171;font-size:14px;font-weight:600;cursor:pointer;background:rgba(239,68,68,.08);
-        text-decoration:none;
-    }
-    .leave-btn svg{width:16px;height:16px;stroke:currentColor;}
-
-    /* Main */
-    .main{flex:1;display:flex;flex-direction:column;min-width:0;}
-    .topbar{
-        background:var(--card);border-bottom:1px solid var(--border);
-        padding:22px 32px;display:flex;align-items:center;justify-content:space-between;
-    }
-    .topbar h1{font-size:22px;margin:0 0 4px 0;font-weight:800;}
-    .topbar p{margin:0;color:var(--text-gray);font-size:13.5px;}
-    .search{
-        display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);
-        border-radius:10px;padding:9px 14px;color:var(--text-gray);font-size:13.5px;min-width:260px;
-    }
-    .search svg{width:16px;height:16px;stroke:var(--text-gray);flex-shrink:0;}
-
-    .content{padding:28px 32px;}
-
-    .greeting{font-size:26px;font-weight:800;margin:4px 0 22px 0;}
-    .greeting span{color:var(--accent);}
-
-    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px;}
-    .stat-card{
-        background:var(--card);border-radius:16px;padding:20px;border:1px solid var(--border);
-        display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;
-    }
-    .stat-top{display:flex;align-items:flex-start;justify-content:space-between;}
-    .stat-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .stat-icon svg{width:19px;height:19px;stroke:#fff;}
-    .stat-label{font-size:11.5px;font-weight:700;letter-spacing:.03em;color:var(--text-gray);text-transform:uppercase;}
-    .stat-value{font-size:30px;font-weight:800;color:var(--text-dark);}
-    .stat-note{font-size:12px;color:var(--text-gray);}
-
-    .panels-row{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:18px;}
-    .panel{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:22px;}
-    .panel h3{margin:0 0 16px 0;font-size:16px;font-weight:700;}
-
-    .donut-wrap{display:flex;align-items:center;gap:24px;}
-    .legend{display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--text-dark);flex-shrink:0;}
-    .legend-item{display:flex;align-items:center;gap:8px;}
-    .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-
-    table{width:100%;border-collapse:collapse;font-size:13.5px;}
-    th{text-align:left;color:var(--text-gray);font-weight:700;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;padding:0 0 10px 0;border-bottom:1px solid var(--border);}
-    td{padding:11px 0;border-bottom:1px solid var(--border);color:var(--text-dark);}
-    tr:last-child td{border-bottom:none;}
-    .badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;}
-    .badge.out{background:#fde8e8;color:var(--red);}
-    .badge.low{background:#fff4dd;color:#c8860d;}
-    .badge.over{background:#e9e6ff;color:var(--accent);}
-    .badge.restocked{background:#e4f9ee;color:#1fa860;}
-    .badge.in-stock{background:#e4f9ee;color:#1c6e4a;}
-    .badge.reserved{background:#e7e7fb;color:#3b3f8f;}
-
-    .activity-panel{background:var(--card);border-radius:16px;border:1px solid var(--border);padding:22px;}
-    .activity-panel h3{margin:0 0 16px 0;font-size:16px;font-weight:700;}
-    .time-col{color:var(--text-gray);width:110px;}
-
-    /* Loading / empty / error states */
-    .state-row td{color:var(--text-gray);text-align:center;padding:22px 0;font-style:italic;}
-    .skeleton{background:linear-gradient(90deg,#eef0f6 25%,#f6f7fb 37%,#eef0f6 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:6px;}
-    @keyframes shimmer{0%{background-position:100% 50%;}100%{background-position:0 50%;}}
-    .stat-value.skeleton{width:70px;height:28px;display:inline-block;}
-    .stat-note.skeleton{width:110px;height:12px;display:inline-block;}
-    .panel-error{color:var(--red);font-size:13px;padding:12px 0;}
+        .submenu-transition {
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease-in-out;
+            overflow: hidden;
+        }
     </style>
-    </head>
-    <body>
-    <div class="app">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen overflow-x-hidden antialiased">
 
-    <aside class="sidebar">
-        <div class="brand">
-        <div class="brand-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-        </div>
-        <div>
-            <div class="brand-name">Supply Chain</div>
-            <div class="brand-sub">ERP SUITE V2.5</div>
-        </div>
-        </div>
+    <!-- MAIN LAYOUT WRAPPER -->
+    <div class="flex h-screen overflow-hidden">
 
-        <nav class="nav">
-        <div class="nav-section-label">Core Modules</div>
-
-        <a class="nav-item active" href="home.php">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Home Dashboard
-        </a>
-
-        <a class="nav-item" href="forecasting.php">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            Demand Forecasting
-            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </a>
-
-        <a class="nav-item" href="procurement.php">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Procurement &amp; Suppliers
-        </a>
-    <a class="nav-item" href="{{ route('logistics.dashboard') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="16" x2="12" y2="12"/>
-            <line x1="12" y1="8" x2="12.01" y2="8"/>
-        </svg>
-
-        Logistics Sub-Module
-
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"/>
-        </svg>
-    </a>
-        <!-- Sub-menu (1. Shipment Schedules / 2. Delivery Tracking / 3. Shipping
-            Routes / 4. Transportation Status) only renders/expands while inside
-            the Logistics section. On the Home Dashboard it stays collapsed. -->
-
-        <a class="nav-item" href="inventory.php">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L11 3.83V2h1.83l9.58 9.59a2 2 0 0 1 0 2.82l-7.18 7.18a2 2 0 0 1-2.82 0L2.83 12"/></svg>
-            Inventory &amp; Warehouse
-        </a>
-        </nav>
-
-        <div class="nav-footer">
-        <a href="welcome.php" class="leave-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Leave System
-        </a>
-        </div>
-    </aside>
-
-    <main class="main">
-        <div class="topbar">
-        <div>
-            <h1 id="pageTitle">Home</h1>
-            <p id="pageSubtitle">Loading dashboard…</p>
-        </div>
-        <div class="search">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            Search
-        </div>
-        </div>
-
-        <div class="content">
-        <div class="greeting">Welcome back, <span id="userName">…</span></div>
-
-        <!-- Stat cards are rendered entirely from JS -> renderStatCards() -->
-        <div class="stats-row" id="statsRow"></div>
-
-        <div class="panels-row">
-            <div class="panel">
-            <h3>Inventory Overview</h3>
-            <div class="donut-wrap">
-                <canvas id="inventoryDonut" width="190" height="190"></canvas>
-                <div class="legend" id="donutLegend"></div>
-            </div>
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="w-72 bg-sidebarBg text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800 relative z-20">
+            <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-extrabold shadow-md border border-indigo-400/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-sm font-bold text-white block leading-tight">Supply Chain</span>
+                        <span class="text-[10px] text-indigo-400 font-extrabold uppercase tracking-wider">ERP Suite v2.5</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="panel">
-            <h3>Stock Reminder</h3>
-            <table>
-                <thead><tr><th>Product</th><th>Status</th></tr></thead>
-                <tbody id="stockReminderBody">
-                <tr class="state-row"><td colspan="2">Loading…</td></tr>
-                </tbody>
-            </table>
-            </div>
-        </div>
+            <nav class="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
+                <div class="px-3 pb-2">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Core Modules</span>
+                </div>
 
-        <div class="activity-panel">
-            <h3>Recent Activities</h3>
-            <table>
-            <thead><tr><th class="time-col">Time</th><th>Activity</th></tr></thead>
-            <tbody id="activityBody">
-                <tr class="state-row"><td colspan="2">Loading…</td></tr>
-            </tbody>
-            </table>
-        </div>
-        </div>
-    </main>
+                <!-- HOME DASHBOARD — ACTIVE (this is the current page) -->
+                <a href="{{ route('home') }}" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-slate-800 text-white font-semibold text-xs border border-slate-700/60 shadow-sm">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <span>Home Dashboard</span>
+                </a>
+
+                <div class="space-y-1">
+                    <button type="button" onclick="toggleSubmenu('forecasting-submenu', 'forecasting-chevron')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition font-semibold text-xs group">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-indigo-400 group-hover:text-indigo-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            <span>Demand Forecasting</span>
+                        </div>
+                        <svg id="forecasting-chevron" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="forecasting-submenu" class="submenu-transition max-h-0 opacity-0 pl-9 pr-2 space-y-1">
+                        <a href="{{ route('forecasting.demand') }}" class="block px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white hover:bg-indigo-600/30 transition">Demand Planning</a>
+                        <a href="{{ route('forecasting.historical') }}" class="block px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white hover:bg-indigo-600/30 transition">Historical Sales Analytics</a>
+                    </div>
+                </div>
+
+                <a href="{{ route('procurement.index') }}" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition font-semibold text-xs group">
+                    <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Procurement &amp; Suppliers</span>
+                </a>
+
+                <!-- LOGISTICS SUB-MODULE DROPDOWN — collapsed by default (we're on Home) -->
+                <div class="space-y-1">
+                    <button type="button" onclick="toggleSubmenu('logistics-submenu', 'logistics-chevron')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition font-semibold text-xs group">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-emerald-400 group-hover:text-emerald-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Logistics Sub-Module</span>
+                        </div>
+                        <svg id="logistics-chevron" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <div id="logistics-submenu" class="submenu-transition max-h-0 opacity-0 pl-7 pr-2 space-y-1">
+                        <a href="{{ route('logistics.dashboard') }}" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Shipment Schedules</span>
+                        </a>
+                        <a href="{{ route('logistics.dashboard') }}" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            </svg>
+                            <span>Delivery Tracking</span>
+                        </a>
+                        <a href="{{ route('logistics.dashboard') }}" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                            </svg>
+                            <span>Shipping Routes</span>
+                        </a>
+                        <a href="{{ route('logistics.dashboard') }}" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            <span>Transportation Status</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="{{ route('inventory') }}" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition font-semibold text-xs group">
+                    <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0l3-4m0 0l3 4"></path>
+                    </svg>
+                    <span>Inventory &amp; Warehouse</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+                <a href="{{ route('welcome') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/20 font-bold text-xs bg-rose-950/20 border border-rose-500/20 transition">
+                    <!-- TODO: point this at a real logout route once you add one
+                         (e.g. Route::post('/logout', ...)->name('logout')) -->
+                    <svg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span>Leave System</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN DISPLAY PANEL -->
+        <main class="flex-1 flex flex-col overflow-y-auto bg-slate-50">
+
+            <!-- HEADER TOOLBAR -->
+            <header class="bg-white px-8 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-200/80 sticky top-0 z-30 shadow-xs">
+                <div>
+                    <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Home Dashboard</h1>
+                    <p id="pageSubtitle" class="text-xs text-slate-500 font-medium">Loading dashboard…</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <div class="relative w-60">
+                        <input type="text" placeholder="Search everywhere..." class="w-full pl-8 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-8 max-w-7xl w-full mx-auto flex-1 space-y-6">
+
+                <div class="text-2xl font-extrabold text-slate-900">
+                    Welcome back, <span id="userName" class="text-indigo-600">…</span>
+                </div>
+
+                <!-- KPI STAT CARDS — rendered entirely from JS via renderStatCards() -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="statsRow"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <!-- INVENTORY OVERVIEW DONUT -->
+                    <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                        <h3 class="font-bold text-slate-900 text-sm">Inventory Overview</h3>
+                        <div class="flex items-center gap-6">
+                            <canvas id="inventoryDonut" width="190" height="190"></canvas>
+                            <div class="space-y-2.5 text-xs font-semibold text-slate-700" id="donutLegend"></div>
+                        </div>
+                    </div>
+
+                    <!-- STOCK REMINDER -->
+                    <div class="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                        <h3 class="font-bold text-slate-900 text-sm">Stock Reminder</h3>
+                        <div class="overflow-x-auto text-xs">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="text-slate-400 font-bold border-b border-slate-100">
+                                    <tr><th class="pb-3">Product</th><th class="pb-3">Status</th></tr>
+                                </thead>
+                                <tbody id="stockReminderBody" class="divide-y divide-slate-50 font-medium text-slate-700">
+                                    <tr><td colspan="2" class="py-6 text-center text-slate-400 italic">Loading…</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT ACTIVITIES -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                    <h3 class="font-bold text-slate-900 text-sm">Recent Activities</h3>
+                    <div class="overflow-x-auto text-xs">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="text-slate-400 font-bold border-b border-slate-100">
+                                <tr><th class="pb-3 w-32">Time</th><th class="pb-3">Activity</th></tr>
+                            </thead>
+                            <tbody id="activityBody" class="divide-y divide-slate-50 font-medium text-slate-700">
+                                <tr><td colspan="2" class="py-6 text-center text-slate-400 italic">Loading…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
     </div>
 
     <script>
-    /* =========================================================================
-    CONFIG — point these at your real backend.
-    Every endpoint is expected to return JSON in the shape documented above
-    each render function below. Adjust paths/shapes to match your API.
-    ========================================================================= */
+        function toggleSubmenu(menuId, chevronId) {
+            const menu = document.getElementById(menuId);
+            const chevron = document.getElementById(chevronId);
+            if (menu.classList.contains('max-h-0')) {
+                menu.classList.remove('max-h-0', 'opacity-0');
+                menu.classList.add('max-h-96', 'opacity-100');
+                if (chevron) chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.remove('max-h-96', 'opacity-100');
+                menu.classList.add('max-h-0', 'opacity-0');
+                if (chevron) chevron.classList.remove('rotate-180');
+            }
+        }
+    </script>
+
+    <!-- ============================================================
+         DASHBOARD DATA LAYER — nothing above is hardcoded content;
+         everything below fetches from your API and paints the DOM.
+         ============================================================ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script>
     const API_BASE_URL = ''; // e.g. 'https://api.yourapp.com' — leave '' for same-origin
 
     const ENDPOINTS = {
-    currentUser:      `${API_BASE_URL}/api/users/me`,
-    dashboardSummary: `${API_BASE_URL}/api/dashboard/summary`,          // total inventory, orders, shipments, suppliers
-    inventoryOverview:`${API_BASE_URL}/api/dashboard/inventory-overview`, // donut breakdown
-    stockReminders:   `${API_BASE_URL}/api/dashboard/stock-reminders`,  // low/out-of-stock/overstock list
-    recentActivities: `${API_BASE_URL}/api/dashboard/recent-activities`
+        currentUser:       `${API_BASE_URL}/api/users/me`,
+        dashboardSummary:  `${API_BASE_URL}/api/dashboard/summary`,
+        inventoryOverview: `${API_BASE_URL}/api/dashboard/inventory-overview`,
+        stockReminders:    `${API_BASE_URL}/api/dashboard/stock-reminders`,
+        recentActivities:  `${API_BASE_URL}/api/dashboard/recent-activities`
     };
 
-    /* Icon set used by the stat cards, keyed by an id the API can return
-    in dashboardSummary.stats[i].icon, so the backend controls which
-    icon+color each card gets without the frontend hardcoding content. */
+    /* Icon set for stat cards, keyed by an id the API returns in
+       dashboardSummary.stats[i].icon — Tailwind bg-* classes, so the
+       backend controls which icon+color each card gets. */
     const ICONS = {
-    box: {
-        color: 'var(--accent)',
-        svg: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>'
-    },
-    orders: {
-        color: 'var(--teal)',
-        svg: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
-    },
-    shipment: {
-        color: 'var(--orange)',
-        svg: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>'
-    },
-    suppliers: {
-        color: 'var(--green)',
-        svg: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
-    }
+        box: {
+            bg: 'bg-indigo-600',
+            svg: '<svg class="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>'
+        },
+        orders: {
+            bg: 'bg-sky-600',
+            svg: '<svg class="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'
+        },
+        shipment: {
+            bg: 'bg-amber-500',
+            svg: '<svg class="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>'
+        },
+        suppliers: {
+            bg: 'bg-emerald-600',
+            svg: '<svg class="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 21v-2a4 4 0 00-3-3.87"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 3.13a4 4 0 010 7.75"></path></svg>'
+        }
     };
 
-    /* Maps a status string coming from the API to a badge CSS class + label.
-    Adjust the keys to match whatever your backend actually sends
-    (e.g. 'out_of_stock', 'low_stock', 'overstocked', 'restocked'). */
+    /* Maps an API status string to a Tailwind badge. Adjust keys to
+       match whatever your backend actually sends. */
     const STOCK_STATUS_MAP = {
-    out_of_stock: { label: 'Out of stock', className: 'out' },
-    low_stock:    { label: 'Low stock',    className: 'low' },
-    overstocked:  { label: 'Overstocked',  className: 'over' },
-    restocked:    { label: 'Restocked',    className: 'restocked' },
-    in_stock:     { label: 'In stock',     className: 'in-stock' }
+        out_of_stock: { label: 'Out of stock', classes: 'bg-rose-50 text-rose-700 border border-rose-200' },
+        low_stock:    { label: 'Low stock',    classes: 'bg-amber-50 text-amber-700 border border-amber-200' },
+        overstocked:  { label: 'Overstocked',  classes: 'bg-indigo-50 text-indigo-700 border border-indigo-200' },
+        restocked:    { label: 'Restocked',    classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
+        in_stock:     { label: 'In stock',     classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200' }
     };
 
-    /* Fixed color per inventory-overview segment. Keys must match whatever
-    category names the API returns in inventoryOverview.segments[i].key */
+    /* Fixed color per inventory-overview donut segment. Keys must match
+       whatever category names the API returns in segments[i].key */
     const DONUT_COLORS = {
-    in_stock:  '#1c6e4a',
-    restocked: '#2ecc71',
-    low_stock: '#f5d547',
-    out_of_stock: '#ef5b5b',
-    reserved:  '#3b3f8f'
+        in_stock:     '#059669',
+        restocked:    '#34d399',
+        low_stock:    '#fbbf24',
+        out_of_stock: '#f43f5e',
+        reserved:     '#4f46e5'
     };
 
     let donutChart = null;
 
-    /* =========================================================================
-    FETCH HELPER
-    ========================================================================= */
     async function fetchJSON(url, options = {}) {
-    const res = await fetch(url, {
-        headers: { 'Content-Type': 'application/json' },
-        // credentials: 'include', // uncomment if your API relies on cookies/session auth
-        // headers: { ...defaultHeaders, Authorization: `Bearer ${getToken()}` },
-        ...options
-    });
-    if (!res.ok) {
-        throw new Error(`Request to ${url} failed with status ${res.status}`);
+        const res = await fetch(url, {
+            headers: { 'Content-Type': 'application/json' },
+            // credentials: 'include', // uncomment if your API relies on cookies/session auth
+            ...options
+        });
+        if (!res.ok) throw new Error(`Request to ${url} failed with status ${res.status}`);
+        return res.json();
     }
-    return res.json();
-    }
-
-    /* =========================================================================
-    RENDER FUNCTIONS — each takes API data and paints the DOM.
-    No business data is hardcoded in the markup above; everything below
-    is a template driven purely by whatever the API returns.
-    ========================================================================= */
 
     function renderUser(user) {
-    document.getElementById('userName').textContent = (user && user.firstName) ? `${user.firstName}!` : 'there!';
+        document.getElementById('userName').textContent = (user && user.firstName) ? `${user.firstName}!` : 'there!';
     }
 
     // Expected shape: { stats: [{ id, label, value, note, icon }] }
     function renderStatCards(summary) {
-    const row = document.getElementById('statsRow');
-    row.innerHTML = '';
+        const row = document.getElementById('statsRow');
+        row.innerHTML = '';
+        const stats = (summary && summary.stats) || [];
 
-    const stats = (summary && summary.stats) || [];
-    if (stats.length === 0) {
-        row.innerHTML = `<div class="panel-error">No dashboard stats available.</div>`;
-        return;
-    }
+        if (stats.length === 0) {
+            row.innerHTML = `<div class="col-span-full text-xs font-semibold text-rose-600">No dashboard stats available.</div>`;
+            return;
+        }
 
-    stats.forEach(stat => {
-        const icon = ICONS[stat.icon] || ICONS.box;
-        const card = document.createElement('div');
-        card.className = 'stat-card';
-        card.innerHTML = `
-        <div class="stat-top">
-            <div class="stat-icon" style="background:${icon.color};">${icon.svg}</div>
-        </div>
-        <div class="stat-label">${escapeHTML(stat.label)}</div>
-        <div class="stat-value">${escapeHTML(formatNumber(stat.value))}</div>
-        <div class="stat-note">${escapeHTML(stat.note || '')}</div>
-        `;
-        row.appendChild(card);
-    });
+        stats.forEach(stat => {
+            const icon = ICONS[stat.icon] || ICONS.box;
+            const card = document.createElement('div');
+            card.className = 'bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2';
+            card.innerHTML = `
+                <div class="w-9 h-9 ${icon.bg} rounded-xl flex items-center justify-center">${icon.svg}</div>
+                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">${escapeHTML(stat.label)}</span>
+                <div class="text-2xl font-extrabold text-slate-900 font-mono">${escapeHTML(formatNumber(stat.value))}</div>
+                <span class="text-[11px] font-semibold text-slate-500 block">${escapeHTML(stat.note || '')}</span>
+            `;
+            row.appendChild(card);
+        });
     }
 
     // Expected shape: { segments: [{ key, label, value }] }
     function renderInventoryDonut(overview) {
-    const segments = (overview && overview.segments) || [];
-    const legend = document.getElementById('donutLegend');
-    legend.innerHTML = '';
+        const segments = (overview && overview.segments) || [];
+        const legend = document.getElementById('donutLegend');
+        legend.innerHTML = '';
 
-    if (segments.length === 0) {
-        legend.innerHTML = `<div class="panel-error">No inventory data available.</div>`;
-        if (donutChart) { donutChart.destroy(); donutChart = null; }
-        return;
-    }
+        if (segments.length === 0) {
+            legend.innerHTML = `<div class="text-xs font-semibold text-rose-600">No inventory data available.</div>`;
+            if (donutChart) { donutChart.destroy(); donutChart = null; }
+            return;
+        }
 
-    segments.forEach(seg => {
-        const color = DONUT_COLORS[seg.key] || '#999';
-        const item = document.createElement('div');
-        item.className = 'legend-item';
-        item.innerHTML = `<span class="dot" style="background:${color};"></span>${escapeHTML(seg.label)}`;
-        legend.appendChild(item);
-    });
-
-    const ctx = document.getElementById('inventoryDonut').getContext('2d');
-    const chartData = {
-        labels: segments.map(s => s.label),
-        datasets: [{
-        data: segments.map(s => s.value),
-        backgroundColor: segments.map(s => DONUT_COLORS[s.key] || '#999'),
-        borderWidth: 0,
-        cutout: '68%'
-        }]
-    };
-
-    if (donutChart) {
-        donutChart.data = chartData;
-        donutChart.update();
-    } else {
-        donutChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: chartData,
-        options: { responsive: false, plugins: { legend: { display: false } } }
+        segments.forEach(seg => {
+            const color = DONUT_COLORS[seg.key] || '#94a3b8';
+            const item = document.createElement('div');
+            item.className = 'flex items-center gap-2';
+            item.innerHTML = `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${color};"></span>${escapeHTML(seg.label)}`;
+            legend.appendChild(item);
         });
-    }
+
+        const ctx = document.getElementById('inventoryDonut').getContext('2d');
+        const chartData = {
+            labels: segments.map(s => s.label),
+            datasets: [{
+                data: segments.map(s => s.value),
+                backgroundColor: segments.map(s => DONUT_COLORS[s.key] || '#94a3b8'),
+                borderWidth: 0,
+                cutout: '68%'
+            }]
+        };
+
+        if (donutChart) {
+            donutChart.data = chartData;
+            donutChart.update();
+        } else {
+            donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: chartData,
+                options: { responsive: false, plugins: { legend: { display: false } } }
+            });
+        }
     }
 
     // Expected shape: { items: [{ id, product, status }] }
     function renderStockReminders(data) {
-    const body = document.getElementById('stockReminderBody');
-    const items = (data && data.items) || [];
+        const body = document.getElementById('stockReminderBody');
+        const items = (data && data.items) || [];
 
-    if (items.length === 0) {
-        body.innerHTML = `<tr class="state-row"><td colspan="2">No stock alerts right now.</td></tr>`;
-        return;
-    }
+        if (items.length === 0) {
+            body.innerHTML = `<tr><td colspan="2" class="py-6 text-center text-slate-400 italic">No stock alerts right now.</td></tr>`;
+            return;
+        }
 
-    body.innerHTML = items.map(item => {
-        const status = STOCK_STATUS_MAP[item.status] || { label: item.status, className: '' };
-        return `
-        <tr>
-            <td>${escapeHTML(item.product)}</td>
-            <td><span class="badge ${status.className}">${escapeHTML(status.label)}</span></td>
-        </tr>
-        `;
-    }).join('');
+        body.innerHTML = items.map(item => {
+            const status = STOCK_STATUS_MAP[item.status] || { label: item.status, classes: 'bg-slate-50 text-slate-600 border border-slate-200' };
+            return `
+                <tr class="hover:bg-slate-50/80 transition">
+                    <td class="py-3 font-semibold text-slate-900">${escapeHTML(item.product)}</td>
+                    <td class="py-3"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase inline-block ${status.classes}">${escapeHTML(status.label)}</span></td>
+                </tr>
+            `;
+        }).join('');
     }
 
     // Expected shape: { items: [{ id, time, activity }] }
     function renderRecentActivities(data) {
-    const body = document.getElementById('activityBody');
-    const items = (data && data.items) || [];
+        const body = document.getElementById('activityBody');
+        const items = (data && data.items) || [];
 
-    if (items.length === 0) {
-        body.innerHTML = `<tr class="state-row"><td colspan="2">No recent activity.</td></tr>`;
-        return;
+        if (items.length === 0) {
+            body.innerHTML = `<tr><td colspan="2" class="py-6 text-center text-slate-400 italic">No recent activity.</td></tr>`;
+            return;
+        }
+
+        body.innerHTML = items.map(item => `
+            <tr class="hover:bg-slate-50/80 transition">
+                <td class="py-3 text-slate-400 font-mono">${escapeHTML(item.time)}</td>
+                <td class="py-3 font-medium text-slate-800">${escapeHTML(item.activity)}</td>
+            </tr>
+        `).join('');
     }
 
-    body.innerHTML = items.map(item => `
-        <tr>
-        <td class="time-col">${escapeHTML(item.time)}</td>
-        <td>${escapeHTML(item.activity)}</td>
-        </tr>
-    `).join('');
-    }
-
-    function renderError(sectionEl, message) {
-    sectionEl.innerHTML = `<div class="panel-error">${escapeHTML(message)}</div>`;
-    }
-
-    /* =========================================================================
-    INIT — fetch everything the page needs and render it.
-    Each section fails independently so one broken endpoint doesn't blank
-    the whole page.
-    ========================================================================= */
     async function initDashboard() {
-    document.getElementById('pageSubtitle').textContent = 'Overview of your supply chain, live from the database.';
+        document.getElementById('pageSubtitle').textContent = 'Overview of your supply chain, live from the database.';
 
-    // Current user / greeting
-    fetchJSON(ENDPOINTS.currentUser)
-        .then(renderUser)
-        .catch(() => { document.getElementById('userName').textContent = 'there!'; });
+        fetchJSON(ENDPOINTS.currentUser)
+            .then(renderUser)
+            .catch(() => { document.getElementById('userName').textContent = 'there!'; });
 
-    // Top stat cards
-    fetchJSON(ENDPOINTS.dashboardSummary)
-        .then(renderStatCards)
-        .catch(err => renderError(document.getElementById('statsRow'), 'Could not load dashboard stats.'));
+        fetchJSON(ENDPOINTS.dashboardSummary)
+            .then(renderStatCards)
+            .catch(() => {
+                document.getElementById('statsRow').innerHTML =
+                    `<div class="col-span-full text-xs font-semibold text-rose-600">Could not load dashboard stats.</div>`;
+            });
 
-    // Inventory donut
-    fetchJSON(ENDPOINTS.inventoryOverview)
-        .then(renderInventoryDonut)
-        .catch(err => renderError(document.getElementById('donutLegend'), 'Could not load inventory overview.'));
+        fetchJSON(ENDPOINTS.inventoryOverview)
+            .then(renderInventoryDonut)
+            .catch(() => {
+                document.getElementById('donutLegend').innerHTML =
+                    `<div class="text-xs font-semibold text-rose-600">Could not load inventory overview.</div>`;
+            });
 
-    // Stock reminders
-    fetchJSON(ENDPOINTS.stockReminders)
-        .then(renderStockReminders)
-        .catch(err => {
-        document.getElementById('stockReminderBody').innerHTML =
-            `<tr class="state-row"><td colspan="2">Could not load stock reminders.</td></tr>`;
-        });
+        fetchJSON(ENDPOINTS.stockReminders)
+            .then(renderStockReminders)
+            .catch(() => {
+                document.getElementById('stockReminderBody').innerHTML =
+                    `<tr><td colspan="2" class="py-6 text-center text-rose-600">Could not load stock reminders.</td></tr>`;
+            });
 
-    // Recent activities
-    fetchJSON(ENDPOINTS.recentActivities)
-        .then(renderRecentActivities)
-        .catch(err => {
-        document.getElementById('activityBody').innerHTML =
-            `<tr class="state-row"><td colspan="2">Could not load recent activity.</td></tr>`;
-        });
+        fetchJSON(ENDPOINTS.recentActivities)
+            .then(renderRecentActivities)
+            .catch(() => {
+                document.getElementById('activityBody').innerHTML =
+                    `<tr><td colspan="2" class="py-6 text-center text-rose-600">Could not load recent activity.</td></tr>`;
+            });
     }
 
-    /* =========================================================================
-    Small utils
-    ========================================================================= */
     function formatNumber(n) {
-    if (typeof n !== 'number') return n;
-    return n.toLocaleString();
+        if (typeof n !== 'number') return n;
+        return n.toLocaleString();
     }
     function escapeHTML(str) {
-    if (str === null || str === undefined) return '';
-    return String(str)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
-    </body>
-    </html>
+</body>
+</html>
