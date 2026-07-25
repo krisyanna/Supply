@@ -1,5 +1,5 @@
 <?php
-// pa accept
+// pa accepts
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
