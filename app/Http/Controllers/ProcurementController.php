@@ -7,54 +7,63 @@ use Illuminate\Support\Facades\DB;
 
 class ProcurementController extends Controller
 {
-    public function index(Request $request)
-{
-    // 1. Calculate Dynamic KPIs (keeping your exact logic)
-    $itemsToReorder = DB::table('products')
-        ->whereColumn('current_stock', '<=', 'reorder_point')
-        ->count();
+    public function index()
+    {
+        // 1. Calculate Dynamic KPIs
+        $itemsToReorder = DB::table('products')
+            ->whereColumn('current_stock', '<=', 'reorder_point')
+            ->count();
 
-    $highPriority = DB::table('products')
-        ->whereColumn('current_stock', '<=', 'reorder_point')
-        ->where('priority_level', 'High')
-        ->count();
+        $highPriority = DB::table('products')
+            ->whereColumn('current_stock', '<=', 'reorder_point')
+            ->where('priority_level', 'High')
+            ->count();
 
-    $suppliersInvolved = DB::table('products')
-        ->whereColumn('current_stock', '<=', 'reorder_point')
-        ->distinct('supplier_id')
-        ->count('supplier_id');
+        $suppliersInvolved = DB::table('products')
+            ->whereColumn('current_stock', '<=', 'reorder_point')
+            ->distinct('supplier_id')
+            ->count('supplier_id');
 
-    $estRestockCost = DB::table('products')
-        ->whereColumn('current_stock', '<=', 'reorder_point')
-        ->sum(DB::raw('reorder_quantity * unit_cost'));
+        $estRestockCost = DB::table('products')
+            ->whereColumn('current_stock', '<=', 'reorder_point')
+            ->sum(DB::raw('reorder_quantity * unit_cost'));
 
-    $kpi_summary = [
-        'items_to_reorder'  => $itemsToReorder,
-        'high_priority'     => $highPriority,
-        'suppliers_involved'=> $suppliersInvolved,
-        'total_est_cost'    => '₱' . number_format($estRestockCost, 2),
-    ];
+        // Bind KPIs to the array your Blade file expects
+        $kpi_summary = [
+            'items_to_reorder'   => $itemsToReorder,
+            'high_priority'      => $highPriority,
+            'suppliers_involved' => $suppliersInvolved,
+            'total_est_cost'     => '₱' . number_format($estRestockCost, 2),
+        ];
 
-    // 2. Fetch Dynamic Ledger Table Data with Global Sorting & Pagination
-    $query = DB::table('products')
-        ->leftJoin('suppliers', 'products.supplier_id', '=', 'suppliers.id')
-        ->select('products.*', 'suppliers.name as supplier_name', 'suppliers.contact', 'suppliers.category', 'suppliers.sub_categories', 'suppliers.payment_terms', 'suppliers.delivery_schedule', 'suppliers.status');
+        // 2. Fetch Dynamic Ledger Table Data
+        $products = DB::table('products')
+            ->leftJoin('suppliers', 'products.supplier_id', '=', 'suppliers.id')
+            ->select('products.*', 'suppliers.name as supplier_name')
+            ->whereColumn('products.current_stock', '<=', 'products.reorder_point')
+            ->orderByRaw("FIELD(products.priority_level, 'High', 'Medium', 'Low')")
+            ->get();
 
-    // Handle global sorting requested from the dropdown
-    $sort = $request->input('sort');
-    if ($sort === 'az') {
-        $query->orderBy('suppliers.name', 'asc');
-    } elseif ($sort === 'za') {
-        $query->orderBy('suppliers.name', 'desc');
-    } else {
-        $query->orderBy('products.id', 'desc'); // Default fallback sort
+        // 3. Format the data to match your Blade @foreach loop
+        $reorder_list = $products->map(function ($item) {
+            $priorityColor = match ($item->priority_level ?? 'Low') {
+                'High'   => 'bg-red-100 text-red-600',
+                'Medium' => 'bg-orange-100 text-orange-600',
+                'Low'    => 'bg-emerald-100 text-emerald-600',
+                default  => 'bg-slate-100 text-slate-600',
+            };
+
+            return [
+                'product'         => $item->product_name ?? 'Unknown Product',
+                'recommended_qty' => ($item->reorder_quantity ?? 0) . ' ' . ($item->unit_type ?? ''),
+                'supplier'        => $item->supplier_name ?? 'No Supplier',
+                'priority'        => $item->priority_level ?? 'Low',
+                'priority_color'  => $priorityColor,
+            ];
+        });
+
+        return view('procurement.index', compact('kpi_summary', 'reorder_list'));
     }
-
-    // Paginate results and preserve query parameters (like sort) across pages
-    $supplier_list = $query->paginate(10)->appends($request->all());
-
-    return view('procurement.suppliers', compact('supplier_list', 'kpi_summary'));
-}
 
     public function suppliers()
     {
@@ -201,5 +210,56 @@ class ProcurementController extends Controller
         return view('procurement.goods-receipt', compact('kpi_summary', 'receipt_list'));
     }
 
+    public function reorder()
+{
+    // 1. Calculate KPIs for the reorder page
+    $itemsToReorderCount = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->count();
+
+    $highPriority = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->where('priority_level', 'High')
+        ->count();
+
+    $suppliersInvolved = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->distinct('supplier_id')
+        ->count('supplier_id');
+
+    $estRestockCost = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->sum(DB::raw('reorder_quantity * unit_cost'));
+
+    $kpi_summary = [
+        'items_to_reorder'   => $itemsToReorderCount,
+        'high_priority'      => $highPriority,
+        'suppliers_involved' => $suppliersInvolved,
+        'total_est_cost'     => '₱' . number_format($estRestockCost, 2),
+    ];
+
+    // 2. Fetch the table list matching your Blade file loop variable name
+    $reorder_list = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->leftJoin('suppliers', 'products.supplier_id', '=', 'suppliers.id')
+        ->select(
+            'products.product_name as product', 
+            'products.reorder_quantity as recommended_qty', 
+            'suppliers.name as supplier', 
+            'products.priority_level as priority'
+        )
+        ->get()
+        ->map(function($item) {
+            // Optional: Map styling attributes if your view expects them
+            $item->priority_color = match(strtolower($item->priority)) {
+                'high' => 'bg-rose-50 text-rose-700 border border-rose-200/80',
+                'medium' => 'bg-amber-50 text-amber-700 border border-amber-200/80',
+                default => 'bg-slate-100 text-slate-700 border border-slate-200'
+            };
+            return $item;
+        });
+
+    return view('procurement.index', compact('reorder_list', 'kpi_summary'));
+}
     
 }

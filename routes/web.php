@@ -57,6 +57,7 @@ Route::prefix('procurement')->group(function () {
 
     Route::get('/goods-receipt', [ProcurementController::class, 'goodsReceipt'])
         ->name('procurement.goods-receipt');
+    Route::get('/procurement/reorder', [ProcurementController::class, 'reorder'])->name('procurement.reorder');
 });
 
 /*
