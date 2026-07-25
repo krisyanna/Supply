@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema; // Make sure Schema is imported here
 use App\Models\Supplier;
 
 class SupplierSyncController extends Controller
@@ -34,7 +35,10 @@ class SupplierSyncController extends Controller
             ], 404);
         }
 
+        // Temporarily disable foreign key constraints to allow truncating safely
+        Schema::disableForeignKeyConstraints();
         Supplier::truncate();
+        Schema::enableForeignKeyConstraints();
 
         foreach ($suppliers as $supplierData) {
             Supplier::create([
@@ -54,7 +58,7 @@ class SupplierSyncController extends Controller
             'status' => 'success',
             'message' => 'All supplier details synced successfully.',
             'count' => $suppliers->count(),
-            'data' => $suppliers // This adds all 100 records to the response view
+            'data' => $suppliers
         ], 200);
     }
 }
