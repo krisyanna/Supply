@@ -67,25 +67,25 @@ class ProcurementController extends Controller
 
     public function suppliers()
     {
-        $suppliers = DB::table('suppliers')->get();
+        // 1. Fetch raw supplier records from your database table
+        $supplierRecords = DB::table('suppliers')->get();
 
-        $totalSuppliers  = $suppliers->count();
-        $activeContracts = $suppliers->where('status', 'Active')->count();
-        $pendingReviews  = $suppliers->where('status', 'Under Review')->count();
-        $avgPerformance  = $suppliers->avg('rating');
+        // 2. Compute dynamic KPI metrics
+        $totalSuppliers = $supplierRecords->count();
+        $activeContracts = $supplierRecords->where('status', 'Active')->count();
+        $pendingReviews = $supplierRecords->where('status', 'Under Review')->count();
+        
+        // Calculate average performance rating safely
+        $avgPerformance = $supplierRecords->avg('rating');
+        $formattedAvgPerformance = $avgPerformance ? number_format($avgPerformance, 2) : '0.00';
 
         $kpi_summary = [
             'total_suppliers'  => $totalSuppliers,
             'active_contracts' => $activeContracts,
             'pending_reviews'  => $pendingReviews,
-            'avg_performance'  => $avgPerformance ? number_format($avgPerformance, 2) : '0.00',
+            'avg_performance'  => $formattedAvgPerformance,
         ];
 
-        $supplierRecords = DB::table('suppliers')
-            ->orderBy('name', 'asc')
-            ->get();
-
-        // 3. Format the data to match your Blade @foreach loop
         // 3. Map and format each supplier record for the view
         $supplier_list = $supplierRecords->map(function ($item) {
             $status = $item->status ?? 'Active';
@@ -97,20 +97,11 @@ class ProcurementController extends Controller
                 default        => 'bg-slate-100 text-slate-600',
             };
 
-            // Expanded fallbacks to automatically catch whatever column name your database uses
-            $contactName = data_get($item, 'contact_name') 
-                        ?? data_get($item, 'contact_person') 
-                        ?? data_get($item, 'contact') 
-                        ?? data_get($item, 'contact_no') 
-                        ?? 'N/A';
-
-            $contactEmail = data_get($item, 'contact_email') 
-                         ?? data_get($item, 'email') 
-                         ?? data_get($item, 'contact_mail');
+            // Safely retrieve contact fields to prevent errors
+            $contactName = data_get($item, 'contact_name') ?? data_get($item, 'contact_person') ?? 'N/A';
+            $contactEmail = data_get($item, 'contact_email');
             
-            $fullContact = $contactEmail && $contactName !== 'N/A' 
-                ? "{$contactName} ({$contactEmail})" 
-                : ($contactName !== 'N/A' ? $contactName : ($contactEmail ?? 'N/A'));
+            $fullContact = $contactEmail ? "{$contactName} ({$contactEmail})" : $contactName;
 
             return [
                 'name'              => $item->name ?? 'Unknown Supplier',
@@ -125,7 +116,8 @@ class ProcurementController extends Controller
             ];
         });
 
-        return view('procurement.suppliers', compact('kpi_summary', 'supplier_list'));
+        // 4. Return the view with synchronized data
+        return view('procurement.suppliers', compact('supplier_list', 'kpi_summary'));
     }
 
     public function poManagement()
