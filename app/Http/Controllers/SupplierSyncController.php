@@ -1,5 +1,5 @@
 <?php
-// pa accepts
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
@@ -11,12 +11,11 @@ class SupplierSyncController extends Controller
 {
     public function sync(): JsonResponse
     {
-        // Define the procurement connection dynamically
         Config::set('database.connections.procurement', [
             'driver' => 'mysql',
             'host' => '127.0.0.1',
             'port' => '3306',
-            'database' => 'procurement_system', // Update this
+            'database' => 'procurement_system',
             'username' => 'root',
             'password' => '',
             'charset' => 'utf8mb4',
@@ -26,7 +25,6 @@ class SupplierSyncController extends Controller
             'engine' => null,
         ]);
 
-        // Fetch records and remove duplicates from the source collection by name
         $suppliers = DB::connection('procurement')->table('suppliers')->get();
 
         if ($suppliers->isEmpty()) {
@@ -36,24 +34,25 @@ class SupplierSyncController extends Controller
             ], 404);
         }
 
-        // Wipe old ERP supplier records to prevent unique constraint conflicts
         Supplier::truncate();
 
         foreach ($suppliers as $supplierData) {
             Supplier::create([
-                'name'              => $supplierData->name,
+                'name'              => $supplierData->name ?? $supplierData->supplier_name ?? 'Unknown',
+                'contact_name'      => $supplierData->contact_name ?? $supplierData->contact_person ?? null,
+                'contact_email'     => $supplierData->contact_email ?? null,
                 'category'          => $supplierData->category ?? null,
                 'sub_categories'    => $supplierData->sub_categories ?? null,
                 'payment_terms'     => $supplierData->payment_terms ?? null,
-                'rating'            => $supplierData->rating ?? null,
+                'rating'            => $supplierData->rating ?? $supplierData->performance_score ?? null,
                 'delivery_schedule' => $supplierData->delivery_schedule ?? null,
-                'status'            => 'Active', // <-- Add this so the column is populated
+                'status'            => $supplierData->status ?? 'Active',
             ]);
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Suppliers synced successfully.',
+            'message' => 'All supplier details synced successfully.',
             'count' => $suppliers->count(),
             'data' => $suppliers // This adds all 100 records to the response view
         ], 200);

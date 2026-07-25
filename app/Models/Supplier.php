@@ -1,5 +1,5 @@
 <?php
-// pa accepts
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Supplier extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'category',
@@ -14,5 +16,7 @@ class Supplier extends Model
         'payment_terms',
         'rating',
         'delivery_schedule',
+        'status',
+        'contact_person',
     ];
 }

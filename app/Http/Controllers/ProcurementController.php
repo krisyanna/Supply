@@ -38,15 +38,15 @@ class ProcurementController extends Controller
 
         // 2. Fetch Dynamic Ledger Table Data
         $products = DB::table('products')
-            ->leftJoin('suppliers', 'products.supplier_id', '=', 'suppliers.supplier_id')
+            ->leftJoin('suppliers', 'products.supplier_id', '=', 'suppliers.id')
+            ->select('products.*', 'suppliers.name as supplier_name')
             ->whereColumn('products.current_stock', '<=', 'products.reorder_point')
             ->orderByRaw("FIELD(products.priority_level, 'High', 'Medium', 'Low')")
             ->get();
 
         // 3. Format the data to match your Blade @foreach loop
         $reorder_list = $products->map(function ($item) {
-            // Dynamically assign Tailwind colors based on priority
-            $priorityColor = match ($item->priority_level) {
+            $priorityColor = match ($item->priority_level ?? 'Low') {
                 'High'   => 'bg-red-100 text-red-600',
                 'Medium' => 'bg-orange-100 text-orange-600',
                 'Low'    => 'bg-emerald-100 text-emerald-600',
@@ -54,75 +54,81 @@ class ProcurementController extends Controller
             };
 
             return [
-                'product'         => $item->product_name,
-                'recommended_qty' => $item->reorder_quantity . ' ' . $item->unit_type,
+                'product'         => $item->product_name ?? 'Unknown Product',
+                'recommended_qty' => ($item->reorder_quantity ?? 0) . ' ' . ($item->unit_type ?? ''),
                 'supplier'        => $item->supplier_name ?? 'No Supplier',
-                'priority'        => $item->priority_level,
+                'priority'        => $item->priority_level ?? 'Low',
                 'priority_color'  => $priorityColor,
             ];
         });
 
-        // 4. Return the view and pass the data
-        // Make sure your HTML file is saved as resources/views/procurement.blade.php
-       return view('procurement.index', compact('kpi_summary', 'reorder_list'));
-
+        return view('procurement.index', compact('kpi_summary', 'reorder_list'));
     }
 
     public function suppliers()
     {
-        // 1. Calculate Dynamic KPIs for Supplier Management
-        $totalSuppliers = DB::table('suppliers')->count();
+        $suppliers = DB::table('suppliers')->get();
 
-        $activeContracts = DB::table('suppliers')
-            ->where('status', 'Active')
-            ->count();
+        $totalSuppliers  = $suppliers->count();
+        $activeContracts = $suppliers->where('status', 'Active')->count();
+        $pendingReviews  = $suppliers->where('status', 'Under Review')->count();
+        $avgPerformance  = $suppliers->avg('rating');
 
-        $pendingReviews = DB::table('suppliers')
-            ->where('status', 'Under Review')
-            ->count();
-
-        // Calculate average performance, round it to a whole number
-        $avgPerformance = DB::table('suppliers')->avg('rating');
-
-        // Bind KPIs to the array your Blade file expects
         $kpi_summary = [
             'total_suppliers'  => $totalSuppliers,
             'active_contracts' => $activeContracts,
             'pending_reviews'  => $pendingReviews,
-            'avg_performance'  => round((float) $avgPerformance) . '%',
+            'avg_performance'  => $avgPerformance ? number_format($avgPerformance, 2) : '0.00',
         ];
 
-        // 2. Fetch Dynamic Ledger Table Data
-        // 2. Fetch Dynamic Ledger Table Data
-        $suppliers = DB::table('suppliers')
+        $supplierRecords = DB::table('suppliers')
             ->orderBy('name', 'asc')
             ->get();
 
         // 3. Format the data to match your Blade @foreach loop
-        $supplier_list = $suppliers->map(function ($item) {
-            // Dynamically assign Tailwind colors based on the supplier's status
-            $statusColor = match ($item->status) {
-                'Active'       => 'bg-green-100 text-green-700',
-                'Under Review' => 'bg-orange-100 text-orange-700',
-                'Inactive'     => 'bg-rose-100 text-rose-700',
+        // 3. Map and format each supplier record for the view
+        $supplier_list = $supplierRecords->map(function ($item) {
+            $status = $item->status ?? 'Active';
+            
+            $statusColor = match ($status) {
+                'Active'       => 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
+                'Under Review' => 'bg-amber-50 text-amber-700 border border-amber-200/60',
+                'Inactive'     => 'bg-slate-100 text-slate-700 border border-slate-200/60',
                 default        => 'bg-slate-100 text-slate-600',
             };
 
+            // Expanded fallbacks to automatically catch whatever column name your database uses
+            $contactName = data_get($item, 'contact_name') 
+                        ?? data_get($item, 'contact_person') 
+                        ?? data_get($item, 'contact') 
+                        ?? data_get($item, 'contact_no') 
+                        ?? 'N/A';
+
+            $contactEmail = data_get($item, 'contact_email') 
+                         ?? data_get($item, 'email') 
+                         ?? data_get($item, 'contact_mail');
+            
+            $fullContact = $contactEmail && $contactName !== 'N/A' 
+                ? "{$contactName} ({$contactEmail})" 
+                : ($contactName !== 'N/A' ? $contactName : ($contactEmail ?? 'N/A'));
+
             return [
-                'name'         => $item->supplier_name,
-                'contact'      => $item->contact_name . ' (' . $item->contact_email . ')',
-                'category'     => $item->category,
-                'performance'  => $item->performance_score . '%',
-                'status'       => $item->status,
-                'status_color' => $statusColor,
+                'name'              => $item->name ?? 'Unknown Supplier',
+                'contact'           => $fullContact,
+                'category'          => $item->category ?? 'General',
+                'sub_categories'    => $item->sub_categories ?? 'N/A',
+                'payment_terms'     => $item->payment_terms ?? 'N/A',
+                'performance'       => isset($item->rating) ? number_format($item->rating, 2) : 'N/A',
+                'delivery_schedule' => $item->delivery_schedule ?? 'N/A',
+                'status'            => $status,
+                'status_color'      => $statusColor,
             ];
         });
 
-        // 4. Return the view and pass the data
-        // Make sure your HTML file is saved as resources/views/procurement/suppliers.blade.php
         return view('procurement.suppliers', compact('kpi_summary', 'supplier_list'));
     }
-   public function poManagement()
+
+    public function poManagement()
     {
         // 1. Calculate Dynamic KPIs for Purchase Orders
         $totalPOs = DB::table('purchase_orders')->count();
@@ -145,43 +151,42 @@ class ProcurementController extends Controller
             'total_value'      => '₱' . number_format($totalValue, 2),
         ];
 
-        // 2. Fetch Dynamic Ledger Table Data
+        // 2. Fetch Dynamic Ledger Table Data safely aliasing supplier name
         $purchaseOrders = DB::table('purchase_orders')
-            ->leftJoin('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.supplier_id')
+            ->leftJoin('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
+            ->select('purchase_orders.*', 'suppliers.name as supplier_name')
             ->orderBy('purchase_orders.order_date', 'desc')
             ->orderBy('purchase_orders.po_number', 'desc')
             ->get();
 
         // 3. Format the data to match your Blade @foreach loop
         $po_list = $purchaseOrders->map(function ($item) {
-            // Dynamically assign Tailwind colors based on the PO status
-            $statusColor = match ($item->status) {
-                'Approved'         => 'bg-green-100 text-green-700',
-                'Delivered'        => 'bg-indigo-100 text-indigo-700',
-                'Pending Approval' => 'bg-orange-100 text-orange-700',
-                'Delayed'          => 'bg-rose-100 text-rose-700',
+            $status = $item->status ?? 'Pending Approval';
+            
+            $statusColor = match ($status) {
+                'Approved'         => 'bg-emerald-50 text-emerald-700',
+                'Delivered'        => 'bg-indigo-50 text-indigo-700',
+                'Pending Approval' => 'bg-amber-50 text-amber-700',
+                'Delayed'          => 'bg-rose-50 text-rose-700',
                 default            => 'bg-slate-100 text-slate-600',
             };
 
             return [
-                'po_number'    => $item->po_number,
+                'po_number'    => $item->po_number ?? 'N/A',
                 'supplier'     => $item->supplier_name ?? 'Unknown Supplier',
-                'order_date'   => date('d M Y', strtotime($item->order_date)),
-                'amount'       => '₱' . number_format($item->total_amount, 2),
-                'status'       => $item->status,
+                'order_date'   => isset($item->order_date) ? date('d M Y', strtotime($item->order_date)) : 'N/A',
+                'amount'       => '₱' . number_format($item->total_amount ?? 0, 2),
+                'status'       => $status,
                 'status_color' => $statusColor,
             ];
         });
 
-        // 4. Return the view and pass the data
-        // Ensure your HTML file is saved as resources/views/procurement/po_management.blade.php
         return view('procurement.po', compact('kpi_summary', 'po_list'));
     }
 
     public function goodsReceipt()
     {
         // 1. Calculate Dynamic KPIs for Goods Receipt
-        // Assuming your table is named 'goods_receipts' and has an 'invoice_match_status' column
         $totalReceipts = DB::table('goods_receipts')->count();
 
         $matchedInvoices = DB::table('goods_receipts')
@@ -204,42 +209,36 @@ class ProcurementController extends Controller
             'pending_matching' => $pendingMatching,
         ];
 
-        // 2. Fetch Dynamic Ledger Table Data
-        // Joining with purchase_orders and suppliers to get the PO number and Supplier name
+        // 2. Fetch Dynamic Ledger Table Data with safe column selection
         $receipts = DB::table('goods_receipts')
-            ->leftJoin('purchase_orders', 'goods_receipts.po_id', '=', 'purchase_orders.po_id')
-            ->leftJoin('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.supplier_id')
+            ->leftJoin('purchase_orders', 'goods_receipts.po_id', '=', 'purchase_orders.id')
+            ->leftJoin('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
+            ->select('goods_receipts.*', 'purchase_orders.po_number', 'suppliers.name as supplier_name')
             ->orderBy('goods_receipts.received_date', 'desc')
             ->get();
 
         // 3. Format the data to match your Blade @foreach loop
         $receipt_list = $receipts->map(function ($item) {
-            // Dynamically assign Tailwind colors based on the GR status
-            $statusColor = match ($item->status) {
-                'Completed'     => 'bg-green-100 text-green-700',
-                'In Progress'   => 'bg-indigo-100 text-indigo-700',
-                'Action Needed' => 'bg-rose-100 text-rose-700',
+            $status = $item->status ?? 'In Progress';
+            
+            $statusColor = match ($status) {
+                'Completed'     => 'bg-emerald-50 text-emerald-700',
+                'In Progress'   => 'bg-indigo-50 text-indigo-700',
+                'Action Needed' => 'bg-rose-50 text-rose-700',
                 default         => 'bg-slate-100 text-slate-600',
             };
 
             return [
-                'gr_code'       => $item->gr_code,
-                'po_code'       => $item->po_number ?? 'N/A', // Pulled from the purchase_orders join
-                'supplier'      => $item->supplier_name ?? 'Unknown Supplier', // Pulled from the suppliers join
-                'received_date' => date('d M Y', strtotime($item->received_date)),
-                'invoice_match' => $item->invoice_match_status,
-                'status'        => $item->status,
+                'gr_code'       => $item->gr_code ?? 'N/A',
+                'po_code'       => $item->po_number ?? 'N/A',
+                'supplier'      => $item->supplier_name ?? 'Unknown Supplier',
+                'received_date' => isset($item->received_date) ? date('d M Y', strtotime($item->received_date)) : 'N/A',
+                'invoice_match' => $item->invoice_match_status ?? 'Pending',
+                'status'        => $status,
                 'status_color'  => $statusColor,
             ];
         });
 
-        // 4. Return the view and pass the data
-        // Ensure your HTML file is saved as resources/views/procurement/goods_receipt.blade.php
-       return view('procurement.goods-receipt', compact('kpi_summary', 'receipt_list'));
+        return view('procurement.goods-receipt', compact('kpi_summary', 'receipt_list'));
     }
-    
-
-
-
-
-} 
+}
