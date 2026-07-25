@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\ProcurementController;
 
+use App\Http\Controllers\SupplierSyncController;
+
+Route::get('/sync/suppliers', [SupplierSyncController::class, 'sync']);
 /*
 |--------------------------------------------------------------------------
 | Landing Page
