@@ -82,7 +82,7 @@ class ProcurementController extends Controller
             ->count();
 
         // Calculate average performance, round it to a whole number
-        $avgPerformance = DB::table('suppliers')->avg('performance_score');
+        $avgPerformance = DB::table('suppliers')->avg('rating');
 
         // Bind KPIs to the array your Blade file expects
         $kpi_summary = [
@@ -93,9 +93,9 @@ class ProcurementController extends Controller
         ];
 
         // 2. Fetch Dynamic Ledger Table Data
+        // 2. Fetch Dynamic Ledger Table Data
         $suppliers = DB::table('suppliers')
-            ->orderByRaw("FIELD(status, 'Under Review', 'Active', 'Inactive')")
-            ->orderBy('supplier_name', 'asc')
+            ->orderBy('name', 'asc')
             ->get();
 
         // 3. Format the data to match your Blade @foreach loop

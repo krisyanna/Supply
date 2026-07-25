@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('category')->nullable();
             $table->string('sub_categories')->nullable();
             $table->string('payment_terms')->nullable();
-            $table->string('rating')->nullable();
+            $table->decimal('rating', 3, 2)->nullable();
             $table->string('delivery_schedule')->nullable();
+            $table->string('status')->default('Active'); // <-- Add this line
             $table->timestamps();
         });
     }

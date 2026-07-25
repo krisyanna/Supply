@@ -47,6 +47,7 @@ class SupplierSyncController extends Controller
                 'payment_terms'     => $supplierData->payment_terms ?? null,
                 'rating'            => $supplierData->rating ?? null,
                 'delivery_schedule' => $supplierData->delivery_schedule ?? null,
+                'status'            => 'Active', // <-- Add this so the column is populated
             ]);
         }
 
