@@ -145,6 +145,7 @@
   .stat-value.accent-blue{color:var(--blue);}
   .stat-value.accent-amber{color:var(--amber);}
   .stat-value.accent-red{color:var(--red);}
+  .stat-value.placeholder{color:var(--text-muted); font-size:20px; font-weight:600;}
 
   /* Ledger card */
   .ledger-card{
@@ -243,6 +244,23 @@
     align-items:center;
     gap:8px;
   }
+
+  /* Empty state (no data yet — awaiting API integration) */
+  .empty-state{
+    padding:60px 26px;
+    text-align:center;
+    color:var(--text-muted);
+  }
+  .empty-state svg{
+    width:40px;
+    height:40px;
+    stroke:#c7cadb;
+    fill:none;
+    stroke-width:1.6;
+    margin-bottom:14px;
+  }
+  .empty-state p{margin:0; font-size:14px;}
+  .empty-state span{font-size:12.5px; color:#b7bacb;}
 </style>
 </head>
 <body>
@@ -406,7 +424,7 @@
       <div class="page-header">
         <div>
           <h1>Inventory & Warehouse Management</h1>
-          <p>Standalone UI Mode (No Database Dependency Required)</p>
+          <p>Awaiting data from Inventory &amp; Warehouse Management System API</p>
         </div>
         <button class="add-btn">
           <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg>
@@ -414,22 +432,35 @@
         </button>
       </div>
 
+      {{--
+        ==========================================================
+        API INTEGRATION PLACEHOLDER — left empty on purpose.
+        --------------------------------------------------------
+        This page is meant to reflect data pulled from the
+        "Inventory and Warehouse Management System" ERP module.
+        Once that module exposes its API, wire it in (either via
+        the InventoryController passing $stats / $items into this
+        view, or via a client-side fetch() call) and replace the
+        placeholder markup below with the real values.
+        ==========================================================
+      --}}
+
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-label">Total SKUs</div>
-          <div class="stat-value">128</div>
+          <div class="stat-value placeholder">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">In Stock</div>
-          <div class="stat-value accent-blue">104</div>
+          <div class="stat-value placeholder">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Low / Out of Stock</div>
-          <div class="stat-value accent-amber">9</div>
+          <div class="stat-value placeholder">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Inventory Value Total</div>
-          <div class="stat-value">₱1,842,300.00</div>
+          <div class="stat-value placeholder">—</div>
         </div>
       </div>
 
@@ -449,64 +480,13 @@
           </thead>
           <tbody>
             <tr>
-              <td class="item-code">#INV-3301</td>
-              <td>Copper Wiring Spool</td>
-              <td>Cavite Depot – Rack A2</td>
-              <td>Electronics & Components</td>
-              <td>
-                <span class="qty-pill">420 pcs</span>
-                <div class="qty-bar-bg"><div class="qty-bar-fill" style="width:82%"></div></div>
+              <td colspan="7">
+                <div class="empty-state">
+                  <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 22.08V12"/></svg>
+                  <p>No inventory data yet</p>
+                  <span>Connect the Inventory &amp; Warehouse Management System API to populate this table.</span>
+                </div>
               </td>
-              <td>₱310.00</td>
-              <td><span class="badge in-stock">In Stock</span></td>
-            </tr>
-            <tr>
-              <td class="item-code">#INV-3302</td>
-              <td>Hydraulic Pump Unit</td>
-              <td>Manila Port – Bay 5</td>
-              <td>Heavy Machinery</td>
-              <td>
-                <span class="qty-pill">6 pcs</span>
-                <div class="qty-bar-bg"><div class="qty-bar-fill" style="width:8%"></div></div>
-              </td>
-              <td>₱24,500.00</td>
-              <td><span class="badge low-stock">Low Stock</span></td>
-            </tr>
-            <tr>
-              <td class="item-code">#INV-3303</td>
-              <td>Galvanized Steel Sheets</td>
-              <td>Bulacan Hub – Rack C1</td>
-              <td>Raw Materials</td>
-              <td>
-                <span class="qty-pill">0 pcs</span>
-                <div class="qty-bar-bg"><div class="qty-bar-fill" style="width:0%"></div></div>
-              </td>
-              <td>₱1,150.00</td>
-              <td><span class="badge out-stock">Out of Stock</span></td>
-            </tr>
-            <tr>
-              <td class="item-code">#INV-3304</td>
-              <td>Industrial Ball Bearings</td>
-              <td>Laguna Hub – Rack B4</td>
-              <td>Spare Parts</td>
-              <td>
-                <span class="qty-pill">980 pcs</span>
-                <div class="qty-bar-bg"><div class="qty-bar-fill" style="width:95%"></div></div>
-              </td>
-              <td>₱85.00</td>
-              <td><span class="badge in-stock">In Stock</span></td>
-            </tr>
-            <tr>
-              <td class="item-code">#INV-3305</td>
-              <td>Safety Helmets (Box of 10)</td>
-              <td>Batangas Depot – Rack D3</td>
-              <td>PPE & Safety Gear</td>
-              <td>
-                <span class="qty-pill">45 boxes</span>
-                <div class="qty-bar-bg"><div class="qty-bar-fill" style="width:40%"></div></div>
-              </td>
-              <td>₱1,800.00</td>
-              <td><span class="badge reserved">Reserved</span></td>
             </tr>
           </tbody>
         </table>
@@ -540,20 +520,11 @@
       });
     });
 
-    // Animate quantity bars on load
-    window.addEventListener('load', ()=>{
-      document.querySelectorAll('.qty-bar-fill').forEach(bar=>{
-        const w = bar.style.width;
-        bar.style.width = '0%';
-        requestAnimationFrame(()=>{
-          setTimeout(()=>{ bar.style.width = w; }, 100);
-        });
-      });
-    });
-
     // ==========================================================
     // API INTEGRATION PLACEHOLDER — left empty on purpose.
-    // Other groups' modules will connect here later.
+    // Once the Inventory & Warehouse Management System API is
+    // available, fetch its data here and populate .stats-row
+    // and the ledger <tbody> above.
     // ==========================================================
 
   </script>
