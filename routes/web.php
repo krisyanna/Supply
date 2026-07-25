@@ -31,9 +31,8 @@ Route::view('/dashboard', 'home')->name('dashboard');
 |--------------------------------------------------------------------------
 */
 
-Route::view('/forecasting-demand', 'forecasting-demand')
+Route::view('/forecasting-demand', 'forecasting.forecasting-demand')
     ->name('forecasting.demand');
-
 /*
 |--------------------------------------------------------------------------
 | Procurement
