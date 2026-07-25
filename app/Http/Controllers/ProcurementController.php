@@ -7,63 +7,54 @@ use Illuminate\Support\Facades\DB;
 
 class ProcurementController extends Controller
 {
-    public function index()
-    {
-        // 1. Calculate Dynamic KPIs
-        $itemsToReorder = DB::table('products')
-            ->whereColumn('current_stock', '<=', 'reorder_point')
-            ->count();
+    public function index(Request $request)
+{
+    // 1. Calculate Dynamic KPIs (keeping your exact logic)
+    $itemsToReorder = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->count();
 
-        $highPriority = DB::table('products')
-            ->whereColumn('current_stock', '<=', 'reorder_point')
-            ->where('priority_level', 'High')
-            ->count();
+    $highPriority = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->where('priority_level', 'High')
+        ->count();
 
-        $suppliersInvolved = DB::table('products')
-            ->whereColumn('current_stock', '<=', 'reorder_point')
-            ->distinct('supplier_id')
-            ->count('supplier_id');
+    $suppliersInvolved = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->distinct('supplier_id')
+        ->count('supplier_id');
 
-        $estRestockCost = DB::table('products')
-            ->whereColumn('current_stock', '<=', 'reorder_point')
-            ->sum(DB::raw('reorder_quantity * unit_cost'));
+    $estRestockCost = DB::table('products')
+        ->whereColumn('current_stock', '<=', 'reorder_point')
+        ->sum(DB::raw('reorder_quantity * unit_cost'));
 
-        // Bind KPIs to the array your Blade file expects
-        $kpi_summary = [
-            'items_to_reorder'   => $itemsToReorder,
-            'high_priority'      => $highPriority,
-            'suppliers_involved' => $suppliersInvolved,
-            'total_est_cost'     => '₱' . number_format($estRestockCost, 2),
-        ];
+    $kpi_summary = [
+        'items_to_reorder'  => $itemsToReorder,
+        'high_priority'     => $highPriority,
+        'suppliers_involved'=> $suppliersInvolved,
+        'total_est_cost'    => '₱' . number_format($estRestockCost, 2),
+    ];
 
-        // 2. Fetch Dynamic Ledger Table Data
-        $products = DB::table('products')
-            ->leftJoin('suppliers', 'products.supplier_id', '=', 'suppliers.id')
-            ->select('products.*', 'suppliers.name as supplier_name')
-            ->whereColumn('products.current_stock', '<=', 'products.reorder_point')
-            ->orderByRaw("FIELD(products.priority_level, 'High', 'Medium', 'Low')")
-            ->get();
+    // 2. Fetch Dynamic Ledger Table Data with Global Sorting & Pagination
+    $query = DB::table('products')
+        ->leftJoin('suppliers', 'products.supplier_id', '=', 'suppliers.id')
+        ->select('products.*', 'suppliers.name as supplier_name', 'suppliers.contact', 'suppliers.category', 'suppliers.sub_categories', 'suppliers.payment_terms', 'suppliers.delivery_schedule', 'suppliers.status');
 
-        // 3. Format the data to match your Blade @foreach loop
-        $reorder_list = $products->map(function ($item) {
-            $priorityColor = match ($item->priority_level ?? 'Low') {
-                'High'   => 'bg-red-100 text-red-600',
-                'Medium' => 'bg-orange-100 text-orange-600',
-                'Low'    => 'bg-emerald-100 text-emerald-600',
-                default  => 'bg-slate-100 text-slate-600',
-            };
-
-            return [
-                'product'         => $item->product_name ?? 'Unknown Product',
-                'recommended_qty' => ($item->reorder_quantity ?? 0) . ' ' . ($item->unit_type ?? ''),
-                'supplier'        => $item->supplier_name ?? 'No Supplier',
-                'priority'        => $item->priority_level ?? 'Low',
-                'priority_color'  => $priorityColor,
-            ];
-        });
-
-        return view('procurement.index', compact('kpi_summary', 'reorder_list'));
+    // Handle global sorting requested from the dropdown
+    $sort = $request->input('sort');
+    if ($sort === 'az') {
+        $query->orderBy('suppliers.name', 'asc');
+    } elseif ($sort === 'za') {
+        $query->orderBy('suppliers.name', 'desc');
+    } else {
+        $query->orderBy('products.id', 'desc'); // Default fallback sort
     }
+
+    // Paginate results and preserve query parameters (like sort) across pages
+    $supplier_list = $query->paginate(10)->appends($request->all());
+
+    return view('procurement.suppliers', compact('supplier_list', 'kpi_summary'));
+}
 
     public function suppliers()
     {
@@ -86,38 +77,14 @@ class ProcurementController extends Controller
             'avg_performance'  => $formattedAvgPerformance,
         ];
 
-        // 3. Map and format each supplier record for the view
-        $supplier_list = $supplierRecords->map(function ($item) {
-            $status = $item->status ?? 'Active';
-            
-            $statusColor = match ($status) {
-                'Active'       => 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
-                'Under Review' => 'bg-amber-50 text-amber-700 border border-amber-200/60',
-                'Inactive'     => 'bg-slate-100 text-slate-700 border border-slate-200/60',
-                default        => 'bg-slate-100 text-slate-600',
-            };
+        $supplier_list = DB::table('suppliers')->paginate(10);
+        return view('procurement.suppliers', compact('kpi_summary', 'supplier_list'));
+        
+        
+        
 
-            // Safely retrieve contact fields to prevent errors
-            $contactName = data_get($item, 'contact_name') ?? data_get($item, 'contact_person') ?? 'N/A';
-            $contactEmail = data_get($item, 'contact_email');
-            
-            $fullContact = $contactEmail ? "{$contactName} ({$contactEmail})" : $contactName;
-
-            return [
-                'name'              => $item->name ?? 'Unknown Supplier',
-                'contact'           => $fullContact,
-                'category'          => $item->category ?? 'General',
-                'sub_categories'    => $item->sub_categories ?? 'N/A',
-                'payment_terms'     => $item->payment_terms ?? 'N/A',
-                'performance'       => isset($item->rating) ? number_format($item->rating, 2) : 'N/A',
-                'delivery_schedule' => $item->delivery_schedule ?? 'N/A',
-                'status'            => $status,
-                'status_color'      => $statusColor,
-            ];
-        });
-
-        // 4. Return the view with synchronized data
-        return view('procurement.suppliers', compact('supplier_list', 'kpi_summary'));
+        
+       
     }
 
     public function poManagement()
@@ -233,4 +200,6 @@ class ProcurementController extends Controller
 
         return view('procurement.goods-receipt', compact('kpi_summary', 'receipt_list'));
     }
+
+    
 }
