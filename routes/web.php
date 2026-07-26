@@ -48,6 +48,7 @@ Route::prefix('procurement')->group(function () {
 
     Route::get('/goods-receipt', [ProcurementController::class, 'goodsReceipt'])
         ->name('procurement.goods-receipt');
+    Route::get('/procurement/reorder', [ProcurementController::class, 'reorder'])->name('procurement.reorder');
 });
 
 /*
@@ -55,8 +56,10 @@ Route::prefix('procurement')->group(function () {
 | Logistics
 |--------------------------------------------------------------------------
 */
-Route::get('/logistics', [LogisticsController::class, 'index'])
-    ->name('logistics.dashboard');
+
+Route::get('/logistics', [LogisticsController::class, 'index'])->name('logistics.dashboard');
+Route::post('/logistics/shipments', [LogisticsController::class, 'store'])->name('logistics.shipments.store');
+Route::patch('/logistics/shipments/{orderID}/update-status', [LogisticsController::class, 'updateStatus'])->name('logistics.update-status');
 
 /*
 |--------------------------------------------------------------------------

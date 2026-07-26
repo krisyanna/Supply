@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class ProcurementController extends Controller
 {
@@ -86,38 +87,14 @@ class ProcurementController extends Controller
             'avg_performance'  => $formattedAvgPerformance,
         ];
 
-        // 3. Map and format each supplier record for the view
-        $supplier_list = $supplierRecords->map(function ($item) {
-            $status = $item->status ?? 'Active';
-            
-            $statusColor = match ($status) {
-                'Active'       => 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
-                'Under Review' => 'bg-amber-50 text-amber-700 border border-amber-200/60',
-                'Inactive'     => 'bg-slate-100 text-slate-700 border border-slate-200/60',
-                default        => 'bg-slate-100 text-slate-600',
-            };
+        $supplier_list = DB::table('suppliers')->paginate(10);
+        return view('procurement.suppliers', compact('kpi_summary', 'supplier_list'));
+        
+        
+        
 
-            // Safely retrieve contact fields to prevent errors
-            $contactName = data_get($item, 'contact_name') ?? data_get($item, 'contact_person') ?? 'N/A';
-            $contactEmail = data_get($item, 'contact_email');
-            
-            $fullContact = $contactEmail ? "{$contactName} ({$contactEmail})" : $contactName;
-
-            return [
-                'name'              => $item->name ?? 'Unknown Supplier',
-                'contact'           => $fullContact,
-                'category'          => $item->category ?? 'General',
-                'sub_categories'    => $item->sub_categories ?? 'N/A',
-                'payment_terms'     => $item->payment_terms ?? 'N/A',
-                'performance'       => isset($item->rating) ? number_format($item->rating, 2) : 'N/A',
-                'delivery_schedule' => $item->delivery_schedule ?? 'N/A',
-                'status'            => $status,
-                'status_color'      => $statusColor,
-            ];
-        });
-
-        // 4. Return the view with synchronized data
-        return view('procurement.suppliers', compact('supplier_list', 'kpi_summary'));
+        
+       
     }
 
     public function poManagement()
@@ -202,12 +179,12 @@ class ProcurementController extends Controller
         ];
 
         // 2. Fetch Dynamic Ledger Table Data with safe column selection
-        $receipts = DB::table('goods_receipts')
-            ->leftJoin('purchase_orders', 'goods_receipts.po_id', '=', 'purchase_orders.id')
-            ->leftJoin('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
-            ->select('goods_receipts.*', 'purchase_orders.po_number', 'suppliers.name as supplier_name')
-            ->orderBy('goods_receipts.received_date', 'desc')
-            ->get();
+       $receipts = DB::table('goods_receipts')
+    ->leftJoin('purchase_orders', 'goods_receipts.po_id', '=', 'purchase_orders.id') // Changed .po_id to .id
+    ->leftJoin('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
+    ->select('goods_receipts.*', 'purchase_orders.po_number', 'suppliers.name as supplier_name')
+    ->orderBy('goods_receipts.received_date', 'desc')
+    ->get();
 
         // 3. Format the data to match your Blade @foreach loop
         $receipt_list = $receipts->map(function ($item) {
@@ -233,4 +210,50 @@ class ProcurementController extends Controller
 
         return view('procurement.goods-receipt', compact('kpi_summary', 'receipt_list'));
     }
+
+   public function reorder()
+{
+    // Fetch the suppliers from your procurement API endpoint
+    $response = Http::get('http://supply.test/sync/suppliers'); // Or your procurement system API URL
+    $suppliers = $response->successful() ? collect($response->json()) : collect();
+
+    // Fetch low-stock products from your local database
+    $reorder_list = DB::table('products as p')
+        ->whereColumn('p.current_stock', '<=', 'p.reorder_point')
+        ->get()
+        ->map(function($product) use ($suppliers) {
+            
+            // Match the supplier name using the supplier_id
+            $supplier = $suppliers->firstWhere('id', $product->supplier_id);
+
+            $product->product = $product->product_name ?? 'Unknown Product';
+            $product->recommended_qty = ($product->reorder_quantity ?? 0) . ' ' . ($product->unit_type ?? 'pcs');
+            
+            // Dynamically grab the supplier name from the API data, with a fallback
+            $product->supplier = $supplier['name'] ?? $supplier['supplier_name'] ?? 'Raidmax'; 
+            
+            $product->priority = $product->priority_level ?? 'High';
+            
+            $product->priority_color = match(strtolower($product->priority)) {
+                'high' => 'bg-rose-50 text-rose-700 border border-rose-200/80',
+                'medium' => 'bg-amber-50 text-amber-700 border border-amber-200/80',
+                default => 'bg-slate-100 text-slate-700 border border-slate-200'
+            };
+
+            return $product;
+        });
+
+    $kpi_summary = [
+        'items_to_reorder'   => $reorder_list->count(),
+        'high_priority'      => $reorder_list->where('priority', 'High')->count(),
+        'suppliers_involved' => $reorder_list->unique('supplier')->count(),
+        'total_est_cost'     => '₱' . number_format(
+            DB::table('products')->whereColumn('current_stock', '<=', 'reorder_point')->sum(DB::raw('reorder_quantity * unit_cost')), 
+            2
+        ),
+    ];
+
+    return view('procurement.index', compact('reorder_list', 'kpi_summary'));
+}
+    
 }
