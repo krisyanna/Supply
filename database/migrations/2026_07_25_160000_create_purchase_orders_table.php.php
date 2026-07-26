@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
 {
-   Schema::create('products', function (Blueprint $table) {
+    Schema::create('purchase_orders', function (Blueprint $table) {
     $table->id();
-    $table->string('product_name');
+    $table->string('po_number')->unique();
     $table->unsignedBigInteger('supplier_id');
-    $table->string('category')->nullable();
-    $table->decimal('unit_cost', 10, 2);
-    $table->integer('current_stock');
-    $table->integer('reorder_point');
-    $table->integer('reorder_quantity');
-    $table->string('unit_type')->default('pcs');
-    $table->string('priority_level')->default('Medium');
+    $table->date('order_date');
+    $table->decimal('total_amount', 12, 2);
+    $table->string('status')->default('Pending Approval'); // <-- Ensure this line is present
     $table->timestamps();
 
     $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('purchase_orders');
     }
 };
