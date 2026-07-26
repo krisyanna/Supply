@@ -148,7 +148,7 @@
         @if ($supplier_list->hasPages())
             <div class="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-slate-200/60 gap-3 text-xs bg-white px-6 lg:px-8 py-3.5">
                 <div class="text-slate-500 font-medium">
-                    Showing <span class="font-bold text-slate-800">{{ $supplier_list->firstItem() }}</span> to <span class="font-bold text-slate-800">{{ $supplier_list->lastItem() }}</span> of <span class="font-bold text-slate-800">{{ $supplier_list->total() }}</span> results
+                    Showing <span class="font-bold text-slate-800">{{ $supplier_list->firstItem() }}</span> to <span class="font-bold text-slate-800">{{ $supplier_list->lastItem() }}</span> of <span class="font-bold text-slate-800">{{ $supplier_list->total() }}</span> results[cite: 10]
                 </div>
                 <div class="flex items-center gap-1">
                     {{-- Previous Page Link --}}
@@ -168,7 +168,7 @@
                             <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-950 text-white font-bold border border-blue-950 shadow-xs text-xs">
                                 {{ $page }}
                             </span>
-                        @elsegit add .
+                        @else
                             <a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-black hover:bg-blue-50 hover:border-blue-900 transition border border-blue-900 font-semibold shadow-2xs text-xs">
                                 {{ $page }}
                             </a>
@@ -243,3 +243,4 @@
     document.getElementById('sortFilter').addEventListener('change', filterAndSortTable);
 </script>
 @endsection
+```[cite: 10]

@@ -68,8 +68,7 @@ Route::patch('/logistics/shipments/{orderID}/update-status', [LogisticsControlle
 |--------------------------------------------------------------------------
 */
 
-Route::get('/inventory', [InventoryController::class, 'index'])
-    ->name('inventory.index');
+Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
 
 Route::post('/inventory', [InventoryController::class, 'store'])
     ->name('inventory.store');
