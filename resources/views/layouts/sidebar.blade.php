@@ -170,7 +170,7 @@
         </div>
 
         {{-- INVENTORY & WAREHOUSE — left as a plain link for now, per your note --}}
-        <a href="{{ route('inventory') }}"
+        <a href="{{ route('inventory.index') }}"
            class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition {{ $isInventory ? $parentActive : $parentInactive }}">
             <svg class="w-4 h-4 transition {{ $isInventory ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0l3-4m0 0l3 4"></path>
