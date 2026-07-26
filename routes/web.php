@@ -3,15 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\ProcurementController;
-use App\Http\Controllers\SupplierSyncController;
 
-/*
-|--------------------------------------------------------------------------
-| Supplier Synchronization
-|--------------------------------------------------------------------------
-*/
-Route::get('/sync/suppliers', [SupplierSyncController::class, 'sync'])
-    ->name('suppliers.sync');
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -57,9 +52,10 @@ Route::prefix('procurement')->group(function () {
 
     Route::get('/goods-receipt', [ProcurementController::class, 'goodsReceipt'])
         ->name('procurement.goods-receipt');
-    Route::get('/procurement/reorder', [ProcurementController::class, 'reorder'])->name('procurement.reorder');
-});
 
+    Route::get('/reorder', [ProcurementController::class, 'reorder']) // <-- Fixed path
+        ->name('procurement.reorder');
+});
 /*
 |--------------------------------------------------------------------------
 | Logistics
@@ -73,8 +69,13 @@ Route::get('/logistics', [LogisticsController::class, 'index'])
 | Inventory
 |--------------------------------------------------------------------------
 */
+
+use App\Http\Controllers\InventoryController;
+
+Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
 Route::view('/inventory', 'inventory.index')
     ->name('inventory');
+
 
 /*
 |--------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StockItem;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -9,77 +10,23 @@ class InventoryController extends Controller
     /**
      * Display the Inventory & Warehouse Management index page.
      *
-     * For now this uses static placeholder data so the UI can be
-     * built and demoed without a database. Once the model/migration
-     * is ready, swap the arrays below for real Eloquent queries
-     * (e.g. StockItem::all()) and this method won't need to change
-     * anywhere else in the app.
+     * IMPORTANT — DATA OWNERSHIP NOTE:
+     * The `stock_items` table here is a LOCAL REFLECTION, not the
+     * source of truth. Right now it's filled by StockItemSeeder for
+     * development/demo purposes. Once the actual IWM team's API is
+     * ready, replace manual seeding with the SyncStockItems command,
+     * which pulls data from their API and writes only the fields
+     * this SCM view actually needs into this table.
      */
     public function index()
     {
-        $stats = [
-            'total_skus'       => 128,
-            'in_stock'         => 104,
-            'low_out_of_stock' => 9,
-            'inventory_value'  => 1842300.00,
-        ];
+        $items = StockItem::orderByDesc('created_at')->get();
 
-        $items = [
-            [
-                'code'     => '#INV-3301',
-                'name'     => 'Copper Wiring Spool',
-                'location' => 'Cavite Depot – Rack A2',
-                'category' => 'Electronics & Components',
-                'quantity' => 420,
-                'unit'     => 'pcs',
-                'max_qty'  => 500,
-                'cost'     => 310.00,
-                'status'   => 'in-stock',
-            ],
-            [
-                'code'     => '#INV-3302',
-                'name'     => 'Hydraulic Pump Unit',
-                'location' => 'Manila Port – Bay 5',
-                'category' => 'Heavy Machinery',
-                'quantity' => 6,
-                'unit'     => 'pcs',
-                'max_qty'  => 75,
-                'cost'     => 24500.00,
-                'status'   => 'low-stock',
-            ],
-            [
-                'code'     => '#INV-3303',
-                'name'     => 'Galvanized Steel Sheets',
-                'location' => 'Bulacan Hub – Rack C1',
-                'category' => 'Raw Materials',
-                'quantity' => 0,
-                'unit'     => 'pcs',
-                'max_qty'  => 300,
-                'cost'     => 1150.00,
-                'status'   => 'out-stock',
-            ],
-            [
-                'code'     => '#INV-3304',
-                'name'     => 'Industrial Ball Bearings',
-                'location' => 'Laguna Hub – Rack B4',
-                'category' => 'Spare Parts',
-                'quantity' => 980,
-                'unit'     => 'pcs',
-                'max_qty'  => 1030,
-                'cost'     => 85.00,
-                'status'   => 'in-stock',
-            ],
-            [
-                'code'     => '#INV-3305',
-                'name'     => 'Safety Helmets (Box of 10)',
-                'location' => 'Batangas Depot – Rack D3',
-                'category' => 'PPE & Safety Gear',
-                'quantity' => 45,
-                'unit'     => 'boxes',
-                'max_qty'  => 112,
-                'cost'     => 1800.00,
-                'status'   => 'reserved',
-            ],
+        $stats = [
+            'total_skus'       => $items->count(),
+            'in_stock'         => $items->where('status', 'in-stock')->count(),
+            'low_out_of_stock' => $items->whereIn('status', ['low-stock', 'out-stock'])->count(),
+            'inventory_value'  => $items->sum(fn ($item) => $item->quantity * $item->cost),
         ];
 
         return view('inventory', compact('stats', 'items'));
@@ -108,7 +55,10 @@ class InventoryController extends Controller
             'status'   => 'required|in:in-stock,low-stock,out-stock,reserved',
         ]);
 
-        // TODO: StockItem::create($validated);
+        $validated['code'] = StockItem::nextCode();
+        $validated['max_qty'] = max($validated['quantity'], 1);
+
+        StockItem::create($validated);
 
         return redirect()->route('inventory.index')
             ->with('success', 'Stock item added successfully.');
@@ -119,8 +69,9 @@ class InventoryController extends Controller
      */
     public function show($id)
     {
-        // TODO: $item = StockItem::findOrFail($id);
-        return view('inventory.show', ['id' => $id]);
+        $item = StockItem::findOrFail($id);
+
+        return view('inventory.show', compact('item'));
     }
 
     /**
@@ -128,8 +79,9 @@ class InventoryController extends Controller
      */
     public function edit($id)
     {
-        // TODO: $item = StockItem::findOrFail($id);
-        return view('inventory.edit', ['id' => $id]);
+        $item = StockItem::findOrFail($id);
+
+        return view('inventory.edit', compact('item'));
     }
 
     /**
@@ -147,7 +99,7 @@ class InventoryController extends Controller
             'status'   => 'sometimes|in:in-stock,low-stock,out-stock,reserved',
         ]);
 
-        // TODO: StockItem::findOrFail($id)->update($validated);
+        StockItem::findOrFail($id)->update($validated);
 
         return redirect()->route('inventory.index')
             ->with('success', 'Stock item updated successfully.');
@@ -158,7 +110,7 @@ class InventoryController extends Controller
      */
     public function destroy($id)
     {
-        // TODO: StockItem::findOrFail($id)->delete();
+        StockItem::findOrFail($id)->delete();
 
         return redirect()->route('inventory.index')
             ->with('success', 'Stock item removed.');
@@ -175,6 +127,35 @@ class InventoryController extends Controller
      */
     public function api(Request $request)
     {
-        //
+        // 1. Confirm the request is really from the IWM team, not a stranger.
+        if ($request->header('X-IWM-Key') !== config('services.iwm.push_key')) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // 2. Validate the shape of the data they're sending.
+        $validated = $request->validate([
+            'code'     => 'required|string|max:255',
+            'name'     => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:0',
+            'unit'     => 'required|string|max:50',
+            'max_qty'  => 'sometimes|integer|min:0',
+            'cost'     => 'required|numeric|min:0',
+            'status'   => 'required|in:in-stock,low-stock,out-stock,reserved',
+        ]);
+
+        $validated['max_qty'] = $validated['max_qty'] ?? $validated['quantity'];
+
+        // 3. Save it — update if this item code already exists, create if not.
+        $item = StockItem::updateOrCreate(
+            ['code' => $validated['code']],
+            $validated
+        );
+
+        return response()->json([
+            'message' => 'Stock item synced successfully.',
+            'item'    => $item,
+        ], 200);
     }
 }
