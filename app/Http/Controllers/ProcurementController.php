@@ -213,9 +213,8 @@ class ProcurementController extends Controller
 
    public function reorder()
 {
-    // Fetch the suppliers from your procurement API endpoint
-    $response = Http::get('http://supply.test/sync/suppliers'); // Or your procurement system API URL
-    $suppliers = $response->successful() ? collect($response->json()) : collect();
+    // Fetch suppliers directly from your local database model
+    $suppliers = \App\Models\Supplier::all();
 
     // Fetch low-stock products from your local database
     $reorder_list = DB::table('products as p')
@@ -229,8 +228,8 @@ class ProcurementController extends Controller
             $product->product = $product->product_name ?? 'Unknown Product';
             $product->recommended_qty = ($product->reorder_quantity ?? 0) . ' ' . ($product->unit_type ?? 'pcs');
             
-            // Dynamically grab the supplier name from the API data, with a fallback
-            $product->supplier = $supplier['name'] ?? $supplier['supplier_name'] ?? 'Raidmax'; 
+            // Dynamically grab the supplier name from your local database, with a clean fallback
+            $product->supplier = $supplier->name ?? 'Unassigned'; 
             
             $product->priority = $product->priority_level ?? 'High';
             
@@ -254,6 +253,6 @@ class ProcurementController extends Controller
     ];
 
     return view('procurement.index', compact('reorder_list', 'kpi_summary'));
+
 }
-    
 }
