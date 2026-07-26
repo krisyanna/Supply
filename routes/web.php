@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\ProcurementController;
+use App\Http\Controllers\InventoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,13 +67,12 @@ Route::patch('/logistics/shipments/{orderID}/update-status', [LogisticsControlle
 | Inventory
 |--------------------------------------------------------------------------
 */
-Route::view('/inventory', 'inventory.index')
-    ->name('inventory');
 
-/*
-|--------------------------------------------------------------------------
-| Reports
-|--------------------------------------------------------------------------
-*/
-Route::view('/reports', 'reports.index')
-    ->name('reports');
+Route::get('/inventory', [InventoryController::class, 'index'])
+    ->name('inventory.index');
+
+Route::post('/inventory', [InventoryController::class, 'store'])
+    ->name('inventory.store');
+Route::post('/inventory/api', [InventoryController::class, 'api'])
+    ->name('inventory.api');
+
