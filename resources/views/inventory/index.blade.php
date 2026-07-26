@@ -244,3 +244,26 @@
                 <div class="qty-bar-fill" style="width: {{ min(100, ($item->quantity / max($item->max_qty, 1)) * 100) }}%"></div>
               </div>
             </td>
+            <td>₱{{ number_format($item->cost, 2) }}</td>
+            <td>
+              <span class="badge {{ $item->status }}">
+                {{ ucwords(str_replace('-', ' ', $item->status)) }}
+              </span>
+            </td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 22.08V12"/></svg>
+                <p>No inventory data yet</p>
+                <span>Add your first stock item to get started.</span>
+              </div>
+            </td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+
+@endsection
