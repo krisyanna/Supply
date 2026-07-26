@@ -3,55 +3,58 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Supplier;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class SupplierSyncController extends Controller
 {
-    public function sync(Request $request): JsonResponse
-    {
-        // 1. Verify the incoming token matches Procurement's token
-        $incomingToken = $request->bearerToken();
-        if ($incomingToken !== 'my-super-secret-erp-key-98765') {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized: Invalid API token.'
-            ], 401);
-        }
+    public function store(Request $request)
+{
+    $incomingToken = $request->bearerToken();
+    $expectedToken = env('SUPPLY_CHAIN_API_TOKEN');
 
-        // 2. Extract the suppliers array sent from Procurement
-        $suppliersData = $request->input('suppliers', []);
+    if (!$incomingToken || $incomingToken !== $expectedToken) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'Unauthorized: Invalid or missing API token.'
+        ], 401);
+    }
 
-        if (empty($suppliersData)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No supplier payload found.'
-            ], 422);
-        }
+    $suppliers = $request->input('suppliers', []);
+    \Illuminate\Support\Facades\Log::info('SUPPLY SYNC DEBUG - Count received: ' . count($suppliers));
 
-        // 3. Loop and persist each supplier record into the Supply database
-        foreach ($suppliersData as $data) {
-            Supplier::updateOrCreate(
-                ['id' => $data['id']], // Matches ID to prevent duplicates
+    try {
+        foreach ($suppliers as $supplier) {
+            DB::table('suppliers')->updateOrInsert(
+                ['id' => $supplier['id']],
                 [
-                    'name'              => $data['name'] ?? null,
-                    'contact_person'    => $data['contact_person'] ?? null,
-                    'phone'             => $data['phone'] ?? null,
-                    'email'             => $data['email'] ?? null,
-                    'category'          => $data['category'] ?? null,
-                    'sub_categories'    => $data['sub_categories'] ?? null,
-                    'payment_terms'     => $data['payment_terms'] ?? null,
-                    'rating'            => $data['rating'] ?? null,
-                    'delivery_schedule' => $data['delivery_schedule'] ?? null,
+                    'name'              => $supplier['name'],
+                    'contact_person'    => $supplier['contact_person'] ?? null,
+                    'phone'             => $supplier['phone'] ?? null,
+                    'email'             => $supplier['email'] ?? null,
+                    'category'          => $supplier['category'] ?? null,
+                    'sub_categories'    => $supplier['sub_categories'] ?? null,
+                    'payment_terms'     => $supplier['payment_terms'] ?? null,
+                    'rating'            => $supplier['rating'] ?? null,
+                    'delivery_schedule' => $supplier['delivery_schedule'] ?? null,
+                    'updated_at'        => now(),
+                    'created_at'        => now(),
                 ]
             );
         }
-
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::error('SUPPLY SYNC ERROR: ' . $e->getMessage());
         return response()->json([
-            'status' => 'success',
-            'message' => 'Suppliers successfully synced and persisted to Supply database.',
-            'count' => count($suppliersData)
-        ], 200);
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
     }
+
+    return response()->json([
+        'status'       => 'success',
+        'synced_count' => count($suppliers)
+    ], 200);
 }
+}
+
+// comment
