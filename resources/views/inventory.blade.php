@@ -424,7 +424,7 @@
       <div class="page-header">
         <div>
           <h1>Inventory & Warehouse Management</h1>
-          <p>Awaiting data from Inventory &amp; Warehouse Management System API</p>
+          <p>{{ count($items) }} stock items across all warehouse locations</p>
         </div>
         <button class="add-btn">
           <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg>
@@ -432,35 +432,22 @@
         </button>
       </div>
 
-      {{--
-        ==========================================================
-        API INTEGRATION PLACEHOLDER — left empty on purpose.
-        --------------------------------------------------------
-        This page is meant to reflect data pulled from the
-        "Inventory and Warehouse Management System" ERP module.
-        Once that module exposes its API, wire it in (either via
-        the InventoryController passing $stats / $items into this
-        view, or via a client-side fetch() call) and replace the
-        placeholder markup below with the real values.
-        ==========================================================
-      --}}
-
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-label">Total SKUs</div>
-          <div class="stat-value placeholder">—</div>
+          <div class="stat-value">{{ $stats['total_skus'] }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">In Stock</div>
-          <div class="stat-value placeholder">—</div>
+          <div class="stat-value accent-blue">{{ $stats['in_stock'] }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Low / Out of Stock</div>
-          <div class="stat-value placeholder">—</div>
+          <div class="stat-value accent-amber">{{ $stats['low_out_of_stock'] }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Inventory Value Total</div>
-          <div class="stat-value placeholder">—</div>
+          <div class="stat-value">₱{{ number_format($stats['inventory_value'], 2) }}</div>
         </div>
       </div>
 
@@ -479,15 +466,36 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td colspan="7">
-                <div class="empty-state">
-                  <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 22.08V12"/></svg>
-                  <p>No inventory data yet</p>
-                  <span>Connect the Inventory &amp; Warehouse Management System API to populate this table.</span>
-                </div>
-              </td>
-            </tr>
+            @forelse ($items as $item)
+              <tr>
+                <td><span class="item-code">{{ $item->code }}</span></td>
+                <td>{{ $item->name }}</td>
+                <td>{{ $item->location }}</td>
+                <td>{{ $item->category }}</td>
+                <td>
+                  <div class="qty-pill">{{ $item->quantity }} {{ $item->unit }}</div>
+                  <div class="qty-bar-bg">
+                    <div class="qty-bar-fill" style="width: {{ min(100, ($item->quantity / max($item->max_qty, 1)) * 100) }}%"></div>
+                  </div>
+                </td>
+                <td>₱{{ number_format($item->cost, 2) }}</td>
+                <td>
+                  <span class="badge {{ $item->status }}">
+                    {{ ucwords(str_replace('-', ' ', $item->status)) }}
+                  </span>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 22.08V12"/></svg>
+                    <p>No inventory data yet</p>
+                    <span>Add your first stock item to get started.</span>
+                  </div>
+                </td>
+              </tr>
+            @endforelse
           </tbody>
         </table>
       </div>
@@ -519,14 +527,6 @@
         card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
       });
     });
-
-    // ==========================================================
-    // API INTEGRATION PLACEHOLDER — left empty on purpose.
-    // Once the Inventory & Warehouse Management System API is
-    // available, fetch its data here and populate .stats-row
-    // and the ledger <tbody> above.
-    // ==========================================================
-
   </script>
 </body>
 </html>

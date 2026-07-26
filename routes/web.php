@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\ProcurementController;
+use App\Http\Controllers\InventoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,14 +64,11 @@ Route::get('/logistics', [LogisticsController::class, 'index'])
 |--------------------------------------------------------------------------
 */
 
-Route::view('/inventory', 'inventory.index')
-    ->name('inventory');
+Route::get('/inventory', [InventoryController::class, 'index'])
+    ->name('inventory.index');
 
-/*
-|--------------------------------------------------------------------------
-| Reports
-|--------------------------------------------------------------------------
-*/
+Route::post('/inventory', [InventoryController::class, 'store'])
+    ->name('inventory.store');
+Route::post('/inventory/api', [InventoryController::class, 'api'])
+    ->name('inventory.api');
 
-Route::view('/reports', 'reports.index')
-    ->name('reports');

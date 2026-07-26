@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+   'iwm' => [
+    'url'      => env('IWM_API_URL'),
+    'push_key' => env('IWM_PUSH_KEY'),
+],
 
 ];
+
