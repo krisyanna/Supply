@@ -64,26 +64,32 @@
     <div class="w-full flex-1 flex flex-col mb-4">
         <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden flex-1 flex flex-col">
             
-            <!-- Table Header Bar with Search, Category Filter & Sorting Filter -->
-            <div class="px-6 lg:px-8 py-5 border-b border-slate-200/60 bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+            <!-- Table Header Bar with Filters and Search Bar aligned to the Right -->
+            <div class="px-6 lg:px-8 py-5 border-b border-slate-200/60 bg-white flex flex-col xl:flex-row justify-between items-center gap-4">
                 <div>
                     <h3 class="text-base font-bold text-slate-900">Complete Supplier Management Ledger</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Showing all synchronized fields and contact details</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Showing all synchronized fields and contact representative details</p>
                 </div>
-                <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <div class="flex flex-wrap items-center justify-end gap-2 w-full xl:w-auto">
                     
+                    <!-- Hide/Show Contact Representative Button -->
+                    <button type="button" id="toggleContactBtn" onclick="toggleContactDetails()" class="px-2.5 py-1.5 text-[11px] bg-indigo-50 border border-indigo-200 text-indigo-700 font-semibold rounded-lg hover:bg-indigo-100 transition shadow-2xs flex items-center gap-1 shrink-0">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                        <span id="toggleBtnText">Hide Contacts</span>
+                    </button>
+
                     <!-- Sorting Dropdown -->
-                    <div class="w-full sm:w-44">
-                        <select id="sortFilter" class="w-full px-3 py-2.5 text-xs bg-slate-50/80 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition shadow-2xs text-slate-700 font-medium">
-                            <option value="">Sort By: Default</option>
+                    <div class="w-28 shrink-0">
+                        <select id="sortFilter" class="w-full px-1.5 py-1.5 text-[11px] bg-slate-50/80 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25 text-slate-700 font-medium">
+                            <option value="">Sort: Default</option>
                             <option value="az">Name: A to Z</option>
                             <option value="za">Name: Z to A</option>
                         </select>
                     </div>
 
                     <!-- Category Filter Dropdown -->
-                    <div class="w-full sm:w-44">
-                        <select id="categoryFilter" class="w-full px-3 py-2.5 text-xs bg-slate-50/80 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition shadow-2xs text-slate-700 font-medium">
+                    <div class="w-28 shrink-0">
+                        <select id="categoryFilter" class="w-full px-1.5 py-1.5 text-[11px] bg-slate-50/80 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25 text-slate-700 font-medium">
                             <option value="">All Categories</option>
                             <option value="graphics">Graphics</option>
                             <option value="storage">Storage</option>
@@ -94,48 +100,58 @@
                     </div>
 
                     <!-- Search Input -->
-                    <div class="w-full sm:w-64 relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <div class="w-44 shrink-0 relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-slate-400">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </span>
-                        <input type="text" id="supplierSearch" placeholder="Search suppliers on this page..." 
-                               class="w-full pl-10 pr-4 py-2.5 text-xs bg-slate-50/80 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition shadow-2xs">
+                        <input type="text" id="supplierSearch" placeholder="Search suppliers..." 
+                               class="w-full pl-7 pr-2 py-1.5 text-[11px] bg-slate-50/80 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25">
                     </div>
                 </div>
             </div>
 
-            <!-- Table Container (No Inner Scroll) -->
-            <div class="overflow-x-auto flex-1">
-                <table class="w-full text-xs text-left border-collapse" id="supplierTable">
-                    <thead class="bg-slate-50/90 text-slate-500 font-semibold uppercase tracking-wider text-[11px] sticky top-0 border-b border-slate-200/60 z-10 backdrop-blur-xs">
+            <!-- Table Container with Controlled Fixed Layout to Completely Eliminate Horizontal Scrolling and Text Truncation -->
+            <div class="w-full overflow-hidden flex-1">
+                <table class="w-full text-xs text-left border-collapse table-fixed" id="supplierTable">
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col class="contact-col" style="width: 22%;">
+                        <col style="width: 13%;">
+                        <col style="width: 13%;">
+                        <col style="width: 9%;">
+                        <col style="width: 14%;">
+                        <col style="width: 9%;">
+                    </colgroup>
+                    <thead class="bg-slate-50/90 text-slate-500 font-semibold uppercase tracking-wider text-[10px] sticky top-0 border-b border-slate-200/60 z-10 backdrop-blur-xs">
                         <tr>
-                            <th scope="col" class="px-6 lg:px-8 py-4">Supplier Name</th>
-                            <th scope="col" class="px-6 lg:px-8 py-4">Contact Details</th>
-                            <th scope="col" class="px-6 lg:px-8 py-4">Category</th>
-                            <th scope="col" class="px-6 lg:px-8 py-4">Sub-Categories</th>
-                            <th scope="col" class="px-6 lg:px-8 py-4">Payment Terms</th>
-                            <th scope="col" class="px-6 lg:px-8 py-4">Rating</th>
-                            <th scope="col" class="px-6 lg:px-8 py-4">Delivery Schedule</th>
-                            <th scope="col" class="px-6 lg:px-8 py-4">Status</th>
+                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Supplier Name</th>
+                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap contact-col">Contact Rep</th>
+                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Category</th>
+                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Payment Terms</th>
+                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Rating</th>
+                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Delivery Schedule</th>
+                            <th scope="col" class="px-3 py-3 text-center overflow-hidden text-ellipsis whitespace-nowrap">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700" id="supplierTableBody">
                         @foreach($supplier_list as $supplier)
                         <tr class="hover:bg-slate-50/75 transition-colors duration-150 supplier-row" data-category="{{ strtolower($supplier->category ?? '') }}">
-                            <td class="px-6 lg:px-8 py-4 font-bold text-indigo-900 supplier-name text-xs sm:text-sm">{{ $supplier->name }}</td>
-                            <td class="px-6 lg:px-8 py-4 text-slate-600 font-medium">{{ $supplier->contact ?? $supplier->contact_representative ?? '-' }}</td>
-                            <td class="px-6 lg:px-8 py-4 text-slate-800 font-semibold supplier-category">{{ $supplier->category }}</td>
-                            <td class="px-6 lg:px-8 py-4 text-slate-500">{{ $supplier->sub_categories }}</td>
-                            <td class="px-6 lg:px-8 py-4 text-slate-800 font-medium">{{ $supplier->payment_terms }}</td>
-                            <td class="px-6 lg:px-8 py-4 font-bold text-slate-900">
+                            <td class="px-3 py-3 font-bold text-indigo-900 supplier-name text-xs truncate" title="{{ $supplier->name }}">{{ $supplier->name }}</td>
+                            <td class="px-3 py-3 text-slate-600 font-medium contact-col truncate" title="{{ $supplier->contact_person }} | {{ $supplier->phone }}">
+                                <div class="font-bold text-slate-900 text-[11px] truncate">{{ $supplier->contact_person }}</div>
+                                <div class="text-[10px] text-slate-400 font-normal truncate mt-0.5">{{ $supplier->phone }}</div>
+                            </td>
+                            <td class="px-3 py-3 text-slate-800 font-semibold supplier-category truncate" title="{{ $supplier->category }}">{{ $supplier->category }}</td>
+                            <td class="px-3 py-3 text-slate-800 font-medium truncate" title="{{ $supplier->payment_terms }}">{{ $supplier->payment_terms }}</td>
+                            <td class="px-3 py-3 font-bold text-slate-900 truncate">
                                 <span class="inline-flex items-center gap-1">
-                                    <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.690h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.690l1.07-3.292z"/></svg>
+                                    <svg class="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.690h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.690l1.07-3.292z"/></svg>
                                     {{ $supplier->rating ?? $supplier->performance ?? '0.0' }}
                                 </span>
                             </td>
-                            <td class="px-6 lg:px-8 py-4 text-slate-600">{{ $supplier->delivery_schedule }}</td>
-                            <td class="px-6 lg:px-8 py-4">
-                                <span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide {{ strtolower($supplier->status) === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-slate-100 text-slate-700' }}">
+                            <td class="px-3 py-3 text-slate-600 truncate" title="{{ $supplier->delivery_schedule }}">{{ $supplier->delivery_schedule }}</td>
+                            <td class="px-3 py-3 whitespace-nowrap text-center truncate">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide inline-block {{ strtolower($supplier->status) === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-slate-100 text-slate-700' }}">
                                     {{ $supplier->status }}
                                 </span>
                             </td>
@@ -148,7 +164,7 @@
         @if ($supplier_list->hasPages())
             <div class="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-slate-200/60 gap-3 text-xs bg-white px-6 lg:px-8 py-3.5">
                 <div class="text-slate-500 font-medium">
-                    Showing <span class="font-bold text-slate-800">{{ $supplier_list->firstItem() }}</span> to <span class="font-bold text-slate-800">{{ $supplier_list->lastItem() }}</span> of <span class="font-bold text-slate-800">{{ $supplier_list->total() }}</span> results[cite: 10]
+                    Showing <span class="font-bold text-slate-800">{{ $supplier_list->firstItem() }}</span> to <span class="font-bold text-slate-800">{{ $supplier_list->lastItem() }}</span> of <span class="font-bold text-slate-800">{{ $supplier_list->total() }}</span> results
                 </div>
                 <div class="flex items-center gap-1">
                     {{-- Previous Page Link --}}
@@ -195,6 +211,54 @@
 </main>
 
 <script>
+    let contactsVisible = true;
+
+    function toggleContactDetails() {
+        contactsVisible = !contactsVisible;
+        const contactElements = document.querySelectorAll('.contact-col');
+        const btnText = document.getElementById('toggleBtnText');
+        const btn = document.getElementById('toggleContactBtn');
+        const table = document.getElementById('supplierTable');
+        const colgroup = table.querySelector('colgroup');
+
+        contactElements.forEach(el => {
+            if (contactsVisible) {
+                el.style.display = '';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+
+        // Reallocate table width distribution instantly without causing page overflow
+        if (contactsVisible) {
+            colgroup.innerHTML = `
+                <col style="width: 20%;">
+                <col class="contact-col" style="width: 22%;">
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+                <col style="width: 9%;">
+                <col style="width: 14%;">
+                <col style="width: 9%;">
+            `;
+            btnText.textContent = 'Hide Contacts';
+            btn.classList.remove('bg-slate-100', 'text-slate-700', 'border-slate-300');
+            btn.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+        } else {
+            colgroup.innerHTML = `
+                <col style="width: 26%;">
+                <col class="contact-col" style="width: 0%;">
+                <col style="width: 17%;">
+                <col style="width: 17%;">
+                <col style="width: 11%;">
+                <col style="width: 18%;">
+                <col style="width: 11%;">
+            `;
+            btnText.textContent = 'Show Contacts';
+            btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+            btn.classList.add('bg-slate-100', 'text-slate-700', 'border-slate-300');
+        }
+    }
+
     function filterAndSortTable() {
         const term = document.getElementById('supplierSearch').value.toLowerCase();
         const selectedCategory = document.getElementById('categoryFilter').value.toLowerCase();
@@ -243,4 +307,3 @@
     document.getElementById('sortFilter').addEventListener('change', filterAndSortTable);
 </script>
 @endsection
-```[cite: 10]

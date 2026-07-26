@@ -3,11 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\ProcurementController;
-use App\Http\Controllers\InventoryController;
+
+
+
+
 
 /*
 |--------------------------------------------------------------------------
-| Landing Page shhes
+| Landing Page
 |--------------------------------------------------------------------------
 */
 Route::view('/', 'welcome')
@@ -49,18 +52,17 @@ Route::prefix('procurement')->group(function () {
 
     Route::get('/goods-receipt', [ProcurementController::class, 'goodsReceipt'])
         ->name('procurement.goods-receipt');
-    Route::get('/procurement/reorder', [ProcurementController::class, 'reorder'])->name('procurement.reorder');
-});
 
+    Route::get('/reorder', [ProcurementController::class, 'reorder']) // <-- Fixed path
+        ->name('procurement.reorder');
+});
 /*
 |--------------------------------------------------------------------------
 | Logistics
 |--------------------------------------------------------------------------
 */
-
-Route::get('/logistics', [LogisticsController::class, 'index'])->name('logistics.dashboard');
-Route::post('/logistics/shipments', [LogisticsController::class, 'store'])->name('logistics.shipments.store');
-Route::patch('/logistics/shipments/{orderID}/update-status', [LogisticsController::class, 'updateStatus'])->name('logistics.update-status');
+Route::get('/logistics', [LogisticsController::class, 'index'])
+    ->name('logistics.dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -68,10 +70,17 @@ Route::patch('/logistics/shipments/{orderID}/update-status', [LogisticsControlle
 |--------------------------------------------------------------------------
 */
 
-Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
+use App\Http\Controllers\InventoryController;
 
-Route::post('/inventory', [InventoryController::class, 'store'])
-    ->name('inventory.store');
-Route::post('/inventory/api', [InventoryController::class, 'api'])
-    ->name('inventory.api');
+Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+Route::view('/inventory', 'inventory.index')
+    ->name('inventory');
 
+
+/*
+|--------------------------------------------------------------------------
+| Reports
+|--------------------------------------------------------------------------
+*/
+Route::view('/reports', 'reports.index')
+    ->name('reports');
