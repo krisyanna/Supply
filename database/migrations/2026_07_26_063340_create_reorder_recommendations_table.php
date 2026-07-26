@@ -6,27 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    Schema::create('reorder_recommendations', function (Blueprint $table) {
-        $table->id();
-        $table->unsignedBigInteger('product_id')->nullable();
-        $table->unsignedBigInteger('supplier_id')->nullable();
-        $table->integer('suggested_quantity');
-        $table->string('status')->default('Pending');
-        $table->timestamps();
+    {
+        Schema::create('reorder_recommendations', function (Blueprint $table) {
+            $table->id();
+            
+            // Explicitly define column and reference id on products table
+            $table->unsignedBigInteger('product_id');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            
+            $table->integer('recommended_qty');
+            $table->string('urgency_level')->default('Medium');
+            $table->string('status')->default('Pending Review');
+            $table->timestamps();
+        });
+    }
 
-        // Foreign keys linking to products and supplier management mock data
-        $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
-        $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
-    });
-}
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('reorder_recommendations');

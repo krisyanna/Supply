@@ -77,20 +77,23 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @foreach($receipt_list as $item)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="px-7 py-4 font-bold brand-purple-text">{{ $item['gr_code'] }}</td>
-                            <td class="px-7 py-4 text-slate-700 font-semibold">{{ $item['po_code'] }}</td>
-                            <td class="px-7 py-4 text-slate-600 font-medium">{{ $item['supplier'] }}</td>
-                            <td class="px-7 py-4 text-slate-600 font-medium">{{ $item['received_date'] }}</td>
-                            <td class="px-7 py-4 text-slate-700 font-semibold">{{ $item['invoice_match'] }}</td>
-                            <td class="px-7 py-4">
-                                <span class="px-3.5 py-1.5 rounded-md text-[11px] font-bold tracking-wide {{ $item['status_color'] }}">
-                                    {{ $item['status'] }}
-                                </span>
-                            </td>
-                        </tr>
-                        @endforeach
+    @foreach($receipt_list as $item)
+    <tr class="hover:bg-slate-50/80 transition-colors">
+        <td class="px-7 py-4 font-bold brand-purple-text">{{ $item['gr_code'] }}</td>
+        <td class="px-7 py-4 text-slate-700 font-semibold">{{ $item['po_code'] }}</td>
+        <td class="px-7 py-4 text-slate-600 font-medium">{{ $item['supplier'] }}</td>
+        <td class="px-7 py-4 text-slate-600 font-medium">{{ $item['received_date'] }}</td>
+        <td class="px-7 py-4 text-slate-700 font-semibold">{{ $item['invoice_match'] }}</td>
+        
+        <!-- Fixed Status Column (Removed nested <td>) -->
+        <td class="px-7 py-4">
+            <span class="{{ $item['status_color'] }} border inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide whitespace-nowrap leading-none">
+                {{ $item['status'] }}
+            </span>
+        </td>
+    </tr>
+    @endforeach
+</tbody>            
                     </tbody>
                 </table>
             </div>

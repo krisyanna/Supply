@@ -23,6 +23,21 @@ return new class extends Migration
        
         $table->timestamps();
     });
+   Schema::create('products', function (Blueprint $table) {
+    $table->id();
+    $table->string('product_name');
+    $table->unsignedBigInteger('supplier_id');
+    $table->string('category')->nullable();
+    $table->decimal('unit_cost', 10, 2);
+    $table->integer('current_stock');
+    $table->integer('reorder_point');
+    $table->integer('reorder_quantity');
+    $table->string('unit_type')->default('pcs');
+    $table->string('priority_level')->default('Medium');
+    $table->timestamps();
+
+    $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+});
 }
 
     /**

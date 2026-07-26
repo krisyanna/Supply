@@ -5,7 +5,7 @@
     $isForecasting = request()->routeIs('forecasting.*');
     $isProcurement = request()->routeIs('procurement.*');
     $isLogistics = request()->routeIs('logistics.*');
-    $isInventory = request()->routeIs('inventory');
+    $isInventory = request()->routeIs('inventory.*');
     $activeLogisticsTab = request()->query('tab');
 
     // Shared class strings so every nav item / sub-item stays visually consistent.
@@ -169,13 +169,39 @@
             </div>
         </div>
 
-        {{-- INVENTORY & WAREHOUSE — left as a plain link for now, per your note --}}
-       <a href="{{ url('/inventory') }}" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition text-slate-300 hover:text-white hover:bg-slate-800 transition-colors group">
-    <svg class="w-4 h-4 transition text-slate-400 group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-    </svg>
-    <span>Inventory & Warehouse</span>
-</a>
+{{-- INVENTORY & WAREHOUSE --}}
+<div class="space-y-1">
+    <button type="button" onclick="toggleSubmenu('inventory-submenu', 'inventory-chevron')"
+            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition {{ $isInventory ? $parentActive : $parentInactive }}">
+        <div class="flex items-center gap-3">
+            <svg class="w-4 h-4 transition {{ $isInventory ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0l3-4m0 0l3 4"></path>
+            </svg>
+            <span>Inventory & Warehouse</span>
+        </div>
+        <svg id="inventory-chevron" class="w-3.5 h-3.5 transition-transform duration-300 {{ $isInventory ? 'text-white rotate-180' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </button>
+
+    <div id="inventory-submenu" class="submenu-transition {{ $isInventory ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0' }} pl-7 pr-2 space-y-1">
+        <a href="{{ route('inventory.index') }}"
+           class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('inventory.index') ? $leafActive : $leafInactive }}">
+            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>1. Stock Ledger</span>
+        </a>
+        <a href="{{ route('inventory.warehouse-locations') }}"
+           class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('inventory.warehouse-locations') ? $leafActive : $leafInactive }}">
+            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <circle cx="12" cy="11" r="2.5"></circle>
+            </svg>
+            <span>2. Warehouse Locations</span>
+        </a>
+    </div>
+</div>
     </nav>
 
     <div class="p-4 border-t border-slate-800 bg-slate-950/40">
