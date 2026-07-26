@@ -6,12 +6,13 @@
     $isProcurement = request()->routeIs('procurement.*');
     $isLogistics = request()->routeIs('logistics.*');
     $isInventory = request()->routeIs('inventory');
+    $activeLogisticsTab = request()->query('tab');
 
     // Shared class strings so every nav item / sub-item stays visually consistent.
     $parentActive = 'bg-slate-800 text-white border border-slate-700/60 shadow-sm';
-    $parentInactive = 'text-slate-300 hover:text-white hover:bg-slate-800 group';
-    $leafActive = 'text-white bg-indigo-600/30 border border-indigo-500/30';
-    $leafInactive = 'text-slate-400 hover:text-white hover:bg-slate-800';
+    $parentInactive = 'text-slate-300 hover:text-white hover:bg-slate-800 transition-colors group';
+    $leafActive = 'text-white bg-slate-800 border border-slate-700/60 shadow-sm';
+    $leafInactive = 'text-slate-400 hover:text-white hover:bg-slate-800 transition-colors';
 @endphp
 
 <aside class="w-72 bg-sidebarBg text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800 relative z-20">
@@ -141,25 +142,25 @@
                      single page with JS tabs (switchTab), not separate routes.
                      If you later add ?tab= deep-linking, swap these hrefs for
                      route('logistics.dashboard', ['tab' => 'schedules']) etc. --}}
-                <a href="{{ route('logistics.dashboard') }}" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ $leafInactive }}">
+                <a href="{{ route('logistics.dashboard', ['tab' => 'schedules']) }}" data-logistics-tab="schedules" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition group {{ $isLogistics && $activeLogisticsTab === 'schedules' ? $leafActive : $leafInactive }}">
                     <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <span>Shipment Schedules</span>
                 </a>
-                <a href="{{ route('logistics.dashboard') }}" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ $leafInactive }}">
+                <a href="{{ route('logistics.dashboard', ['tab' => 'tracking']) }}" data-logistics-tab="tracking" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition group {{ $isLogistics && $activeLogisticsTab === 'tracking' ? $leafActive : $leafInactive }}">
                     <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                     </svg>
                     <span>Delivery Tracking</span>
                 </a>
-                <a href="{{ route('logistics.dashboard') }}" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ $leafInactive }}">
+                <a href="{{ route('logistics.dashboard', ['tab' => 'routes']) }}" data-logistics-tab="routes" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition group {{ $isLogistics && $activeLogisticsTab === 'routes' ? $leafActive : $leafInactive }}">
                     <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
                     </svg>
                     <span>Shipping Routes</span>
                 </a>
-                <a href="{{ route('logistics.dashboard') }}" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ $leafInactive }}">
+                <a href="{{ route('logistics.dashboard', ['tab' => 'status']) }}" data-logistics-tab="status" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition group {{ $isLogistics && $activeLogisticsTab === 'status' ? $leafActive : $leafInactive }}">
                     <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                     </svg>

@@ -65,8 +65,10 @@ Route::prefix('procurement')->group(function () {
 | Logistics
 |--------------------------------------------------------------------------
 */
-Route::get('/logistics', [LogisticsController::class, 'index'])
-    ->name('logistics.dashboard');
+
+Route::get('/logistics', [LogisticsController::class, 'index'])->name('logistics.dashboard');
+Route::post('/logistics/shipments', [LogisticsController::class, 'store'])->name('logistics.shipments.store');
+Route::patch('/logistics/shipments/{orderID}/update-status', [LogisticsController::class, 'updateStatus'])->name('logistics.update-status');
 
 /*
 |--------------------------------------------------------------------------
