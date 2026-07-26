@@ -6,7 +6,7 @@ use App\Http\Controllers\ProcurementController;
 
 /*
 |--------------------------------------------------------------------------
-| Landing Page
+| Landing Page shhes
 |--------------------------------------------------------------------------
 */
 Route::view('/', 'welcome')
