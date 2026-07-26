@@ -179,7 +179,7 @@
     </nav>
 
     <div class="p-4 border-t border-slate-800 bg-slate-950/40">
-        <a href="{{ route('home') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/20 font-bold text-xs bg-rose-950/20 border border-rose-500/20 transition">
+        <a href="{{ route('welcome') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/20 font-bold text-xs bg-rose-950/20 border border-rose-500/20 transition">
             {{-- TODO: point this at a real logout route once you add one
                  (e.g. Route::post('/logout', ...)->name('logout')) --}}
             <svg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
