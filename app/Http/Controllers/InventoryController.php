@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\StockItem;
+use App\Models\WarehouseLocation;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -29,7 +30,46 @@ class InventoryController extends Controller
             'inventory_value'  => $items->sum(fn ($item) => $item->quantity * $item->cost),
         ];
 
-        return view('inventory', compact('stats', 'items'));
+        return view('inventory.index', compact('stats', 'items'));
+    }
+
+    /**
+     * Display the Warehouse Locations page.
+     */
+    public function warehouseLocations()
+    {
+        $warehouses = WarehouseLocation::orderByDesc('created_at')->get();
+
+        $stats = [
+            'total_warehouses' => $warehouses->count(),
+            'active'           => $warehouses->where('status', 'active')->count(),
+            'inactive'         => $warehouses->where('status', 'inactive')->count(),
+            'total_capacity'   => $warehouses->sum('capacity'),
+        ];
+
+        return view('inventory.warehouse-locations', compact('warehouses', 'stats'));
+    }
+
+    /**
+     * Store a newly created warehouse location.
+     */
+    public function storeWarehouseLocation(Request $request)
+    {
+        $validated = $request->validate([
+            'name'         => 'required|string|max:255',
+            'address'      => 'required|string|max:255',
+            'city'         => 'required|string|max:255',
+            'capacity'     => 'required|integer|min:0',
+            'manager_name' => 'required|string|max:255',
+            'status'       => 'required|in:active,inactive',
+        ]);
+
+        $validated['code'] = WarehouseLocation::nextCode();
+
+        WarehouseLocation::create($validated);
+
+        return redirect()->route('inventory.warehouse-locations')
+            ->with('success', 'Warehouse added successfully.');
     }
 
     /**

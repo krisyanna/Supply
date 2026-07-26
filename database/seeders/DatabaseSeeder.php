@@ -7,6 +7,8 @@ use Database\Seeders\SupplierSeeder;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\ReorderRecommendationSeeder;
 use Database\Seeders\PurchaseOrderSeeder;
+use Database\Seeders\StockItemSeeder;
+use Database\Seeders\WarehouseLocationSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,6 +19,8 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             ReorderRecommendationSeeder::class,
             PurchaseOrderSeeder::class, // <-- This line must be here
+            StockItemSeeder::class,
+            WarehouseLocationSeeder::class,
         ]);
     }
 }
