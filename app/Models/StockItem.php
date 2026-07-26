@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class StockItem extends Model
 {
+   protected $table = 'supply_stock_items';
+
     protected $fillable = [
         'code',
         'name',
@@ -17,6 +19,7 @@ class StockItem extends Model
         'cost',
         'status',
     ];
+    
 
     protected $casts = [
         'quantity' => 'integer',

@@ -73,8 +73,6 @@ Route::get('/logistics', [LogisticsController::class, 'index'])
 use App\Http\Controllers\InventoryController;
 
 Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
-Route::view('/inventory', 'inventory.index')
-    ->name('inventory');
 
 
 /*
