@@ -49,7 +49,7 @@ class ProductFactory extends Factory
             'reorder_point' => $this->faker->numberBetween(10, 25),
             'reorder_quantity' => $this->faker->numberBetween(30, 80),
             'priority_level' => $this->faker->randomElement(['High', 'Medium', 'Low']),
-            'supplier_id' => Supplier::inRandomOrder()->first()?->id ?? null,
+           
         ];
     }
 }

@@ -65,16 +65,13 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="{{ asset('js/chart.umd.min.js') }}"></script>
 <script>
 const API_BASE_URL = '';
 
 const ENDPOINTS = {
-    currentUser:       `${API_BASE_URL}/api/users/me`,
-    dashboardSummary:  `${API_BASE_URL}/api/dashboard/summary`,
-    inventoryOverview: `${API_BASE_URL}/api/dashboard/inventory-overview`,
-    stockReminders:    `${API_BASE_URL}/api/dashboard/stock-reminders`,
-    recentActivities:  `${API_BASE_URL}/api/dashboard/recent-activities`
+    products: `${API_BASE_URL}/api/products`,
+    sales: `${API_BASE_URL}/api/sales`
 };
 
 const ICONS = {
@@ -97,6 +94,40 @@ const DONUT_COLORS = {
 };
 
 let donutChart = null;
+
+/* ---------------------------------------------------------
+   Field-mapping helpers.
+   Your API returns `current_stock` on products (not `stock`)
+   and `quantity_sold` on sales — centralize the lookup here
+   so there's exactly one place to update if the API changes.
+--------------------------------------------------------- */
+function getStock(product) {
+    return Number(product?.current_stock ?? product?.stock ?? product?.quantity ?? 0);
+}
+
+function getSoldQty(sale) {
+    return Number(sale?.quantity_sold ?? sale?.quantity ?? sale?.qty ?? 0);
+}
+
+function getProductName(product) {
+    return product?.product_name || product?.name || product?.product || 'Unknown product';
+}
+
+// Retries for up to ~2 seconds (20 x 100ms) waiting for Chart.js to finish
+// loading before giving up, in case the CDN script is slow to arrive.
+function waitForChart(callback, retries = 20) {
+    if (typeof Chart !== 'undefined') {
+        callback();
+    } else if (retries > 0) {
+        setTimeout(() => waitForChart(callback, retries - 1), 100);
+    } else {
+        console.error('Chart.js never loaded after waiting.');
+        const legend = document.getElementById('donutLegend');
+        if (legend) {
+            legend.innerHTML = `<div class="text-xs font-semibold text-rose-600">Chart library failed to load.</div>`;
+        }
+    }
+}
 
 async function fetchJSON(url, options = {}) {
     const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
@@ -134,11 +165,13 @@ function renderInventoryDonut(overview) {
     const segments = (overview && overview.segments) || [];
     const legend = document.getElementById('donutLegend');
     legend.innerHTML = '';
+
     if (segments.length === 0) {
         legend.innerHTML = `<div class="text-xs font-semibold text-rose-600">No inventory data available.</div>`;
         if (donutChart) { donutChart.destroy(); donutChart = null; }
         return;
     }
+
     segments.forEach(seg => {
         const color = DONUT_COLORS[seg.key] || '#94a3b8';
         const item = document.createElement('div');
@@ -146,6 +179,14 @@ function renderInventoryDonut(overview) {
         item.innerHTML = `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${color};"></span>${escapeHTML(seg.label)}`;
         legend.appendChild(item);
     });
+
+    // Guard against Chart.js not having loaded yet (slow network, blocked CDN, etc.)
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded — skipping donut chart render.');
+        legend.innerHTML += `<div class="text-xs font-semibold text-rose-600 mt-2">Chart library failed to load.</div>`;
+        return;
+    }
+
     const ctx = document.getElementById('inventoryDonut').getContext('2d');
     const chartData = {
         labels: segments.map(s => s.label),
@@ -184,32 +225,130 @@ function renderRecentActivities(data) {
     </tr>`).join('');
 }
 
-async function initDashboard() {
-    document.getElementById('pageSubtitle').textContent = 'Overview of your supply chain, live from the database.';
-
-    fetchJSON(ENDPOINTS.currentUser).then(renderUser).catch(() => { document.getElementById('userName').textContent = 'there!'; });
-
-    fetchJSON(ENDPOINTS.dashboardSummary).then(renderStatCards).catch(() => {
-        document.getElementById('statsRow').innerHTML = `<div class="col-span-full text-xs font-semibold text-rose-600">Could not load dashboard stats.</div>`;
-    });
-
-    fetchJSON(ENDPOINTS.inventoryOverview).then(renderInventoryDonut).catch(() => {
-        document.getElementById('donutLegend').innerHTML = `<div class="text-xs font-semibold text-rose-600">Could not load inventory overview.</div>`;
-    });
-
-    fetchJSON(ENDPOINTS.stockReminders).then(renderStockReminders).catch(() => {
-        document.getElementById('stockReminderBody').innerHTML = `<tr><td colspan="2" class="py-6 text-center text-rose-600">Could not load stock reminders.</td></tr>`;
-    });
-
-    fetchJSON(ENDPOINTS.recentActivities).then(renderRecentActivities).catch(() => {
-        document.getElementById('activityBody').innerHTML = `<tr><td colspan="2" class="py-6 text-center text-rose-600">Could not load recent activity.</td></tr>`;
-    });
-}
-
 function formatNumber(n) { return typeof n === 'number' ? n.toLocaleString() : n; }
+
 function escapeHTML(str) {
     if (str === null || str === undefined) return '';
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function initDashboard() {
+    document.getElementById('pageSubtitle').textContent =
+        'Overview of your supply chain, live from database.';
+
+    loadDashboardData();
+}
+
+async function loadDashboardData() {
+    let products = [];
+    let sales = [];
+
+    // --- Fetch (if this fails, nothing below can render, so it stays in its own try/catch) ---
+    try {
+        const productResponse = await fetchJSON(ENDPOINTS.products);
+        const salesResponse = await fetchJSON(ENDPOINTS.sales);
+
+        products = productResponse.data || [];
+        sales = salesResponse.data || [];
+
+        console.log("PRODUCT DATA:", products);
+        console.log("SALES DATA:", sales);
+    } catch (error) {
+        console.error("Dashboard data fetch failed:", error);
+        document.getElementById('pageSubtitle').textContent = 'Failed to load dashboard data.';
+        return;
+    }
+
+    /*
+    =====================
+    KPI CARDS
+    =====================
+    Each section below runs in its own try/catch so that a
+    failure in one widget (e.g. the chart lib not being ready)
+    doesn't stop the other widgets from rendering.
+    */
+    try {
+        const totalProducts = products.length;
+        const totalSales = sales.reduce((sum, item) => sum + getSoldQty(item), 0);
+        const lowStock = products.filter(product => getStock(product) <= 10).length;
+
+        renderStatCards({
+            stats: [
+                { label: "Total Products", value: totalProducts, note: "Products in inventory", icon: "box" },
+                { label: "Total Sales", value: totalSales, note: "Units sold", icon: "orders" },
+                { label: "Low Stock", value: lowStock, note: "Need attention", icon: "shipment" },
+                { label: "Suppliers", value: "--", note: "From supplier module", icon: "suppliers" }
+            ]
+        });
+    } catch (error) {
+        console.error("Stat cards failed to render:", error);
+    }
+
+    /*
+    =====================
+    INVENTORY DONUT
+    =====================
+    */
+    try {
+        let inStock = 0;
+        let low = 0;
+        let out = 0;
+
+        products.forEach(product => {
+            const stock = getStock(product);
+            if (stock === 0) out++;
+            else if (stock <= 10) low++;
+            else inStock++;
+        });
+
+        waitForChart(() => renderInventoryDonut({
+            segments: [
+                { key: "in_stock", label: "In Stock", value: inStock },
+                { key: "low_stock", label: "Low Stock", value: low },
+                { key: "out_of_stock", label: "Out of Stock", value: out }
+            ]
+        }));
+    } catch (error) {
+        console.error("Inventory donut failed to render:", error);
+    }
+
+    /*
+    =====================
+    STOCK REMINDER
+    =====================
+    */
+    try {
+        renderStockReminders({
+            items: products
+                .filter(p => getStock(p) <= 10)
+                .slice(0, 5)
+                .map(p => ({
+                    product: getProductName(p),
+                    status: getStock(p) === 0 ? "out_of_stock" : "low_stock"
+                }))
+        });
+    } catch (error) {
+        console.error("Stock reminders failed to render:", error);
+    }
+
+    /*
+    =====================
+    RECENT ACTIVITIES
+    =====================
+    */
+    try {
+        renderRecentActivities({
+            items: sales
+                .slice(-5)
+                .reverse()
+                .map(s => ({
+                    time: s.sale_date || s.created_at || s.sold_at || "recent",
+                    activity: `Sold ${getSoldQty(s)} item(s) — ${getProductName(s)}`
+                }))
+        });
+    } catch (error) {
+        console.error("Recent activities failed to render:", error);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard);

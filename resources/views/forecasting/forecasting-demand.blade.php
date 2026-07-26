@@ -20,7 +20,7 @@
 
         <div class="relative">
             <select id="categorySelect" class="appearance-none pl-3.5 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer min-w-[140px]">
-                <option value="">All Categories</option>
+                <option value="">All Unit Types</option>
             </select>
             <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -41,27 +41,32 @@
 
     <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
         <div class="flex items-center justify-between">
-            <h3 class="font-bold text-slate-900 text-sm">Historical Sales vs Forecast</h3>
+            <h3 class="font-bold text-slate-900 text-sm">Historical Sales &amp; Future Forecast</h3>
             <div class="flex items-center gap-4 text-[11px] font-bold text-slate-500">
-                <span class="flex items-center gap-1.5"><span class="w-3 h-[3px] rounded-full bg-emerald-500 inline-block"></span> Actual Sales</span>
-                <span class="flex items-center gap-1.5"><span class="w-3 h-[3px] rounded-full bg-rose-400 inline-block"></span> Forecast</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-[3px] rounded-full bg-emerald-500 inline-block"></span> Historical Sales</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-[3px] rounded-full bg-rose-400 inline-block"></span> Future Forecast</span>
             </div>
         </div>
         <div id="chartLoadingMsg" class="text-xs font-semibold text-slate-400 italic py-16 text-center">Loading chart…</div>
-        <canvas id="salesForecastChart" height="90" class="hidden"></canvas>
+        <div class="h-72">
+            <canvas id="salesForecastChart" class="hidden"></canvas>
+        </div>
     </div>
 
+    {{-- Product Demand Forecast table — header cells now match the body's
+         alignment exactly: Product stays left, the 3 numeric columns are
+         centered on both header and data, Status stays left. --}}
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden p-5 space-y-4">
         <h3 class="font-bold text-slate-900 text-sm">Product Demand Forecast</h3>
         <div class="overflow-x-auto text-xs">
             <table class="w-full text-left border-collapse">
                 <thead class="bg-slate-100/80 text-slate-500 font-bold">
                     <tr>
-                        <th class="py-2.5 px-3 rounded-l-lg">Product</th>
-                        <th class="py-2.5 px-3">Current Stock</th>
-                        <th class="py-2.5 px-3">Last Month Sale</th>
-                        <th class="py-2.5 px-3">Forecast</th>
-                        <th class="py-2.5 px-3 rounded-r-lg">Status</th>
+                        <th class="py-2.5 px-3 rounded-l-lg text-left">Product</th>
+                        <th class="py-2.5 px-3 text-center">Current Stock</th>
+                        <th class="py-2.5 px-3 text-center">Historical Sales</th>
+                        <th class="py-2.5 px-3 text-center">Forecast Demand</th>
+                        <th class="py-2.5 px-3 rounded-r-lg text-left">Status</th>
                     </tr>
                 </thead>
                 <tbody id="productForecastBody" class="divide-y divide-slate-50 font-semibold text-slate-700">
@@ -69,6 +74,7 @@
                 </tbody>
             </table>
         </div>
+        <div id="productForecastPagination" class="flex items-center justify-center gap-1.5 pt-2"></div>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden p-5 space-y-4">
@@ -86,33 +92,32 @@
                 </tbody>
             </table>
         </div>
+        <div id="recommendationsPagination" class="flex items-center justify-center gap-1.5 pt-2"></div>
     </div>
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
 /* =============================================================================
    ONLY 2 DATA SOURCES — everything on this page (KPI cards, chart, product
    table, recommendations) is computed client-side from these two raw feeds.
-   No separate "forecasting" endpoints exist anymore.
 
-   ASSUMED SHAPES (matching the envelope pattern from your existing Inventory
-   bridge API: {status, source_module, target_module, data_count, payload}).
-   Adjust SALES_ENDPOINT / INVENTORY_ENDPOINT and the field names inside
-   normalizeSalesRecord() / normalizeInventoryItem() to match whatever you
-   actually build — those two functions are the ONLY place field names live,
-   so fixing a mismatch is a one-line change, not a rewrite.
+   CONFIRMED SCHEMA (from your actual MySQL tables, via DESCRIBE):
 
-   Sales payload item assumed shape:
-     { product_name, category, quantity_sold, sale_date }   (one row per sale)
+   sales:    id, product_id, quantity_sold, sale_date, created_at, updated_at
+   products: product_id, product_name, unit_type, unit_cost, current_stock,
+             reorder_point, reorder_quantity, priority_level, created_at, updated_at
 
-   Inventory payload item assumed shape:
-     { item_name, category, quantity }                       (current stock)
+   SalesApiController joins products in, so each sales row also carries
+   product_name + unit_type. Both endpoints wrap their array in a `data` key.
+
+   There is no `category` column on either table — the "Category" filter is
+   repurposed to filter by `unit_type`, the real column that exists.
    ============================================================================= */
 const API_BASE_URL = '';
 const SALES_ENDPOINT = `${API_BASE_URL}/api/sales`;
-const INVENTORY_ENDPOINT = `${API_BASE_URL}/api/inventory`;
+const INVENTORY_ENDPOINT = `${API_BASE_URL}/api/products`;
 
 const ICONS = {
     cube: '<svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>',
@@ -120,15 +125,15 @@ const ICONS = {
     growth: '<svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>'
 };
 
-const DEMAND_STATUS = {
-    high:     { label: 'High Demand',     dot: 'bg-emerald-500' },
-    moderate: { label: 'Moderate Demand', dot: 'bg-amber-400' },
-    low:      { label: 'Low Demand',      dot: 'bg-rose-500' }
-};
-
 let forecastChart = null;
-let rawSales = [];
-let rawInventory = [];
+let salesData = [];
+let productData = [];
+
+const PAGE_SIZE = 10;
+let productForecastRows = [];
+let productForecastPage = 1;
+let recommendationRows = [];
+let recommendationPage = 1;
 
 async function fetchJSON(url, options = {}) {
     const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
@@ -136,274 +141,364 @@ async function fetchJSON(url, options = {}) {
     return res.json();
 }
 
-/* Adjust these two functions if your actual API field names differ —
-   nothing else in this file needs to change. */
+/* Confirmed against your actual MySQL schema (products + sales tables). */
 function normalizeSalesRecord(row) {
     return {
-        product: row.product_name ?? row.item_name ?? 'Unknown',
-        category: row.category ?? '',
-        qty: Number(row.quantity_sold ?? row.qty ?? 0),
-        date: row.sale_date ?? row.created_at ?? null
+        product: row.product_name ?? 'Unknown',
+        unitType: row.unit_type ?? '',
+        qty: Number(row.quantity_sold ?? 0),
+        date: row.sale_date ?? null
     };
 }
 function normalizeInventoryItem(row) {
     return {
-        product: row.item_name ?? row.product_name ?? 'Unknown',
-        category: row.category ?? '',
-        currentStock: Number(row.quantity ?? row.stock ?? 0)
+        product: row.product_name ?? 'Unknown',
+        unitType: row.unit_type ?? '',
+        currentStock: Number(row.current_stock ?? 0),
+        reorderPoint: Number(row.reorder_point ?? 0),
+        reorderQuantity: Number(row.reorder_quantity ?? 0),
+        priorityLevel: row.priority_level ?? null // 'High' | 'Medium' | 'Low', not currently used below
+    };
+}
+
+function calculateForecastData(sales, products, range) {
+    const today = new Date();
+    let days;
+    switch (range) {
+        case '30d': days = 30; break;
+        case '90d': days = 90; break;
+        case '6m':  days = 180; break;
+        case '12m': days = 365; break;
+        default:    days = 30;
+    }
+
+    // Current period
+    const currentStart = new Date();
+    currentStart.setDate(today.getDate() - days);
+    const currentSales = sales.filter(s => new Date(s.date) >= currentStart);
+
+    // Previous period (for growth comparison)
+    const previousStart = new Date();
+    previousStart.setDate(previousStart.getDate() - (days * 2));
+    const previousSales = sales.filter(s => {
+        const date = new Date(s.date);
+        return date >= previousStart && date < currentStart;
+    });
+
+    const currentTotal = currentSales.reduce((sum, s) => sum + s.qty, 0);
+    const previousTotal = previousSales.reduce((sum, s) => sum + s.qty, 0);
+
+    // Forecast using simple monthly average (SMA)
+    const monthlySales = {};
+    currentSales.forEach(s => {
+        const d = new Date(s.date);
+        const month = `${d.getFullYear()}-${d.getMonth() + 1}`;
+        monthlySales[month] = (monthlySales[month] || 0) + s.qty;
+    });
+    const monthlyValues = Object.values(monthlySales);
+    let forecast = currentTotal;
+    if (monthlyValues.length > 0) {
+        const average = monthlyValues.reduce((a, b) => a + b, 0) / monthlyValues.length;
+        forecast = Math.round(average);
+    }
+
+    // Demand growth — only computed when there's enough history to compare fairly
+    let growth = null;
+    let hasEnoughHistory = true;
+    if (range === '6m' || range === '12m') {
+        const requiredMonths = range === '6m' ? 6 : 12;
+        const previousMonths = new Set(previousSales.map(s => {
+            const d = new Date(s.date);
+            return `${d.getFullYear()}-${d.getMonth()}`;
+        }));
+        if (previousMonths.size < requiredMonths) hasEnoughHistory = false;
+    }
+    if (hasEnoughHistory && previousTotal > 0) {
+        growth = Math.round(((currentTotal - previousTotal) / previousTotal) * 100);
+    }
+
+    // Per-product forecast + reorder need
+    const productForecast = products.map(product => {
+        const productSales = currentSales.filter(s => s.product === product.product);
+        const sold = productSales.reduce((sum, s) => sum + s.qty, 0);
+        const productForecastQty = Math.round(sold);
+        const reorder = Math.max(0, productForecastQty - product.currentStock);
+        return {
+            product: product.product,
+            historical: sold,
+            forecast: productForecastQty,
+            stock: product.currentStock,
+            reorder
+        };
+    });
+
+    const totalReorder = productForecast.reduce((sum, p) => sum + p.reorder, 0);
+    const totalStock = products.reduce((sum, p) => sum + p.currentStock, 0);
+    const dailySales = currentTotal / days;
+    const coverage = dailySales > 0 ? Math.round(totalStock / dailySales) : 0;
+
+    return { range, days, currentTotal, previousTotal, forecast, growth, totalReorder, coverage, productForecast };
+}
+
+function buildChartData(sales) {
+    const monthly = {};
+    sales.forEach(s => {
+        const date = new Date(s.date);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        monthly[key] = (monthly[key] || 0) + s.qty;
+    });
+
+    const labels = Object.keys(monthly).sort();
+    const actual = labels.map(month => monthly[month]);
+
+    // Moving average forecast over the last 3 known months
+    let forecast = 0;
+    if (actual.length > 0) {
+        const lastValues = actual.slice(-3);
+        forecast = Math.round(lastValues.reduce((a, b) => a + b, 0) / lastValues.length);
+    }
+
+    return {
+        labels: [...labels, 'Forecast'],
+        actual: [...actual, null],
+        predicted: [...Array(actual.length - 1).fill(null), actual[actual.length - 1], forecast],
+        forecast
     };
 }
 
 function currentFilters() {
     return {
         range: document.getElementById('dateRangeSelect').value,
-        category: document.getElementById('categorySelect').value
+        unitType: document.getElementById('categorySelect').value
     };
 }
 
-function monthsBack(n) {
-    const months = [];
-    const now = new Date();
-    for (let i = n - 1; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, label: d.toLocaleString('default', { month: 'short' }) });
+function applyForecastFilters(sales, products, filters) {
+    let filteredSales = sales;
+    let filteredProducts = products;
+    if (filters.unitType) {
+        filteredSales = sales.filter(s => s.unitType === filters.unitType);
+        filteredProducts = products.filter(p => p.unitType === filters.unitType);
     }
-    return months;
+    return { filteredSales, filteredProducts };
 }
 
 function populateCategoryOptions(sales) {
     const select = document.getElementById('categorySelect');
     const existing = new Set(Array.from(select.options).map(o => o.value));
-    const categories = [...new Set(sales.map(s => s.category).filter(Boolean))];
-    categories.forEach(cat => {
-        if (!existing.has(cat)) {
+    const unitTypes = [...new Set(sales.map(s => s.unitType).filter(Boolean))];
+    unitTypes.forEach(type => {
+        if (!existing.has(type)) {
             const opt = document.createElement('option');
-            opt.value = cat;
-            opt.textContent = cat;
+            opt.value = type;
+            opt.textContent = type;
             select.appendChild(opt);
         }
     });
 }
 
-function applyFilters(sales, inventory, filters) {
-    let filteredSales = sales;
-    let filteredInventory = inventory;
-    if (filters.category) {
-        filteredSales = filteredSales.filter(s => s.category === filters.category);
-        filteredInventory = filteredInventory.filter(i => i.category === filters.category);
-    }
-    return { filteredSales, filteredInventory };
-}
-
-/* ===================== Derived computations ===================== */
-
-// 6-month Actual vs simple-projection Forecast series, for both the chart
-// and the "Forecast Demand" / "Demand Growth" KPI cards.
-function buildMonthlySeries(sales) {
-    const months = monthsBack(6);
-    const totals = months.map(m => {
-        const sum = sales
-            .filter(s => {
-                if (!s.date) return false;
-                const d = new Date(s.date);
-                return `${d.getFullYear()}-${d.getMonth()}` === m.key;
-            })
-            .reduce((acc, s) => acc + s.qty, 0);
-        return sum;
-    });
-
-    // Simple linear trend over the last 3 available months → 1-month forecast.
-    const known = totals.filter(v => v > 0);
-    let nextMonthForecast = null;
-    if (known.length >= 2) {
-        const last = known[known.length - 1];
-        const prev = known[known.length - 2];
-        nextMonthForecast = Math.max(0, Math.round(last + (last - prev)));
-    } else if (known.length === 1) {
-        nextMonthForecast = known[0];
-    }
-
-    const forecastSeries = totals.map((v, i) => (i === totals.length - 1 ? v : v)); // mirrors actual up to now
-    if (nextMonthForecast !== null) {
-        months.push({ key: 'forecast', label: monthsBack(1)[0] ? nextMonthLabel() : 'Next' });
-        totals.push(null);
-        forecastSeries.push(nextMonthForecast);
-        // connect the dashed forecast line to the last actual point
-        forecastSeries[forecastSeries.length - 2] = totals[totals.length - 2];
-    }
-
-    return {
-        labels: months.map(m => m.label),
-        actual: totals,
-        forecast: forecastSeries,
-        currentMonthTotal: known[known.length - 1] ?? 0,
-        previousMonthTotal: known[known.length - 2] ?? 0,
-        nextMonthForecast: nextMonthForecast ?? 0
-    };
-}
-
-function nextMonthLabel() {
-    const d = new Date();
-    d.setMonth(d.getMonth() + 1);
-    return d.toLocaleString('default', { month: 'short' });
-}
-
-function classifyDemand(forecastQty, currentStock) {
-    if (currentStock <= 0) return 'high';
-    const ratio = forecastQty / currentStock;
-    if (ratio >= 1) return 'high';
-    if (ratio >= 0.5) return 'moderate';
-    return 'low';
-}
-
-// Per-product table: merges last-30-days sales with current inventory stock.
-function buildProductTable(sales, inventory) {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 30);
-
-    const lastMonthByProduct = {};
-    sales.forEach(s => {
-        if (!s.date || new Date(s.date) < cutoff) return;
-        lastMonthByProduct[s.product] = (lastMonthByProduct[s.product] || 0) + s.qty;
-    });
-
-    return inventory.map(item => {
-        const lastMonthSale = lastMonthByProduct[item.product] || 0;
-        // Naive forecast: assume next month repeats last month's pace.
-        const forecast = lastMonthSale;
-        return {
-            product: item.product,
-            currentStock: item.currentStock,
-            lastMonthSale,
-            forecast,
-            status: classifyDemand(forecast, item.currentStock)
-        };
-    });
-}
-
-function buildRecommendations(productRows) {
-    return productRows
-        .filter(r => r.status !== 'moderate' || r.currentStock < r.forecast)
-        .map(r => {
-            let recommendation;
-            if (r.status === 'high') {
-                const deficit = Math.max(r.forecast - r.currentStock, Math.round(r.forecast * 0.2));
-                recommendation = `Increase production by ${deficit} units`;
-            } else if (r.status === 'low') {
-                recommendation = 'Maintain current inventory';
-            } else {
-                recommendation = 'Monitor closely — approaching reorder point';
-            }
-            return { product: r.product, recommendation };
-        });
-}
-
-function buildKpiStats(series, productRows) {
-    const growth = series.previousMonthTotal > 0
-        ? Math.round(((series.currentMonthTotal - series.previousMonthTotal) / series.previousMonthTotal) * 100)
-        : 0;
-
-    const totalStock = productRows.reduce((a, r) => a + r.currentStock, 0);
-    const avgDaily = series.currentMonthTotal > 0 ? series.currentMonthTotal / 30 : 0;
-    const coverageDays = avgDaily > 0 ? Math.round(totalStock / avgDaily) : 0;
-
-    const reorderLow = Math.round(series.nextMonthForecast * 0.95);
-    const reorderHigh = Math.round(series.nextMonthForecast * 1.05);
-
-    return [
-        { id: 1, label: 'Forecast Demand', value: formatNumber(series.nextMonthForecast), note: 'Predicted Units', icon: 'cube' },
-        { id: 2, label: 'Product Reorder', value: `${formatNumber(reorderLow)} - ${formatNumber(reorderHigh)}`, note: 'Forecast-Based Reorders' },
-        { id: 3, label: 'Inventory Coverage', value: `${coverageDays} Days`, note: 'Current Inventory Capacity', icon: 'calendar' },
-        { id: 4, label: 'Demand Growth', value: `${growth >= 0 ? '+' : ''}${growth}%`, note: 'Compared to Last Month', icon: 'growth', positive: growth >= 0 }
-    ];
-}
-
 /* ===================== Render functions ===================== */
 
-function renderStatCards(stats) {
+function renderStatCards(data) {
     const row = document.getElementById('statsRow');
+
+    const stats = [
+        {
+            label: 'Forecast Demand',
+            value: `${data.forecast.toLocaleString()} Units`,
+            note: `Next ${data.days} Days`,
+            icon: 'cube'
+        },
+        {
+            label: 'Product Reorder',
+            value: data.totalReorder.toLocaleString(),
+            note: 'Recommended Reorder',
+            icon: 'cube'
+        },
+        {
+            label: 'Inventory Coverage',
+            value: `${data.coverage} Days`,
+            note: 'Current Inventory Capacity',
+            icon: 'calendar'
+        },
+        {
+            label: 'Demand Growth',
+            value: data.growth === null ? 'N/A' : `${data.growth >= 0 ? '+' : ''}${data.growth}%`,
+            note: data.growth === null ? 'Insufficient historical data' : 'Compared to previous period',
+            icon: 'growth',
+            positive: data.growth !== null ? data.growth >= 0 : null
+        }
+    ];
+
     row.innerHTML = '';
     stats.forEach(stat => {
-        const iconSvg = stat.icon ? ICONS[stat.icon] : '';
-        const valueColor = stat.positive === true ? 'text-emerald-600' : (stat.positive === false ? 'text-rose-600' : 'text-slate-900');
+        const color = stat.positive === true ? 'text-emerald-600' : (stat.positive === false ? 'text-rose-600' : 'text-slate-900');
         const card = document.createElement('div');
         card.className = 'bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-start justify-between gap-3';
         card.innerHTML = `
             <div class="space-y-1">
                 <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">${escapeHTML(stat.label)}</span>
-                <div class="text-2xl font-extrabold ${valueColor} font-mono">${escapeHTML(stat.value)}</div>
-                <span class="text-[11px] font-semibold text-slate-500 block">${escapeHTML(stat.note || '')}</span>
+                <div class="text-2xl font-extrabold ${color} font-mono">${escapeHTML(stat.value)}</div>
+                <span class="text-[11px] font-semibold text-slate-500 block">${escapeHTML(stat.note)}</span>
             </div>
-            ${iconSvg ? `<div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center flex-shrink-0">${iconSvg}</div>` : ''}
+            <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center flex-shrink-0">${ICONS[stat.icon] || ''}</div>
         `;
         row.appendChild(card);
     });
 }
 
-function renderForecastChart(series) {
+function renderForecastChart(chartData) {
+    const canvas = document.getElementById('salesForecastChart');
+    const ctx = canvas.getContext('2d');
+
     document.getElementById('chartLoadingMsg').classList.add('hidden');
-    document.getElementById('salesForecastChart').classList.remove('hidden');
+    canvas.classList.remove('hidden');
 
-    const ctx = document.getElementById('salesForecastChart').getContext('2d');
-    const chartData = {
-        labels: series.labels,
-        datasets: [
-            { label: 'Actual Sales', data: series.actual, borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#0f172a', tension: 0.3, spanGaps: true },
-            { label: 'Forecast', data: series.forecast, borderColor: '#fb7185', backgroundColor: '#fb7185', borderWidth: 2.5, borderDash: [4, 4], pointRadius: 2, tension: 0.3, spanGaps: true }
-        ]
-    };
+    if (forecastChart) forecastChart.destroy();
 
-    if (forecastChart) { forecastChart.data = chartData; forecastChart.update(); }
-    else {
-        forecastChart = new Chart(ctx, {
-            type: 'line',
-            data: chartData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 }, color: '#94a3b8' } },
-                    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } }
-                }
-            }
-        });
-    }
+    forecastChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [
+                { label: 'Historical Sales', data: chartData.actual, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3, spanGaps: true },
+                { label: 'Forecast', data: chartData.predicted, borderColor: '#fb7185', backgroundColor: '#fb7185', borderDash: [6, 6], tension: 0.3, spanGaps: true }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
 }
 
-function renderProductForecast(rows) {
-    const body = document.getElementById('productForecastBody');
-    if (rows.length === 0) {
-        body.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400 italic font-normal">No product data available.</td></tr>`;
+/* Shared pagination control — renders numbered page buttons + prev/next
+   into `containerId`, and calls onPageChange(newPage) when clicked. */
+function renderPagination(containerId, totalItems, currentPage, onPageChange) {
+    const container = document.getElementById(containerId);
+    const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
         return;
     }
-    body.innerHTML = rows.map(r => {
-        const status = DEMAND_STATUS[r.status];
-        return `<tr class="hover:bg-slate-50/80 transition">
-            <td class="py-3 px-3 font-bold text-slate-900">${escapeHTML(r.product)}</td>
-            <td class="py-3 px-3 font-mono">${escapeHTML(formatNumber(r.currentStock))}</td>
-            <td class="py-3 px-3 font-mono">${escapeHTML(formatNumber(r.lastMonthSale))}</td>
-            <td class="py-3 px-3 font-mono">${escapeHTML(formatNumber(r.forecast))}</td>
-            <td class="py-3 px-3">
-                <span class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full ${status.dot} flex-shrink-0"></span>
-                    ${escapeHTML(status.label)}
+
+    const btnBase = 'w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold transition';
+    const btnActive = `${btnBase} bg-indigo-600 text-white`;
+    const btnInactive = `${btnBase} text-slate-500 hover:bg-slate-100`;
+    const btnDisabled = `${btnBase} text-slate-300 cursor-not-allowed`;
+
+    let html = '';
+    html += `<button type="button" class="${currentPage === 1 ? btnDisabled : btnInactive}" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">‹</button>`;
+
+    for (let p = 1; p <= totalPages; p++) {
+        html += `<button type="button" class="${p === currentPage ? btnActive : btnInactive}" data-page="${p}">${p}</button>`;
+    }
+
+    html += `<button type="button" class="${currentPage === totalPages ? btnDisabled : btnInactive}" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">›</button>`;
+
+    container.innerHTML = html;
+    container.querySelectorAll('button[data-page]:not(:disabled)').forEach(btn => {
+        btn.addEventListener('click', () => onPageChange(Number(btn.dataset.page)));
+    });
+}
+
+function renderProductForecast(products) {
+    productForecastRows = products || [];
+    if (productForecastPage > Math.ceil(productForecastRows.length / PAGE_SIZE)) {
+        productForecastPage = 1;
+    }
+    renderProductForecastPage();
+}
+
+function renderProductForecastPage() {
+    const body = document.getElementById('productForecastBody');
+
+    if (productForecastRows.length === 0) {
+        body.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400 italic font-normal">No product forecast data available.</td></tr>`;
+        document.getElementById('productForecastPagination').innerHTML = '';
+        return;
+    }
+
+    const start = (productForecastPage - 1) * PAGE_SIZE;
+    const pageItems = productForecastRows.slice(start, start + PAGE_SIZE);
+
+    body.innerHTML = pageItems.map(product => {
+        let statusText, statusColor;
+
+        if (product.stock <= 0) {
+            statusText = 'Out of Stock';
+            statusColor = 'bg-rose-600';
+        } else if (product.stock < product.forecast * 0.25) {
+            statusText = 'Critical Stock';
+            statusColor = 'bg-rose-500';
+        } else if (product.stock < product.forecast) {
+            statusText = 'Low Stock';
+            statusColor = 'bg-amber-400';
+        } else {
+            statusText = 'Sufficient Stock';
+            statusColor = 'bg-emerald-500';
+        }
+
+        return `
+        <tr class="hover:bg-slate-50/80 transition">
+            <td class="py-3 px-3 font-bold text-slate-900 text-left">${escapeHTML(product.product)}</td>
+            <td class="py-3 px-3 text-center font-mono">${product.stock.toLocaleString()}</td>
+            <td class="py-3 px-3 text-center font-mono">${product.historical.toLocaleString()}</td>
+            <td class="py-3 px-3 text-center font-mono">${product.forecast.toLocaleString()}</td>
+            <td class="py-3 px-3 text-left">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full ${statusColor} flex-shrink-0"></span>
+                    <span>${statusText}</span>
                 </span>
             </td>
-        </tr>`;
+        </tr>
+        `;
     }).join('');
+
+    renderPagination('productForecastPagination', productForecastRows.length, productForecastPage, (newPage) => {
+        productForecastPage = newPage;
+        renderProductForecastPage();
+    });
 }
 
-function renderRecommendations(items) {
+// This is the ONLY renderRecommendations now — it matches the actual shape
+// of productForecast items ({product, historical, forecast, stock, reorder}),
+// not the old {product, recommendation} shape that was silently overwriting
+// this one before and causing every row to render blank.
+function renderRecommendations(products) {
+    recommendationRows = (products || []).filter(p => p.reorder > 0);
+    if (recommendationPage > Math.ceil(recommendationRows.length / PAGE_SIZE)) {
+        recommendationPage = 1;
+    }
+    renderRecommendationsPage();
+}
+
+function renderRecommendationsPage() {
     const body = document.getElementById('recommendationsBody');
-    if (items.length === 0) {
-        body.innerHTML = `<tr><td colspan="2" class="py-6 text-center text-slate-400 italic font-normal">No recommendations right now.</td></tr>`;
+
+    if (recommendationRows.length === 0) {
+        body.innerHTML = `<tr><td colspan="2" class="py-6 text-center text-slate-400 italic font-normal">No reorder recommendations right now.</td></tr>`;
+        document.getElementById('recommendationsPagination').innerHTML = '';
         return;
     }
-    body.innerHTML = items.map(item => `<tr class="hover:bg-slate-50/80 transition">
-        <td class="py-3 px-3 font-bold text-slate-900">${escapeHTML(item.product)}</td>
-        <td class="py-3 px-3 font-medium text-slate-600">${escapeHTML(item.recommendation)}</td>
-    </tr>`).join('');
+
+    const start = (recommendationPage - 1) * PAGE_SIZE;
+    const pageItems = recommendationRows.slice(start, start + PAGE_SIZE);
+
+    body.innerHTML = pageItems.map(product => `
+        <tr class="hover:bg-slate-50/80 transition">
+            <td class="py-3 px-3 font-bold text-slate-900">${escapeHTML(product.product)}</td>
+            <td class="py-3 px-3 text-slate-600">Reorder <b>${product.reorder.toLocaleString()}</b> units</td>
+        </tr>
+    `).join('');
+
+    renderPagination('recommendationsPagination', recommendationRows.length, recommendationPage, (newPage) => {
+        recommendationPage = newPage;
+        renderRecommendationsPage();
+    });
 }
 
 /* ===================== Orchestration ===================== */
@@ -411,21 +506,19 @@ function renderRecommendations(items) {
 async function loadForecastData() {
     const filters = currentFilters();
 
-    try {
-        const { filteredSales, filteredInventory } = applyFilters(rawSales, rawInventory, filters);
+    const { filteredSales, filteredProducts } = applyForecastFilters(salesData, productData, filters);
 
-        const series = buildMonthlySeries(filteredSales);
-        const productRows = buildProductTable(filteredSales, filteredInventory);
-        const recommendations = buildRecommendations(productRows);
-        const stats = buildKpiStats(series, productRows);
+    const result = calculateForecastData(filteredSales, filteredProducts, filters.range);
 
-        renderStatCards(stats);
-        renderForecastChart(series);
-        renderProductForecast(productRows);
-        renderRecommendations(recommendations);
-    } catch (e) {
-        document.getElementById('statsRow').innerHTML = `<div class="col-span-full text-xs font-semibold text-rose-600">Could not compute forecast data.</div>`;
-    }
+    productForecastPage = 1;
+    recommendationPage = 1;
+
+    renderStatCards(result);
+    renderProductForecast(result.productForecast);
+    renderRecommendations(result.productForecast);
+
+    const chartData = buildChartData(filteredSales);
+    renderForecastChart(chartData);
 }
 
 async function initForecasting() {
@@ -435,27 +528,29 @@ async function initForecasting() {
             fetchJSON(INVENTORY_ENDPOINT)
         ]);
 
-        // Both endpoints assumed to return { payload: [...] } per your existing
-        // Inventory bridge API's envelope — adjust here if the key differs.
-        rawSales = (salesRes.payload || salesRes.items || salesRes.data || []).map(normalizeSalesRecord);
-        rawInventory = (inventoryRes.payload || inventoryRes.items || inventoryRes.data || []).map(normalizeInventoryItem);
+        salesData = (salesRes.data || []).map(normalizeSalesRecord);
+        productData = (inventoryRes.data || []).map(normalizeInventoryItem);
 
-        populateCategoryOptions(rawSales);
+        populateCategoryOptions(salesData);
         loadForecastData();
     } catch (e) {
-        document.getElementById('statsRow').innerHTML = `<div class="col-span-full text-xs font-semibold text-rose-600">Could not load Sales or Inventory data.</div>`;
+        console.error('initForecasting failed:', e);
+        document.getElementById('statsRow').innerHTML = `<div class="col-span-full text-xs font-semibold text-rose-600">Could not load Sales or Inventory data: ${escapeHTML(e.message)}</div>`;
         document.getElementById('chartLoadingMsg').textContent = 'Could not load chart data.';
         document.getElementById('productForecastBody').innerHTML = `<tr><td colspan="5" class="py-6 text-center text-rose-600 font-normal">Could not load product data.</td></tr>`;
         document.getElementById('recommendationsBody').innerHTML = `<tr><td colspan="2" class="py-6 text-center text-rose-600 font-normal">Could not load recommendations.</td></tr>`;
     }
 }
 
-function formatNumber(n) { return typeof n === 'number' ? n.toLocaleString() : n; }
 function escapeHTML(str) {
     if (str === null || str === undefined) return '';
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-document.addEventListener('DOMContentLoaded', initForecasting);
+document.addEventListener('DOMContentLoaded', () => {
+    initForecasting();
+    document.getElementById('dateRangeSelect').addEventListener('change', loadForecastData);
+    document.getElementById('categorySelect').addEventListener('change', loadForecastData);
+});
 </script>
 @endpush

@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Database\Seeders\SupplierSeeder;
-use Database\Seeders\ProductSeeder;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,17 +18,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Run your seeders
         $this->call([
+            SupplierSeeder::class,
+            ProductSeeder::class,
             SalesSeeder::class,
         ]);
     }
 }
-{
-    $this->call([
-        SupplierSeeder::class,
-        ProductSeeder::class,
-    ]);
-}
-
-

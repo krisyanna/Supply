@@ -20,10 +20,7 @@ return new class extends Migration
         $table->integer('reorder_point')->default(0);
         $table->integer('reorder_quantity');
         $table->enum('priority_level', ['High', 'Medium', 'Low']);
-        $table->unsignedBigInteger('supplier_id')->nullable();
-        
-        // Foreign key linking to your suppliers table
-        $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
+       
         $table->timestamps();
     });
 }

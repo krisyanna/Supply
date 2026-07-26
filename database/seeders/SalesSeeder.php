@@ -20,9 +20,13 @@ class SalesSeeder extends Seeder
 
                 DB::table('sales')->insert([
                     'product_id'     => $product->product_id,
-                    'product_name'   => $product->product_name,
-                    'category'       => $product->unit_type,
-                    'quantity_sold'  => rand(5, 60),
+               
+                   'quantity_sold' => match ($product->priority_level) {
+                    'High' => rand(30, 60),
+                    'Medium' => rand(15, 35),
+                    'Low' => rand(5, 15),
+                    default => rand(10, 25),
+                },
                     'sale_date'      => now()->subDays(rand(1,180)),
                     'created_at'     => now(),
                     'updated_at'     => now(),
