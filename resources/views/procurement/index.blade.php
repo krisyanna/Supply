@@ -77,14 +77,15 @@
                     <tbody class="divide-y divide-slate-100">
                         @foreach($reorder_list as $row)
                         <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="px-7 py-4 font-bold brand-purple-text">{{ $row['product'] }}</td>
-                            <td class="px-7 py-4 text-slate-700 font-semibold">{{ $row['recommended_qty'] }}</td>
-                            <td class="px-7 py-4 text-slate-600 font-medium">{{ $row['supplier'] }}</td>
-                            <td class="px-7 py-4">
-                                <span class="px-3.5 py-1.5 rounded-md text-[11px] font-bold tracking-wide {{ $row['priority_color'] }}">
-                                    {{ $row['priority'] }}
-                                </span>
-                            </td>
+                           <td class="px-7 py-4 font-bold brand-purple-text">{{ $row->product }}</td>
+<td class="px-7 py-4 text-slate-700 font-semibold">{{ $row->recommended_qty }}</td>
+<td class="px-7 py-4 text-slate-600 font-medium">{{ $row->supplier }}</td>
+<td class="px-7 py-4">
+    <!-- Change this to match your priority output -->
+    <span class="{{ $row->priority_color }} px-3 py-1 rounded-full text-xs font-semibold">
+        {{ $row->priority }}
+    </span>
+</td>
                         </tr>
                         @endforeach
                     </tbody>
