@@ -185,28 +185,31 @@ class ProcurementController extends Controller
     ->select('goods_receipts.*', 'purchase_orders.po_number', 'suppliers.name as supplier_name')
     ->orderBy('goods_receipts.received_date', 'desc')
     ->get();
+// 3. Format the data to match your Blade @foreach loop
+       // 3. Format the data to match your Blade @foreach loop
+$receipt_list = $receipts->map(function ($item) {
+    $status = $item->status ?? 'Pending';
+    
+    // Add exact matches for the seeded data
+    $statusColor = match ($status) {
+    'Completed'            => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    'Received'             => 'bg-blue-50 text-blue-700 border-blue-200',
+    'Pending Verification' => 'bg-amber-50 text-amber-700 border-amber-200',
+    'In Progress'          => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    'Action Needed'        => 'bg-rose-50 text-rose-700 border-rose-200',
+    default                => 'bg-slate-50 text-slate-600 border-slate-200',
+};
 
-        // 3. Format the data to match your Blade @foreach loop
-        $receipt_list = $receipts->map(function ($item) {
-            $status = $item->status ?? 'In Progress';
-            
-            $statusColor = match ($status) {
-                'Completed'     => 'bg-emerald-50 text-emerald-700',
-                'In Progress'   => 'bg-indigo-50 text-indigo-700',
-                'Action Needed' => 'bg-rose-50 text-rose-700',
-                default         => 'bg-slate-100 text-slate-600',
-            };
-
-            return [
-                'gr_code'       => $item->gr_code ?? 'N/A',
-                'po_code'       => $item->po_number ?? 'N/A',
-                'supplier'      => $item->supplier_name ?? 'Unknown Supplier',
-                'received_date' => isset($item->received_date) ? date('d M Y', strtotime($item->received_date)) : 'N/A',
-                'invoice_match' => $item->invoice_match_status ?? 'Pending',
-                'status'        => $status,
-                'status_color'  => $statusColor,
-            ];
-        });
+    return [
+        'gr_code'       => $item->grn_number ?? 'N/A',
+        'po_code'       => $item->po_number ?? 'N/A',
+        'supplier'      => $item->supplier_name ?? 'Unknown Supplier',
+        'received_date' => isset($item->received_date) ? date('d M Y', strtotime($item->received_date)) : 'N/A',
+        'invoice_match' => $item->invoice_match_status ?? 'Pending',
+        'status'        => $status,
+        'status_color'  => $statusColor,
+    ];
+});
 
         return view('procurement.goods-receipt', compact('kpi_summary', 'receipt_list'));
     }
