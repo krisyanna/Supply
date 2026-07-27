@@ -41,15 +41,17 @@ class ProductFactory extends Factory
 
         $item = $this->faker->randomElement($hardwareItems);
 
-        return [
-            'product_name' => $item['name'] . ' (' . strtoupper($this->faker->bothify('###')) . ')',
-            'unit_type' => 'pcs',
-            'unit_cost' => $item['cost'],
-            'current_stock' => $this->faker->numberBetween(5, 100),
-            'reorder_point' => $this->faker->numberBetween(10, 25),
-            'reorder_quantity' => $this->faker->numberBetween(30, 80),
-            'priority_level' => $this->faker->randomElement(['High', 'Medium', 'Low']),
-           
-        ];
+       return [
+    'supplier_id' => Supplier::inRandomOrder()->value('id'),
+
+    'product_name' => $item['name'] . ' (' . strtoupper($this->faker->bothify('###')) . ')',
+    'category' => $item['category'],
+    'unit_type' => 'pcs',
+    'unit_cost' => $item['cost'],
+    'current_stock' => $this->faker->numberBetween(5, 100),
+    'reorder_point' => $this->faker->numberBetween(10, 25),
+    'reorder_quantity' => $this->faker->numberBetween(30, 80),
+    'priority_level' => $this->faker->randomElement(['High', 'Medium', 'Low']),
+];
     }
-}
+}   

@@ -22,7 +22,7 @@
             <a href="{{ route('forecasting.demand') }}">Forecasting</a>
             <a href="{{ route('procurement.reorder') }}">Procurement</a>
             <a href="{{ route('logistics.dashboard') }}">Logistics</a>
-            <a href="{{ route('inventory') }}">Inventory & Warehouse</a>
+            <a href="{{ route('inventory.index') }}">Inventory & Warehouse</a>
           
         </nav>
     </header>

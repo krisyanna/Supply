@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- 1. Import the trai
 
 class Product extends Model
 {
-    use HasFactory; // <-- 2. Include the trait here inside your class
+    use HasFactory;
 
     protected $guarded = [];
+
+    protected $primaryKey = 'product_id';
 }

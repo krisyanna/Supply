@@ -18,7 +18,7 @@ class ReorderRecommendationSeeder extends Seeder
 
         foreach ($products->random(15) as $product) {
             DB::table('reorder_recommendations')->insert([
-                'product_id'        => $product->id,
+                'product_id' => $product->product_id,
                 'recommended_qty'   => $product->reorder_quantity,
                 'urgency_level'     => ['High', 'Medium', 'Critical'][rand(0, 2)],
                 'status'            => 'Pending Review',
