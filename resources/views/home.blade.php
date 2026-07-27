@@ -9,10 +9,21 @@
     </div>
     <div class="flex flex-wrap items-center gap-2.5">
         <div class="relative w-60">
-            <input type="text" placeholder="Search everywhere..." class="w-full pl-8 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+            <input type="text" id="globalSearchInput" placeholder="Search everywhere..." class="w-full pl-8 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
             <svg class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
+            <!-- Search Results Dropdown Container -->
+            <div id="globalSearchResults" class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-64 overflow-y-auto hidden z-50 text-xs divide-y divide-slate-100"></div>
+        </div>
+        <div class="flex items-center gap-2.5 pl-3 border-l border-slate-200">
+            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
+                AD
+            </div>
+            <div class="hidden sm:block text-left leading-tight">
+                <span class="block text-xs font-bold text-slate-900">Admin User</span>
+                <span class="block text-[10px] font-medium text-slate-500">System Admin</span>
+            </div>
         </div>
     </div>
 @endsection
@@ -94,13 +105,9 @@ const DONUT_COLORS = {
 };
 
 let donutChart = null;
+let globalProductsCache = [];
+let globalSalesCache = [];
 
-/* ---------------------------------------------------------
-   Field-mapping helpers.
-   Your API returns `current_stock` on products (not `stock`)
-   and `quantity_sold` on sales — centralize the lookup here
-   so there's exactly one place to update if the API changes.
---------------------------------------------------------- */
 function getStock(product) {
     return Number(product?.current_stock ?? product?.stock ?? product?.quantity ?? 0);
 }
@@ -113,8 +120,6 @@ function getProductName(product) {
     return product?.product_name || product?.name || product?.product || 'Unknown product';
 }
 
-// Retries for up to ~2 seconds (20 x 100ms) waiting for Chart.js to finish
-// loading before giving up, in case the CDN script is slow to arrive.
 function waitForChart(callback, retries = 20) {
     if (typeof Chart !== 'undefined') {
         callback();
@@ -136,7 +141,7 @@ async function fetchJSON(url, options = {}) {
 }
 
 function renderUser(user) {
-    document.getElementById('userName').textContent = (user && user.firstName) ? `${user.firstName}!` : 'there!';
+    document.getElementById('userName').textContent = (user && user.firstName) ? `${user.firstName}!` : 'Admin User!';
 }
 
 function renderStatCards(summary) {
@@ -180,7 +185,6 @@ function renderInventoryDonut(overview) {
         legend.appendChild(item);
     });
 
-    // Guard against Chart.js not having loaded yet (slow network, blocked CDN, etc.)
     if (typeof Chart === 'undefined') {
         console.error('Chart.js is not loaded — skipping donut chart render.');
         legend.innerHTML += `<div class="text-xs font-semibold text-rose-600 mt-2">Chart library failed to load.</div>`;
@@ -232,45 +236,129 @@ function escapeHTML(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+/* ---------------------------------------------------------
+   Comprehensive Multi-Module "Search Everywhere" Logic
+--------------------------------------------------------- */
+function setupGlobalSearch() {
+    const searchInput = document.getElementById('globalSearchInput');
+    const resultsContainer = document.getElementById('globalSearchResults');
+
+    if (!searchInput || !resultsContainer) return;
+
+    searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.trim().toLowerCase();
+
+        if (query.length === 0) {
+            resultsContainer.innerHTML = '';
+            resultsContainer.classList.add('hidden');
+            return;
+        }
+
+        // 1. Search Products
+        const matchedProducts = globalProductsCache.filter(p => {
+            const name = getProductName(p).toLowerCase();
+            const category = String(p.category || p.type || '').toLowerCase();
+            return name.includes(query) || category.includes(query);
+        }).slice(0, 4);
+
+        // 2. Search Sales / Activities
+        const matchedSales = globalSalesCache.filter(s => {
+            const prodName = getProductName(s).toLowerCase();
+            const time = String(s.sale_date || s.created_at || s.sold_at || '').toLowerCase();
+            return prodName.includes(query) || time.includes(query);
+        }).slice(0, 4);
+
+        // 3. Search System Modules / Navigation Links as structural matches
+        const modules = [
+            { name: 'Home Dashboard', url: '/dashboard' },
+            { name: 'Procurement & Supplier Management', url: '/procurement/suppliers' },
+            { name: 'Purchase Order Management', url: '/procurement/po-management' },
+            { name: 'Logistics Sub-Module', url: '/logistics' },
+            { name: 'Inventory & Warehouse', url: '/inventory' }
+        ];
+        const matchedModules = modules.filter(m => m.name.toLowerCase().includes(query));
+
+        if (matchedProducts.length === 0 && matchedSales.length === 0 && matchedModules.length === 0) {
+            resultsContainer.innerHTML = `<div class="p-3 text-slate-400 italic text-center">No results found for "${escapeHTML(query)}"</div>`;
+            resultsContainer.classList.remove('hidden');
+            return;
+        }
+
+        let html = '';
+
+        // Render Matching Modules
+        if (matchedModules.length > 0) {
+            html += `<div class="px-3 py-1.5 font-bold bg-slate-100 text-slate-500 uppercase text-[10px]">Modules & Pages</div>`;
+            matchedModules.forEach(m => {
+                html += `<a href="${m.url}" class="p-2.5 hover:bg-slate-50 flex justify-between items-center block text-slate-700 font-medium">
+                    <span>${escapeHTML(m.name)}</span>
+                    <span class="text-indigo-600 text-[10px] font-bold">Go &rarr;</span>
+                </a>`;
+            });
+        }
+
+        // Render Matching Products
+        if (matchedProducts.length > 0) {
+            html += `<div class="px-3 py-1.5 font-bold bg-slate-100 text-slate-500 uppercase text-[10px]">Inventory Products</div>`;
+            matchedProducts.forEach(p => {
+                html += `<div class="p-2.5 hover:bg-slate-50 flex justify-between items-center">
+                    <span class="font-semibold text-slate-800">${escapeHTML(getProductName(p))}</span>
+                    <span class="text-slate-500 font-mono text-[11px]">Stock: ${escapeHTML(getStock(p))}</span>
+                </div>`;
+            });
+        }
+
+        // Render Matching Sales
+        if (matchedSales.length > 0) {
+            html += `<div class="px-3 py-1.5 font-bold bg-slate-100 text-slate-500 uppercase text-[10px]">Sales & Transactions</div>`;
+            matchedSales.forEach(s => {
+                html += `<div class="p-2.5 hover:bg-slate-50 flex justify-between items-center">
+                    <span class="text-slate-700">Sold ${escapeHTML(getSoldQty(s))} unit(s) of ${escapeHTML(getProductName(s))}</span>
+                    <span class="text-slate-400 text-[10px]">${escapeHTML(s.sale_date || s.created_at || 'Recent')}</span>
+                </div>`;
+            });
+        }
+
+        resultsContainer.innerHTML = html;
+        resultsContainer.classList.remove('hidden');
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+            resultsContainer.classList.add('hidden');
+        }
+    });
+}
+
 async function initDashboard() {
     document.getElementById('pageSubtitle').textContent =
         'Overview of your supply chain, live from database.';
 
+    setupGlobalSearch();
     loadDashboardData();
 }
 
 async function loadDashboardData() {
-    let products = [];
-    let sales = [];
-
-    // --- Fetch (if this fails, nothing below can render, so it stays in its own try/catch) ---
     try {
         const productResponse = await fetchJSON(ENDPOINTS.products);
         const salesResponse = await fetchJSON(ENDPOINTS.sales);
 
-        products = productResponse.data || [];
-        sales = salesResponse.data || [];
+        globalProductsCache = productResponse.data || [];
+        globalSalesCache = salesResponse.data || [];
 
-        console.log("PRODUCT DATA:", products);
-        console.log("SALES DATA:", sales);
+        console.log("PRODUCT DATA:", globalProductsCache);
+        console.log("SALES DATA:", globalSalesCache);
     } catch (error) {
         console.error("Dashboard data fetch failed:", error);
         document.getElementById('pageSubtitle').textContent = 'Failed to load dashboard data.';
         return;
     }
 
-    /*
-    =====================
-    KPI CARDS
-    =====================
-    Each section below runs in its own try/catch so that a
-    failure in one widget (e.g. the chart lib not being ready)
-    doesn't stop the other widgets from rendering.
-    */
     try {
-        const totalProducts = products.length;
-        const totalSales = sales.reduce((sum, item) => sum + getSoldQty(item), 0);
-        const lowStock = products.filter(product => getStock(product) <= 10).length;
+        const totalProducts = globalProductsCache.length;
+        const totalSales = globalSalesCache.reduce((sum, item) => sum + getSoldQty(item), 0);
+        const lowStock = globalProductsCache.filter(product => getStock(product) <= 10).length;
 
         renderStatCards({
             stats: [
@@ -284,17 +372,12 @@ async function loadDashboardData() {
         console.error("Stat cards failed to render:", error);
     }
 
-    /*
-    =====================
-    INVENTORY DONUT
-    =====================
-    */
     try {
         let inStock = 0;
         let low = 0;
         let out = 0;
 
-        products.forEach(product => {
+        globalProductsCache.forEach(product => {
             const stock = getStock(product);
             if (stock === 0) out++;
             else if (stock <= 10) low++;
@@ -312,14 +395,9 @@ async function loadDashboardData() {
         console.error("Inventory donut failed to render:", error);
     }
 
-    /*
-    =====================
-    STOCK REMINDER
-    =====================
-    */
     try {
         renderStockReminders({
-            items: products
+            items: globalProductsCache
                 .filter(p => getStock(p) <= 10)
                 .slice(0, 5)
                 .map(p => ({
@@ -331,14 +409,9 @@ async function loadDashboardData() {
         console.error("Stock reminders failed to render:", error);
     }
 
-    /*
-    =====================
-    RECENT ACTIVITIES
-    =====================
-    */
     try {
         renderRecentActivities({
-            items: sales
+            items: globalSalesCache
                 .slice(-5)
                 .reverse()
                 .map(s => ({
