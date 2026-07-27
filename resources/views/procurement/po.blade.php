@@ -20,13 +20,13 @@
     <!-- KPI Cards Grid (Full Fluid Width) -->
     <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         
-        <!-- Card 1: Total POs -->
+        <!-- Card 1: Total POs (Green Theme) -->
         <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex justify-between items-center gap-4">
             <div class="flex-1 min-w-0">
                 <p class="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1 truncate">Total POs</p>
-                <p class="text-3xl font-black text-slate-900 tracking-tight truncate">{{ $kpi_summary['total_pos'] }}</p>
+                <p class="text-3xl font-black text-emerald-600 tracking-tight truncate">{{ $kpi_summary['total_pos'] }}</p>
             </div>
-            <div class="shrink-0 p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-600">
+            <div class="shrink-0 p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
             </div>
         </div>

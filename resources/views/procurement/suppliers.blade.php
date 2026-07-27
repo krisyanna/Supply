@@ -17,44 +17,38 @@
         </div>
     </header>
 
-    <!-- KPI Cards Grid (Full Fluid Width) -->
-    <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <!-- KPI Cards Grid (Adjusted to 3 columns for balanced alignment) -->
+    <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        
+        <!-- Card 1: Total Suppliers (Blue Theme) -->
         <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex justify-between items-center gap-4">
             <div class="flex-1 min-w-0">
                 <p class="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1 truncate">Total Suppliers</p>
-                <p class="text-3xl font-black text-slate-900 tracking-tight truncate">{{ $kpi_summary['total_suppliers'] ?? $supplier_list->total() }}</p>
+                <p class="text-3xl font-black text-blue-600 tracking-tight truncate">{{ $kpi_summary['total_suppliers'] ?? $supplier_list->total() }}</p>
             </div>
-            <div class="shrink-0 p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-600">
+            <div class="shrink-0 p-3 bg-blue-50 rounded-xl border border-blue-100 text-blue-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             </div>
         </div>
         
+        <!-- Card 2: Active Contracts (Emerald/Green Theme) -->
         <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex justify-between items-center gap-4">
             <div class="flex-1 min-w-0">
                 <p class="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1 truncate">Active Contracts</p>
-                <p class="text-3xl font-black text-indigo-600 tracking-tight truncate">{{ $kpi_summary['active_contracts'] ?? 0 }}</p>
+                <p class="text-3xl font-black text-emerald-600 tracking-tight truncate">{{ $kpi_summary['active_contracts'] ?? 0 }}</p>
             </div>
-            <div class="shrink-0 p-3 bg-indigo-50/70 rounded-xl border border-indigo-100 text-indigo-600">
+            <div class="shrink-0 p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </div>
         </div>
         
-        <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex justify-between items-center gap-4">
-            <div class="flex-1 min-w-0">
-                <p class="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1 truncate">Pending Reviews</p>
-                <p class="text-3xl font-black text-amber-600 tracking-tight truncate">{{ $kpi_summary['pending_reviews'] ?? 0 }}</p>
-            </div>
-            <div class="shrink-0 p-3 bg-amber-50/70 rounded-xl border border-amber-100 text-amber-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
-        </div>
-        
+        <!-- Card 3: Avg. Performance (Purple Theme) -->
         <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex justify-between items-center gap-4">
             <div class="flex-1 min-w-0">
                 <p class="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1 truncate">Avg. Performance</p>
-                <p class="text-3xl font-black text-slate-900 tracking-tight truncate">{{ $kpi_summary['avg_performance'] ?? '0.0' }}</p>
+                <p class="text-3xl font-black text-purple-600 tracking-tight truncate">{{ $kpi_summary['avg_performance'] ?? '0.0' }}</p>
             </div>
-            <div class="shrink-0 p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-600">
+            <div class="shrink-0 p-3 bg-purple-50 rounded-xl border border-purple-100 text-purple-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
             </div>
         </div>
