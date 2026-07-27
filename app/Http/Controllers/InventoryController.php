@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PurchaseOrder;
 use App\Models\StockItem;
 use App\Models\WarehouseLocation;
 use Illuminate\Http\Request;
@@ -24,11 +25,12 @@ class InventoryController extends Controller
         $items = StockItem::orderByDesc('created_at')->get();
 
         $stats = [
-            'total_skus'       => $items->count(),
-            'in_stock'         => $items->where('status', 'in-stock')->count(),
-            'low_out_of_stock' => $items->whereIn('status', ['low-stock', 'out-stock'])->count(),
-            'reserved'         => $items->where('status', 'reserved')->count(),
-            'inventory_value'  => $items->sum(fn ($item) => $item->quantity * $item->cost),
+            'total_skus'             => $items->count(),
+            'in_stock'               => $items->where('status', 'in-stock')->count(),
+            'low_out_of_stock'       => $items->whereIn('status', ['low-stock', 'out-stock'])->count(),
+            'reserved'               => $items->where('status', 'reserved')->count(),
+            'inventory_value'        => $items->sum(fn ($item) => $item->quantity * $item->cost),
+            'synced_purchase_orders' => PurchaseOrder::count(),
         ];
 
         $categories = $items->pluck('category')->unique()->sort()->values();
