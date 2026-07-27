@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Http;
 
 class ProcurementController extends Controller
 {
-    public function index()
+   public function index()
     {
-        // 1. Calculate Dynamic KPIs
+        // 1. Calculate Dynamic KPIs (Kept in case your Blade file still uses the top cards)
         $itemsToReorder = DB::table('products')
             ->whereColumn('current_stock', '<=', 'reorder_point')
             ->count();
@@ -29,7 +29,6 @@ class ProcurementController extends Controller
             ->whereColumn('current_stock', '<=', 'reorder_point')
             ->sum(DB::raw('reorder_quantity * unit_cost'));
 
-        // Bind KPIs to the array your Blade file expects
         $kpi_summary = [
             'items_to_reorder'   => $itemsToReorder,
             'high_priority'      => $highPriority,
@@ -37,33 +36,10 @@ class ProcurementController extends Controller
             'total_est_cost'     => '₱' . number_format($estRestockCost, 2),
         ];
 
-        // 2. Fetch Dynamic Ledger Table Data
-        $products = DB::table('products')
-            ->leftJoin('suppliers', 'products.supplier_id', '=', 'suppliers.id')
-            ->select('products.*', 'suppliers.name as supplier_name')
-            ->whereColumn('products.current_stock', '<=', 'products.reorder_point')
-            ->orderByRaw("FIELD(products.priority_level, 'High', 'Medium', 'Low')")
-            ->get();
+        // The $reorder_list query and formatting have been completely removed!
 
-        // 3. Format the data to match your Blade @foreach loop
-        $reorder_list = $products->map(function ($item) {
-            $priorityColor = match ($item->priority_level ?? 'Low') {
-                'High'   => 'bg-red-100 text-red-600',
-                'Medium' => 'bg-orange-100 text-orange-600',
-                'Low'    => 'bg-emerald-100 text-emerald-600',
-                default  => 'bg-slate-100 text-slate-600',
-            };
-
-            return [
-                'product'         => $item->product_name ?? 'Unknown Product',
-                'recommended_qty' => ($item->reorder_quantity ?? 0) . ' ' . ($item->unit_type ?? ''),
-                'supplier'        => $item->supplier_name ?? 'No Supplier',
-                'priority'        => $item->priority_level ?? 'Low',
-                'priority_color'  => $priorityColor,
-            ];
-        });
-
-        return view('procurement.index', compact('kpi_summary', 'reorder_list'));
+        // Pass only the KPI summary to the view
+        return view('procurement.index', compact('kpi_summary'));
     }
 
     public function suppliers()
@@ -97,9 +73,9 @@ class ProcurementController extends Controller
        
     }
 
-    public function poManagement()
+   public function poManagement()
     {
-        // 1. Calculate Dynamic KPIs for Purchase Orders
+        // 1. Calculate Dynamic KPIs for Purchase Orders (Using all records)
         $totalPOs = DB::table('purchase_orders')->count();
 
         $pendingApproval = DB::table('purchase_orders')
@@ -120,39 +96,37 @@ class ProcurementController extends Controller
             'total_value'      => '₱' . number_format($totalValue, 2),
         ];
 
-        // 2. Fetch Dynamic Ledger Table Data safely aliasing supplier name
-        $purchaseOrders = DB::table('purchase_orders')
+        // 2. Fetch PAGINATED Ledger Table Data (10 items per page)
+        $po_list = DB::table('purchase_orders')
             ->leftJoin('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
             ->select('purchase_orders.*', 'suppliers.name as supplier_name')
             ->orderBy('purchase_orders.order_date', 'desc')
             ->orderBy('purchase_orders.po_number', 'desc')
-            ->get();
+            ->paginate(10);
 
-        // 3. Format the data to match your Blade @foreach loop
-       // 2. Format list for the view (Adding badge colors dynamically)
-    $po_list = $purchaseOrders->map(function ($po) {
-        $color = 'bg-slate-100 text-slate-600 border-slate-200'; // Default
-        
-        if ($po->status === 'Approved') {
-            $color = 'bg-emerald-50 text-emerald-600 border-emerald-200';
-        } elseif ($po->status === 'Delayed') {
-            $color = 'bg-rose-50 text-rose-600 border-rose-200';
-        } elseif ($po->status === 'Pending Approval') {
-            $color = 'bg-orange-50 text-orange-600 border-orange-200';
-        } elseif ($po->status === 'Delivered') {
-            // New Purple styling for Delivered!
-            $color = 'bg-indigo-50 text-indigo-600 border-indigo-200'; 
-        }
+        // 3. Format the data directly on the Paginator's collection
+        $po_list->getCollection()->transform(function ($po) {
+            $color = 'bg-slate-100 text-slate-600 border-slate-200'; // Default
+            
+            if ($po->status === 'Approved') {
+                $color = 'bg-emerald-50 text-emerald-600 border-emerald-200';
+            } elseif ($po->status === 'Delayed') {
+                $color = 'bg-rose-50 text-rose-600 border-rose-200';
+            } elseif ($po->status === 'Pending Approval') {
+                $color = 'bg-orange-50 text-orange-600 border-orange-200';
+            } elseif ($po->status === 'Delivered') {
+                $color = 'bg-indigo-50 text-indigo-600 border-indigo-200'; 
+            }
 
-        return [
-            'po_number'    => $po->po_number,
-            'supplier'     => $po->supplier_name,
-            'order_date'   => \Carbon\Carbon::parse($po->order_date)->format('d M Y'),
-            'amount'       => '₱' . number_format($po->total_amount, 2),
-            'status'       => $po->status,
-            'status_color' => $color,
-        ];
-    });
+            return [
+                'po_number'    => $po->po_number,
+                'supplier'     => $po->supplier_name,
+                'order_date'   => \Carbon\Carbon::parse($po->order_date)->format('d M Y'),
+                'amount'       => '₱' . number_format($po->total_amount, 2),
+                'status'       => $po->status,
+                'status_color' => $color,
+            ];
+        });
 
         return view('procurement.po', compact('kpi_summary', 'po_list'));
     }
