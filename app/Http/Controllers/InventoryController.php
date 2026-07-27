@@ -51,60 +51,6 @@ class InventoryController extends Controller
     }
 
     /**
-     * Store a newly created warehouse location.
-     */
-    public function storeWarehouseLocation(Request $request)
-    {
-        $validated = $request->validate([
-            'name'         => 'required|string|max:255',
-            'address'      => 'required|string|max:255',
-            'city'         => 'required|string|max:255',
-            'capacity'     => 'required|integer|min:0',
-            'manager_name' => 'required|string|max:255',
-            'status'       => 'required|in:active,inactive',
-        ]);
-
-        $validated['code'] = WarehouseLocation::nextCode();
-
-        WarehouseLocation::create($validated);
-
-        return redirect()->route('inventory.warehouse-locations')
-            ->with('success', 'Warehouse added successfully.');
-    }
-
-    /**
-     * Show the form for creating a new stock item.
-     */
-    public function create()
-    {
-        return view('inventory.create');
-    }
-
-    /**
-     * Store a newly created stock item.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'location' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:0',
-            'unit'     => 'required|string|max:50',
-            'cost'     => 'required|numeric|min:0',
-            'status'   => 'required|in:in-stock,low-stock,out-stock,reserved',
-        ]);
-
-        $validated['code'] = StockItem::nextCode();
-        $validated['max_qty'] = max($validated['quantity'], 1);
-
-        StockItem::create($validated);
-
-        return redirect()->route('inventory.index')
-            ->with('success', 'Stock item added successfully.');
-    }
-
-    /**
      * Display a single stock item.
      */
     public function show($id)

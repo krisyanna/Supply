@@ -74,7 +74,6 @@ use App\Http\Controllers\InventoryController;
 
 Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
 Route::get('/inventory/warehouse-locations', [InventoryController::class, 'warehouseLocations'])->name('inventory.warehouse-locations');
-Route::post('/inventory/warehouse-locations', [InventoryController::class, 'storeWarehouseLocation'])->name('inventory.warehouse-locations.store');
 
 /*
 |--------------------------------------------------------------------------

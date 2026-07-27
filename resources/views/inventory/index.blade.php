@@ -190,10 +190,6 @@
     <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Inventory & Warehouse Management</h1>
     <p class="text-sm text-slate-500 mt-1">{{ count($items) }} stock items across all warehouse locations</p>
   </div>
-  <button class="add-btn">
-    <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg>
-    Add New Stock Item
-  </button>
 @endsection
 
 @section('content')

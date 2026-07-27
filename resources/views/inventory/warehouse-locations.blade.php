@@ -209,59 +209,9 @@
     <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Warehouse Locations</h1>
     <p class="text-sm text-slate-500 mt-1">{{ count($warehouses) }} warehouse locations registered</p>
   </div>
-  <button class="add-btn" onclick="document.getElementById('add-warehouse-modal').classList.add('open')">
-    <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg>
-    Add New Warehouse
-  </button>
 @endsection
 
 @section('content')
-
-  <!-- Add Warehouse Modal -->
-  <div class="modal-overlay" id="add-warehouse-modal">
-    <div class="modal-card">
-      <h2>Add New Warehouse</h2>
-      <p>Register a new warehouse location.</p>
-      <form method="POST" action="{{ route('inventory.warehouse-locations.store') }}">
-        @csrf
-        <div class="form-row">
-          <label for="name">Warehouse Name</label>
-          <input type="text" id="name" name="name" required maxlength="255" placeholder="e.g. Cavite Depot">
-        </div>
-        <div class="form-row">
-          <label for="address">Address</label>
-          <input type="text" id="address" name="address" required maxlength="255" placeholder="e.g. Km 32 East Service Road">
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label for="city">City</label>
-            <input type="text" id="city" name="city" required maxlength="255" placeholder="e.g. Cavite">
-          </div>
-          <div class="form-row">
-            <label for="capacity">Capacity</label>
-            <input type="number" id="capacity" name="capacity" required min="0" placeholder="0">
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label for="manager_name">Manager Name</label>
-            <input type="text" id="manager_name" name="manager_name" required maxlength="255" placeholder="e.g. Ramon Dela Cruz">
-          </div>
-          <div class="form-row">
-            <label for="status">Status</label>
-            <select id="status" name="status" required>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="document.getElementById('add-warehouse-modal').classList.remove('open')">Cancel</button>
-          <button type="submit" class="btn-submit">Save Warehouse</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <div class="stats-row">
     <div class="stat-card">
