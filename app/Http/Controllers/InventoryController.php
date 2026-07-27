@@ -27,10 +27,13 @@ class InventoryController extends Controller
             'total_skus'       => $items->count(),
             'in_stock'         => $items->where('status', 'in-stock')->count(),
             'low_out_of_stock' => $items->whereIn('status', ['low-stock', 'out-stock'])->count(),
+            'reserved'         => $items->where('status', 'reserved')->count(),
             'inventory_value'  => $items->sum(fn ($item) => $item->quantity * $item->cost),
         ];
 
-        return view('inventory.index', compact('stats', 'items'));
+        $categories = $items->pluck('category')->unique()->sort()->values();
+
+        return view('inventory.index', compact('stats', 'items', 'categories'));
     }
 
     /**
@@ -47,7 +50,9 @@ class InventoryController extends Controller
             'total_capacity'   => $warehouses->sum('capacity'),
         ];
 
-        return view('inventory.warehouse-locations', compact('warehouses', 'stats'));
+        $cities = $warehouses->pluck('city')->unique()->sort()->values();
+
+        return view('inventory.warehouse-locations', compact('warehouses', 'stats', 'cities'));
     }
 
     /**

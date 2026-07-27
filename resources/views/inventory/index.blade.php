@@ -45,7 +45,7 @@
 
   .stats-row{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(5,1fr);
     gap:20px;
     margin-bottom:28px;
   }
@@ -74,6 +74,7 @@
   .stat-value{font-size:30px; font-weight:800; color:var(--text-dark);}
   .stat-value.accent-blue{color:var(--blue);}
   .stat-value.accent-amber{color:var(--amber);}
+  .stat-value.accent-teal{color:var(--teal);}
   .stat-value.currency{
     font-size:22px;
     white-space:nowrap;
@@ -182,6 +183,35 @@
   }
   .empty-state p{margin:0; font-size:14px;}
   .empty-state span{font-size:12.5px; color:#b7bacb;}
+
+  .filter-bar{
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+  .filter-bar input[type="text"],
+  .filter-bar select{
+    padding:11px 14px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:13.5px;
+    background:#fff;
+    color:var(--text-dark);
+  }
+  .filter-bar input[type="text"]{
+    flex:1;
+    min-width:220px;
+  }
+  .filter-bar select{
+    min-width:170px;
+  }
+  .filter-bar input[type="text"]:focus,
+  .filter-bar select:focus{
+    outline:none;
+    border-color:var(--accent);
+  }
 </style>
 @endpush
 
@@ -208,9 +238,30 @@
       <div class="stat-value accent-amber">{{ $stats['low_out_of_stock'] }}</div>
     </div>
     <div class="stat-card">
+      <div class="stat-label">Reserved</div>
+      <div class="stat-value accent-teal">{{ $stats['reserved'] }}</div>
+    </div>
+    <div class="stat-card">
       <div class="stat-label">Inventory Value Total</div>
       <div class="stat-value currency">₱{{ number_format($stats['inventory_value'], 2) }}</div>
     </div>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="search-input" placeholder="Search by item code or name...">
+    <select id="category-filter">
+      <option value="">All Categories</option>
+      @foreach ($categories as $category)
+        <option value="{{ $category }}">{{ $category }}</option>
+      @endforeach
+    </select>
+    <select id="status-filter">
+      <option value="">All Statuses</option>
+      <option value="in-stock">In Stock</option>
+      <option value="low-stock">Low Stock</option>
+      <option value="out-stock">Out of Stock</option>
+      <option value="reserved">Reserved</option>
+    </select>
   </div>
 
   <div class="ledger-card">
@@ -227,9 +278,9 @@
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="ledger-body">
         @forelse ($items as $item)
-          <tr>
+          <tr data-code="{{ strtolower($item->code) }}" data-name="{{ strtolower($item->name) }}" data-category="{{ $item->category }}" data-status="{{ $item->status }}">
             <td><span class="item-code">{{ $item->code }}</span></td>
             <td>{{ $item->name }}</td>
             <td>{{ $item->location }}</td>
@@ -248,7 +299,7 @@
             </td>
           </tr>
         @empty
-          <tr>
+          <tr id="empty-row">
             <td colspan="7">
               <div class="empty-state">
                 <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 22.08V12"/></svg>
@@ -258,8 +309,53 @@
             </td>
           </tr>
         @endforelse
+        <tr id="no-results-row" style="display:none;">
+          <td colspan="7">
+            <div class="empty-state">
+              <p>No items match your search or filters</p>
+              <span>Try adjusting the search text or filter selections.</span>
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 
 @endsection
+
+@push('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search-input');
+    const categoryFilter = document.getElementById('category-filter');
+    const statusFilter = document.getElementById('status-filter');
+    const rows = Array.from(document.querySelectorAll('#ledger-body tr[data-code]'));
+    const noResultsRow = document.getElementById('no-results-row');
+
+    function applyFilters() {
+      const search = searchInput.value.trim().toLowerCase();
+      const category = categoryFilter.value;
+      const status = statusFilter.value;
+      let visibleCount = 0;
+
+      rows.forEach(function (row) {
+        const matchesSearch = !search || row.dataset.code.includes(search) || row.dataset.name.includes(search);
+        const matchesCategory = !category || row.dataset.category === category;
+        const matchesStatus = !status || row.dataset.status === status;
+        const isVisible = matchesSearch && matchesCategory && matchesStatus;
+
+        row.style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
+      });
+
+      if (noResultsRow) {
+        noResultsRow.style.display = (rows.length > 0 && visibleCount === 0) ? '' : 'none';
+      }
+    }
+
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
+    if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+  });
+</script>
+@endpush
