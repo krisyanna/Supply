@@ -6,6 +6,7 @@ use App\Models\PurchaseOrder;
 use App\Models\Shipment;
 use App\Models\StockItem;
 use App\Models\WarehouseLocation;
+use App\Services\ShipmentMockService;
 use Illuminate\Http\Request;
 
 class LogisticsController extends Controller
@@ -25,20 +26,18 @@ class LogisticsController extends Controller
             ->take(6)
             ->get();
 
-        $shipments = Shipment::query()
-            ->orderByDesc('created_at')
-            ->paginate(8);
+        $mockShipments = ShipmentMockService::getMockShipments();
+        $dbShipments = Shipment::all();
 
-        $trackingShipments = Shipment::query()
-            ->whereIn('status', ['In Transit', 'Delayed'])
-            ->orderByDesc('updated_at')
-            ->take(6)
-            ->get();
+        $shipments = $dbShipments->isNotEmpty() ? $dbShipments : $mockShipments;
+        $trackingShipments = $shipments;
+        $routeShipments = $shipments;
 
-        $routeShipments = Shipment::query()
-            ->orderBy('city')
-            ->take(6)
-            ->get();
+        $trackingStats = [
+            'in_transit' => $shipments->where('status', 'In Transit')->count(),
+            'delayed_shipments' => $shipments->where('status', 'Delayed')->count(),
+            'shipment_count' => $shipments->count(),
+        ];
 
         $stats = [
             'total_orders' => PurchaseOrder::count(),
@@ -53,7 +52,7 @@ class LogisticsController extends Controller
         $inventoryItems = StockItem::count();
         $warehouses = WarehouseLocation::count();
 
-        return view('logistics-dashboard', compact('approvalOrders', 'liveOrders', 'shipments', 'trackingShipments', 'routeShipments', 'stats', 'inventoryItems', 'warehouses'));
+        return view('logistics-dashboard', compact('approvalOrders', 'liveOrders', 'shipments', 'trackingShipments', 'routeShipments', 'stats', 'trackingStats', 'inventoryItems', 'warehouses'));
     }
 
     public function reviewPurchaseOrder(Request $request, PurchaseOrder $purchaseOrder)

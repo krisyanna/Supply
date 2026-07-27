@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // <-- 1. Import the DB facade
+use App\Models\Product;
+use App\Models\Supplier;
 
 class HomeController extends Controller
 {
@@ -11,9 +12,13 @@ class HomeController extends Controller
      * Show the application home page.
      */
     public function index()
-{
-    $totalSuppliers = DB::table('supply.suppliers')->count();
+    {
+        $totalSuppliers = Supplier::count();
+        
+        // Fetch products and load the warehouse and category relationships
+        $items = Product::with(['warehouse', 'category'])->get(); 
 
-    return view('dashboard', compact('totalSuppliers'));
-}
+        // Make sure this matches 'home' since your file is home.blade.php
+        return view('home', compact('totalSuppliers', 'items'));
+    }
 }

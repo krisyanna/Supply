@@ -3,14 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- 1. Import the trait
-
 
 class Product extends Model
 {
-    use HasFactory;
-
     protected $guarded = [];
 
-    protected $primaryKey = 'product_id';
+    // Point to the correct WarehouseLocation model
+    public function warehouse()
+    {
+        return $this->belongsTo(WarehouseLocation::class, 'warehouse_location_id');
+    }
+
+    // Category relationship
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

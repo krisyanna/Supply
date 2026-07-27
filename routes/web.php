@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\ProcurementController;
-
+use App\Http\Controllers\HomeController;
 
 
 
@@ -24,9 +24,8 @@ Route::view('/', 'welcome')
 Route::view('/home', 'home')
     ->name('home');
 
-Route::view('/dashboard', 'home')
+Route::get('/dashboard', [HomeController::class, 'index'])
     ->name('dashboard');
-
 /*
 |--------------------------------------------------------------------------
 | Forecasting
