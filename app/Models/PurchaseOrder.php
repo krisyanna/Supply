@@ -11,5 +11,10 @@ class PurchaseOrder extends Model
 
     protected $table = 'purchase_orders';
 
-    protected $guarded = []; // Allows all fields to be seeded via factory
+    protected $guarded = [];
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
 }

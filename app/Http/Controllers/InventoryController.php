@@ -10,28 +10,43 @@ class InventoryController extends Controller
 {
     /**
      * Display the Inventory & Warehouse Management index page.
-     *
-     * IMPORTANT — DATA OWNERSHIP NOTE:
-     * The `stock_items` table here is a LOCAL REFLECTION, not the
-     * source of truth. Right now it's filled by StockItemSeeder for
-     * development/demo purposes. Once the actual IWM team's API is
-     * ready, replace manual seeding with the SyncStockItems command,
-     * which pulls data from their API and writes only the fields
-     * this SCM view actually needs into this table.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = StockItem::orderByDesc('created_at')->get();
+        // 1. Calculate overall KPI stats (unfiltered)
+        $all_items = StockItem::all();
 
         $stats = [
-            'total_skus'       => $items->count(),
-            'in_stock'         => $items->where('status', 'in-stock')->count(),
-            'low_out_of_stock' => $items->whereIn('status', ['low-stock', 'out-stock'])->count(),
-            'reserved'         => $items->where('status', 'reserved')->count(),
-            'inventory_value'  => $items->sum(fn ($item) => $item->quantity * $item->cost),
+            'total_skus'       => $all_items->count(),
+            'in_stock'         => $all_items->where('status', 'in-stock')->count(),
+            'low_out_of_stock' => $all_items->whereIn('status', ['low-stock', 'out-stock'])->count(),
+            'reserved'         => $all_items->where('status', 'reserved')->count(),
+            'inventory_value'  => $all_items->sum(fn ($item) => $item->quantity * $item->cost),
         ];
 
-        $categories = $items->pluck('category')->unique()->sort()->values();
+        $categories = $all_items->pluck('category')->filter()->unique()->sort()->values();
+
+        // 2. Build Query for Search, Filter, and Server-Side Pagination
+        $query = StockItem::query();
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(code) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Appends query parameters to pagination links so filters persist
+        $items = $query->orderByDesc('created_at')->paginate(10)->withQueryString();
 
         return view('inventory.index', compact('stats', 'items', 'categories'));
     }
@@ -39,18 +54,41 @@ class InventoryController extends Controller
     /**
      * Display the Warehouse Locations page.
      */
-    public function warehouseLocations()
+    public function warehouseLocations(Request $request)
     {
-        $warehouses = WarehouseLocation::orderByDesc('created_at')->get();
+        // 1. Calculate overall KPI stats (unfiltered)
+        $all_warehouses = WarehouseLocation::all();
 
         $stats = [
-            'total_warehouses' => $warehouses->count(),
-            'active'           => $warehouses->where('status', 'active')->count(),
-            'inactive'         => $warehouses->where('status', 'inactive')->count(),
-            'total_capacity'   => $warehouses->sum('capacity'),
+            'total_warehouses' => $all_warehouses->count(),
+            'active'           => $all_warehouses->where('status', 'active')->count(),
+            'inactive'         => $all_warehouses->where('status', 'inactive')->count(),
+            'total_capacity'   => $all_warehouses->sum('capacity'),
         ];
 
-        $cities = $warehouses->pluck('city')->unique()->sort()->values();
+        $cities = $all_warehouses->pluck('city')->filter()->unique()->sort()->values();
+
+        // 2. Build Query for Search, Filter, and Server-Side Pagination
+        $query = WarehouseLocation::query();
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(code) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+            });
+        }
+
+        if ($request->filled('city')) {
+            $query->where('city', $request->city);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Appends query parameters to pagination links so filters persist
+        $warehouses = $query->orderByDesc('created_at')->paginate(10)->withQueryString();
 
         return view('inventory.warehouse-locations', compact('warehouses', 'stats', 'cities'));
     }
@@ -108,22 +146,14 @@ class InventoryController extends Controller
     }
 
     /**
-     * ------------------------------------------------------------
      * API INTEGRATION PLACEHOLDER
-     * ------------------------------------------------------------
-     * Left empty on purpose. Other groups' modules (Logistics,
-     * Procurement, Forecasting, etc.) will call into or feed data
-     * through this endpoint once their APIs are ready. Expected to
-     * return JSON consumed by the front-end sub-module page.
      */
     public function api(Request $request)
     {
-        // 1. Confirm the request is really from the IWM team, not a stranger.
         if ($request->header('X-IWM-Key') !== config('services.iwm.push_key')) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // 2. Validate the shape of the data they're sending.
         $validated = $request->validate([
             'code'     => 'required|string|max:255',
             'name'     => 'required|string|max:255',
@@ -138,7 +168,6 @@ class InventoryController extends Controller
 
         $validated['max_qty'] = $validated['max_qty'] ?? $validated['quantity'];
 
-        // 3. Save it — update if this item code already exists, create if not.
         $item = StockItem::updateOrCreate(
             ['code' => $validated['code']],
             $validated

@@ -9,6 +9,7 @@ use Database\Seeders\ProductSeeder;
 use Database\Seeders\SalesSeeder;
 use Database\Seeders\ReorderRecommendationSeeder;
 use Database\Seeders\PurchaseOrderSeeder;
+use Database\Seeders\ShipmentSeeder;
 use Database\Seeders\StockItemSeeder;
 use Database\Seeders\WarehouseLocationSeeder;
 
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
             SalesSeeder::class,
             ReorderRecommendationSeeder::class,
             PurchaseOrderSeeder::class,
+            ShipmentSeeder::class,
             StockItemSeeder::class,
             WarehouseLocationSeeder::class,
         ]);
