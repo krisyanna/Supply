@@ -80,28 +80,27 @@
                 </div>
             </div>
             
-            <!-- Table Body -->
-            <div class="w-full overflow-hidden flex-1">
-                <table class="w-full text-xs text-left border-collapse">
+            <!-- Table Body with Fixed Balanced Column Spacing -->
+            <div class="w-full overflow-x-auto flex-1">
+                <table class="w-full text-xs text-left border-collapse table-fixed">
                     <thead class="bg-slate-50/90 text-slate-500 font-semibold uppercase tracking-wider text-[10px] sticky top-0 border-b border-slate-200/60 z-10 backdrop-blur-xs">
                         <tr>
-                            <th scope="col" class="px-6 py-3">PO Number</th>
-                            <th scope="col" class="px-6 py-3">Supplier Name</th>
-                            <th scope="col" class="px-6 py-3">Order Date</th>
-                            <th scope="col" class="px-6 py-3">Total Amount</th>
-                            <th scope="col" class="px-6 py-3">Status</th>
+                            <th scope="col" class="px-4 py-3 w-[18%]">PO Number</th>
+                            <th scope="col" class="px-4 py-3 w-[28%]">Supplier Name</th>
+                            <th scope="col" class="px-4 py-3 w-[18%]">Order Date</th>
+                            <th scope="col" class="px-4 py-3 w-[18%]">Total Amount</th>
+                            <th scope="col" class="px-4 py-3 w-[18%] text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
                         @foreach($po_list as $po)
                         <tr class="hover:bg-slate-50/75 transition-colors duration-150">
-                            <!-- Note: Changed $po array access to object access if using pagination -->
-                            <td class="px-6 py-3 font-bold text-indigo-900 text-xs truncate">{{ $po['po_number'] ?? $po->po_number ?? '' }}</td>
-                            <td class="px-6 py-3 font-semibold text-slate-700 text-xs truncate">{{ $po['supplier'] ?? $po->supplier_name ?? '' }}</td>
-                            <td class="px-6 py-3 font-medium text-slate-500 text-xs truncate">{{ $po['order_date'] ?? $po->order_date ?? '' }}</td>
-                            <td class="px-6 py-3 font-semibold text-slate-700 text-xs truncate">{{ $po['amount'] ?? '₱'.number_format($po->total_amount ?? 0, 2) }}</td>
-                            <td class="px-6 py-3">
-                                <span class="{{ $po['status_color'] ?? 'bg-slate-100 text-slate-700' }} border inline-block px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide whitespace-nowrap leading-none shadow-2xs">
+                            <td class="px-4 py-3 font-bold text-indigo-900 text-xs truncate">{{ $po['po_number'] ?? $po->po_number ?? '' }}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-700 text-xs truncate" title="{{ $po['supplier'] ?? $po->supplier_name ?? '' }}">{{ $po['supplier'] ?? $po->supplier_name ?? '' }}</td>
+                            <td class="px-4 py-3 font-medium text-slate-500 text-xs truncate">{{ $po['order_date'] ?? $po->order_date ?? '' }}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-700 text-xs truncate">{{ $po['amount'] ?? '₱'.number_format($po->total_amount ?? 0, 2) }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{{ $po['status_color'] ?? 'bg-slate-100 text-slate-700' }} border inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-wide leading-none shadow-2xs whitespace-nowrap">
                                     {{ $po['status'] ?? $po->status ?? '' }}
                                 </span>
                             </td>

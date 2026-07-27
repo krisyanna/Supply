@@ -110,47 +110,38 @@
                 </div>
             </div>
 
-            <!-- Table Container with Controlled Fixed Layout to Completely Eliminate Horizontal Scrolling and Text Truncation -->
-            <div class="w-full overflow-hidden flex-1">
-                <table class="w-full text-xs text-left border-collapse table-fixed" id="supplierTable">
-                    <colgroup>
-                        <col style="width: 20%;">
-                        <col class="contact-col" style="width: 22%;">
-                        <col style="width: 13%;">
-                        <col style="width: 13%;">
-                        <col style="width: 9%;">
-                        <col style="width: 14%;">
-                        <col style="width: 9%;">
-                    </colgroup>
+            <!-- Table Container -->
+            <div class="w-full overflow-x-auto flex-1">
+                <table class="w-full text-xs text-left border-collapse" id="supplierTable">
                     <thead class="bg-slate-50/90 text-slate-500 font-semibold uppercase tracking-wider text-[10px] sticky top-0 border-b border-slate-200/60 z-10 backdrop-blur-xs">
                         <tr>
-                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Supplier Name</th>
-                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap contact-col">Contact Rep</th>
-                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Category</th>
-                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Payment Terms</th>
-                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Rating</th>
-                            <th scope="col" class="px-3 py-3 overflow-hidden text-ellipsis whitespace-nowrap">Delivery Schedule</th>
-                            <th scope="col" class="px-3 py-3 text-center overflow-hidden text-ellipsis whitespace-nowrap">Status</th>
+                            <th scope="col" class="px-4 py-3 w-[22%]">Supplier Name</th>
+                            <th scope="col" class="px-4 py-3 w-[22%] contact-col">Contact Rep</th>
+                            <th scope="col" class="px-4 py-3 w-[15%]">Category</th>
+                            <th scope="col" class="px-4 py-3 w-[13%]">Payment Terms</th>
+                            <th scope="col" class="px-4 py-3 w-[10%]">Rating</th>
+                            <th scope="col" class="px-4 py-3 w-[13%]">Delivery Schedule</th>
+                            <th scope="col" class="px-4 py-3 w-[10%] text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700" id="supplierTableBody">
                         @foreach($supplier_list as $supplier)
                         <tr class="hover:bg-slate-50/75 transition-colors duration-150 supplier-row" data-category="{{ strtolower($supplier->category ?? '') }}">
-                            <td class="px-3 py-3 font-bold text-indigo-900 supplier-name text-xs truncate" title="{{ $supplier->name }}">{{ $supplier->name }}</td>
-                            <td class="px-3 py-3 text-slate-600 font-medium contact-col truncate" title="{{ $supplier->contact_person }} | {{ $supplier->phone }}">
+                            <td class="px-4 py-3 font-bold text-indigo-900 supplier-name text-xs truncate" title="{{ $supplier->name }}">{{ $supplier->name }}</td>
+                            <td class="px-4 py-3 text-slate-600 font-medium contact-col truncate" title="{{ $supplier->contact_person }} | {{ $supplier->phone }}">
                                 <div class="font-bold text-slate-900 text-[11px] truncate">{{ $supplier->contact_person }}</div>
                                 <div class="text-[10px] text-slate-400 font-normal truncate mt-0.5">{{ $supplier->phone }}</div>
                             </td>
-                            <td class="px-3 py-3 text-slate-800 font-semibold supplier-category truncate" title="{{ $supplier->category }}">{{ $supplier->category }}</td>
-                            <td class="px-3 py-3 text-slate-800 font-medium truncate" title="{{ $supplier->payment_terms }}">{{ $supplier->payment_terms }}</td>
-                            <td class="px-3 py-3 font-bold text-slate-900 truncate">
+                            <td class="px-4 py-3 text-slate-800 font-semibold supplier-category truncate" title="{{ $supplier->category }}">{{ $supplier->category }}</td>
+                            <td class="px-4 py-3 text-slate-800 font-medium truncate" title="{{ $supplier->payment_terms }}">{{ $supplier->payment_terms }}</td>
+                            <td class="px-4 py-3 font-bold text-slate-900 truncate">
                                 <span class="inline-flex items-center gap-1">
                                     <svg class="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.690h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.690l1.07-3.292z"/></svg>
                                     {{ $supplier->rating ?? $supplier->performance ?? '0.0' }}
                                 </span>
                             </td>
-                            <td class="px-3 py-3 text-slate-600 truncate" title="{{ $supplier->delivery_schedule }}">{{ $supplier->delivery_schedule }}</td>
-                            <td class="px-3 py-3 whitespace-nowrap text-center truncate">
+                            <td class="px-4 py-3 text-slate-600 truncate" title="{{ $supplier->delivery_schedule }}">{{ $supplier->delivery_schedule }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-center truncate">
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide inline-block {{ strtolower($supplier->status) === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-slate-100 text-slate-700' }}">
                                     {{ $supplier->status }}
                                 </span>
@@ -207,7 +198,6 @@
 
         </div>
     </div>
-    
 </main>
 
 <script>
@@ -218,8 +208,6 @@
         const contactElements = document.querySelectorAll('.contact-col');
         const btnText = document.getElementById('toggleBtnText');
         const btn = document.getElementById('toggleContactBtn');
-        const table = document.getElementById('supplierTable');
-        const colgroup = table.querySelector('colgroup');
 
         contactElements.forEach(el => {
             if (contactsVisible) {
@@ -229,30 +217,11 @@
             }
         });
 
-        // Reallocate table width distribution instantly without causing page overflow
         if (contactsVisible) {
-            colgroup.innerHTML = `
-                <col style="width: 20%;">
-                <col class="contact-col" style="width: 22%;">
-                <col style="width: 13%;">
-                <col style="width: 13%;">
-                <col style="width: 9%;">
-                <col style="width: 14%;">
-                <col style="width: 9%;">
-            `;
             btnText.textContent = 'Hide Contacts';
             btn.classList.remove('bg-slate-100', 'text-slate-700', 'border-slate-300');
             btn.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
         } else {
-            colgroup.innerHTML = `
-                <col style="width: 26%;">
-                <col class="contact-col" style="width: 0%;">
-                <col style="width: 17%;">
-                <col style="width: 17%;">
-                <col style="width: 11%;">
-                <col style="width: 18%;">
-                <col style="width: 11%;">
-            `;
             btnText.textContent = 'Show Contacts';
             btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
             btn.classList.add('bg-slate-100', 'text-slate-700', 'border-slate-300');
