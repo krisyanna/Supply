@@ -45,7 +45,7 @@
 
   .stats-row{
     display:grid;
-    grid-template-columns:repeat(5,1fr);
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:20px;
     margin-bottom:28px;
   }
@@ -244,6 +244,10 @@
     <div class="stat-card">
       <div class="stat-label">Inventory Value Total</div>
       <div class="stat-value currency">₱{{ number_format($stats['inventory_value'], 2) }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Procurement POs</div>
+      <div class="stat-value accent-blue">{{ $stats['synced_purchase_orders'] }}</div>
     </div>
   </div>
 

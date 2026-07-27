@@ -20,13 +20,13 @@
     <!-- KPI Cards Grid (Full Fluid Width) -->
     <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         
-        <!-- Card 1: Total POs -->
+        <!-- Card 1: Total POs (Green Theme) -->
         <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex justify-between items-center gap-4">
             <div class="flex-1 min-w-0">
                 <p class="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1 truncate">Total POs</p>
-                <p class="text-3xl font-black text-slate-900 tracking-tight truncate">{{ $kpi_summary['total_pos'] }}</p>
+                <p class="text-3xl font-black text-emerald-600 tracking-tight truncate">{{ $kpi_summary['total_pos'] }}</p>
             </div>
-            <div class="shrink-0 p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-600">
+            <div class="shrink-0 p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
             </div>
         </div>
@@ -80,28 +80,27 @@
                 </div>
             </div>
             
-            <!-- Table Body -->
-            <div class="w-full overflow-hidden flex-1">
-                <table class="w-full text-xs text-left border-collapse">
+            <!-- Table Body with Fixed Balanced Column Spacing -->
+            <div class="w-full overflow-x-auto flex-1">
+                <table class="w-full text-xs text-left border-collapse table-fixed">
                     <thead class="bg-slate-50/90 text-slate-500 font-semibold uppercase tracking-wider text-[10px] sticky top-0 border-b border-slate-200/60 z-10 backdrop-blur-xs">
                         <tr>
-                            <th scope="col" class="px-6 py-3">PO Number</th>
-                            <th scope="col" class="px-6 py-3">Supplier Name</th>
-                            <th scope="col" class="px-6 py-3">Order Date</th>
-                            <th scope="col" class="px-6 py-3">Total Amount</th>
-                            <th scope="col" class="px-6 py-3">Status</th>
+                            <th scope="col" class="px-4 py-3 w-[18%]">PO Number</th>
+                            <th scope="col" class="px-4 py-3 w-[28%]">Supplier Name</th>
+                            <th scope="col" class="px-4 py-3 w-[18%]">Order Date</th>
+                            <th scope="col" class="px-4 py-3 w-[18%]">Total Amount</th>
+                            <th scope="col" class="px-4 py-3 w-[18%] text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
                         @foreach($po_list as $po)
                         <tr class="hover:bg-slate-50/75 transition-colors duration-150">
-                            <!-- Note: Changed $po array access to object access if using pagination -->
-                            <td class="px-6 py-3 font-bold text-indigo-900 text-xs truncate">{{ $po['po_number'] ?? $po->po_number ?? '' }}</td>
-                            <td class="px-6 py-3 font-semibold text-slate-700 text-xs truncate">{{ $po['supplier'] ?? $po->supplier_name ?? '' }}</td>
-                            <td class="px-6 py-3 font-medium text-slate-500 text-xs truncate">{{ $po['order_date'] ?? $po->order_date ?? '' }}</td>
-                            <td class="px-6 py-3 font-semibold text-slate-700 text-xs truncate">{{ $po['amount'] ?? '₱'.number_format($po->total_amount ?? 0, 2) }}</td>
-                            <td class="px-6 py-3">
-                                <span class="{{ $po['status_color'] ?? 'bg-slate-100 text-slate-700' }} border inline-block px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide whitespace-nowrap leading-none shadow-2xs">
+                            <td class="px-4 py-3 font-bold text-indigo-900 text-xs truncate">{{ $po['po_number'] ?? $po->po_number ?? '' }}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-700 text-xs truncate" title="{{ $po['supplier'] ?? $po->supplier_name ?? '' }}">{{ $po['supplier'] ?? $po->supplier_name ?? '' }}</td>
+                            <td class="px-4 py-3 font-medium text-slate-500 text-xs truncate">{{ $po['order_date'] ?? $po->order_date ?? '' }}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-700 text-xs truncate">{{ $po['amount'] ?? '₱'.number_format($po->total_amount ?? 0, 2) }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="{{ $po['status_color'] ?? 'bg-slate-100 text-slate-700' }} border inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-wide leading-none shadow-2xs whitespace-nowrap">
                                     {{ $po['status'] ?? $po->status ?? '' }}
                                 </span>
                             </td>

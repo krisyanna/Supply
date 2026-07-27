@@ -63,6 +63,11 @@ Route::prefix('procurement')->group(function () {
 */
 Route::get('/logistics', [LogisticsController::class, 'index'])
     ->name('logistics.dashboard');
+Route::post('/logistics/purchase-orders/{purchaseOrder}/review', [LogisticsController::class, 'reviewPurchaseOrder'])
+    ->name('logistics.purchase-orders.review');
+
+Route::post('/logistics/shipments', [LogisticsController::class, 'storeShipment'])
+    ->name('logistics.shipments.store');
 
 /*
 |--------------------------------------------------------------------------
