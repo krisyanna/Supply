@@ -8,19 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('reorder_recommendations', function (Blueprint $table) {
-            $table->id();
-            
-            // Explicitly define column and reference id on products table
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            
-            $table->integer('recommended_qty');
-            $table->string('urgency_level')->default('Medium');
-            $table->string('status')->default('Pending Review');
-            $table->timestamps();
-        });
-    }
+    
+
+    Schema::create('reorder_recommendations', function (Blueprint $table) {
+        $table->id();
+        
+        // THIS IS THE ONLY TIME PRODUCT_ID SHOULD APPEAR HERE:
+        $table->foreignId('product_id')->references('product_id')->on('products')->onDelete('cascade');
+        
+        $table->integer('recommended_qty');
+        $table->string('urgency_level')->default('Medium');
+        $table->string('status')->default('Pending Review');
+        $table->timestamps();
+    });
+}
 
     public function down(): void
     {

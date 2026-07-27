@@ -129,26 +129,30 @@ class ProcurementController extends Controller
             ->get();
 
         // 3. Format the data to match your Blade @foreach loop
-        $po_list = $purchaseOrders->map(function ($item) {
-            $status = $item->status ?? 'Pending Approval';
-            
-            $statusColor = match ($status) {
-                'Approved'         => 'bg-emerald-50 text-emerald-700',
-                'Delivered'        => 'bg-indigo-50 text-indigo-700',
-                'Pending Approval' => 'bg-amber-50 text-amber-700',
-                'Delayed'          => 'bg-rose-50 text-rose-700',
-                default            => 'bg-slate-100 text-slate-600',
-            };
+       // 2. Format list for the view (Adding badge colors dynamically)
+    $po_list = $purchaseOrders->map(function ($po) {
+        $color = 'bg-slate-100 text-slate-600 border-slate-200'; // Default
+        
+        if ($po->status === 'Approved') {
+            $color = 'bg-emerald-50 text-emerald-600 border-emerald-200';
+        } elseif ($po->status === 'Delayed') {
+            $color = 'bg-rose-50 text-rose-600 border-rose-200';
+        } elseif ($po->status === 'Pending Approval') {
+            $color = 'bg-orange-50 text-orange-600 border-orange-200';
+        } elseif ($po->status === 'Delivered') {
+            // New Purple styling for Delivered!
+            $color = 'bg-indigo-50 text-indigo-600 border-indigo-200'; 
+        }
 
-            return [
-                'po_number'    => $item->po_number ?? 'N/A',
-                'supplier'     => $item->supplier_name ?? 'Unknown Supplier',
-                'order_date'   => isset($item->order_date) ? date('d M Y', strtotime($item->order_date)) : 'N/A',
-                'amount'       => '₱' . number_format($item->total_amount ?? 0, 2),
-                'status'       => $status,
-                'status_color' => $statusColor,
-            ];
-        });
+        return [
+            'po_number'    => $po->po_number,
+            'supplier'     => $po->supplier_name,
+            'order_date'   => \Carbon\Carbon::parse($po->order_date)->format('d M Y'),
+            'amount'       => '₱' . number_format($po->total_amount, 2),
+            'status'       => $po->status,
+            'status_color' => $color,
+        ];
+    });
 
         return view('procurement.po', compact('kpi_summary', 'po_list'));
     }

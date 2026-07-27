@@ -87,14 +87,6 @@
             </button>
             
             <div id="procurement-submenu" class="submenu-transition {{ $isProcurement ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0' }} pl-7 pr-2 space-y-1">
-                <a href="{{ route('procurement.reorder') }}"
-                   class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('procurement.reorder') ? $leafActive : $leafInactive }}">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l2 2 4-4"></path>
-                    </svg>
-                    <span>Reorder Recommendations</span>
-                </a>
                 <a href="{{ route('procurement.suppliers') }}"
                    class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('procurement.suppliers') ? $leafActive : $leafInactive }}">
                     <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,13 +103,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <span>Purchase Order Management</span>
-                </a>
-                <a href="{{ route('procurement.goods-receipt') }}"
-                   class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('procurement.goods-receipt') ? $leafActive : $leafInactive }}">
-                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"></path>
-                    </svg>
-                    <span>Goods Receipt &amp; Invoices</span>
                 </a>
             </div>
         </div>
@@ -169,39 +154,39 @@
             </div>
         </div>
 
-{{-- INVENTORY & WAREHOUSE --}}
-<div class="space-y-1">
-    <button type="button" onclick="toggleSubmenu('inventory-submenu', 'inventory-chevron')"
-            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition {{ $isInventory ? $parentActive : $parentInactive }}">
-        <div class="flex items-center gap-3">
-            <svg class="w-4 h-4 transition {{ $isInventory ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0l3-4m0 0l3 4"></path>
-            </svg>
-            <span>Inventory & Warehouse</span>
-        </div>
-        <svg id="inventory-chevron" class="w-3.5 h-3.5 transition-transform duration-300 {{ $isInventory ? 'text-white rotate-180' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-    </button>
+        {{-- INVENTORY & WAREHOUSE --}}
+        <div class="space-y-1">
+            <button type="button" onclick="toggleSubmenu('inventory-submenu', 'inventory-chevron')"
+                    class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition {{ $isInventory ? $parentActive : $parentInactive }}">
+                <div class="flex items-center gap-3">
+                    <svg class="w-4 h-4 transition {{ $isInventory ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0l3-4m0 0l3 4"></path>
+                    </svg>
+                    <span>Inventory & Warehouse</span>
+                </div>
+                <svg id="inventory-chevron" class="w-3.5 h-3.5 transition-transform duration-300 {{ $isInventory ? 'text-white rotate-180' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
 
-    <div id="inventory-submenu" class="submenu-transition {{ $isInventory ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0' }} pl-7 pr-2 space-y-1">
-        <a href="{{ route('inventory.index') }}"
-           class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('inventory.index') ? $leafActive : $leafInactive }}">
-            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            <span>Stock Ledger</span>
-        </a>
-        <a href="{{ route('inventory.warehouse-locations') }}"
-           class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('inventory.warehouse-locations') ? $leafActive : $leafInactive }}">
-            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <circle cx="12" cy="11" r="2.5"></circle>
-            </svg>
-            <span>Warehouse Locations</span>
-        </a>
-    </div>
-</div>
+            <div id="inventory-submenu" class="submenu-transition {{ $isInventory ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0' }} pl-7 pr-2 space-y-1">
+                <a href="{{ route('inventory.index') }}"
+                   class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('inventory.index') ? $leafActive : $leafInactive }}">
+                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Stock Ledger</span>
+                </a>
+                <a href="{{ route('inventory.warehouse-locations') }}"
+                   class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('inventory.warehouse-locations') ? $leafActive : $leafInactive }}">
+                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <circle cx="12" cy="11" r="2.5"></circle>
+                    </svg>
+                    <span>Warehouse Locations</span>
+                </a>
+            </div>
+        </div>
     </nav>
 
     <div class="p-4 border-t border-slate-800 bg-slate-950/40">
