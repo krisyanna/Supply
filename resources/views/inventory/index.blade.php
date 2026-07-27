@@ -1,361 +1,224 @@
 @extends('layouts.app')
 
-@section('title', 'Inventory & Warehouse Management')
-
-@push('styles')
-<style>
-  :root{
-    --accent:#6d5df6;
-    --accent-2:#5b4bdb;
-    --teal:#17c9b0;
-    --text-dark:#1c1f2e;
-    --text-muted:#8b8fa3;
-    --border:#eceef4;
-    --green:#1fae6b;
-    --green-bg:#e6f8ef;
-    --amber:#c9820a;
-    --amber-bg:#fdf1de;
-    --red:#e0483a;
-    --red-bg:#fceceb;
-    --blue:#4b3fd6;
-    --blue-bg:#eceafe;
-  }
-
-  .add-btn{
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    color:#fff;
-    border:none;
-    padding:14px 22px;
-    border-radius:12px;
-    font-weight:700;
-    font-size:14.5px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    cursor:pointer;
-    box-shadow:0 8px 18px rgba(109,93,246,.35);
-    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-  }
-  .add-btn:hover{
-    transform:translateY(-3px) scale(1.02);
-    box-shadow:0 14px 26px rgba(109,93,246,.45);
-    filter:brightness(1.06);
-  }
-  .add-btn:active{transform:translateY(-1px) scale(.98);}
-
-  .stats-row{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:20px;
-    margin-bottom:28px;
-  }
-  .stat-card{
-    background:#fff;
-    border-radius:16px;
-    padding:22px 24px;
-    border:1px solid var(--border);
-    transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
-    position:relative;
-    overflow:hidden;
-  }
-  .stat-card:hover{
-    transform:translateY(-6px);
-    box-shadow:0 16px 30px rgba(23,26,52,.08);
-    border-color:#e2e0fb;
-  }
-  .stat-label{
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.06em;
-    color:var(--text-muted);
-    margin-bottom:10px;
-    text-transform:uppercase;
-  }
-  .stat-value{font-size:30px; font-weight:800; color:var(--text-dark);}
-  .stat-value.accent-blue{color:var(--blue);}
-  .stat-value.accent-amber{color:var(--amber);}
-  .stat-value.accent-teal{color:var(--teal);}
-  .stat-value.currency{
-    font-size:22px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .ledger-card{
-    background:#fff;
-    border-radius:18px;
-    border:1px solid var(--border);
-    overflow:hidden;
-  }
-  .ledger-header{
-    padding:22px 26px;
-    font-size:17px;
-    font-weight:700;
-    border-bottom:1px solid var(--border);
-  }
-  table{width:100%; border-collapse:collapse;}
-  thead th{
-    background:#f6f7fb;
-    text-align:left;
-    font-size:11.5px;
-    font-weight:700;
-    letter-spacing:.05em;
-    color:var(--text-muted);
-    text-transform:uppercase;
-    padding:16px 26px;
-  }
-  tbody tr{
-    border-top:1px solid var(--border);
-    transition:background .16s ease, transform .16s ease;
-  }
-  tbody tr:hover{
-    background:#f8f8ff;
-    transform:scale(1.003);
-  }
-  tbody td{
-    padding:18px 26px;
-    font-size:14px;
-    vertical-align:top;
-  }
-  .item-code{
-    color:var(--accent-2);
-    font-weight:700;
-    cursor:pointer;
-    transition:color .15s ease;
-  }
-  .item-code:hover{color:var(--accent);text-decoration:underline;}
-
-  .badge{
-    display:inline-block;
-    padding:6px 14px;
-    border-radius:20px;
-    font-size:12.5px;
-    font-weight:700;
-    transition:transform .15s ease, box-shadow .15s ease;
-  }
-  tr:hover .badge{transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,0,0,.08);}
-  .badge.in-stock{background:var(--green-bg); color:var(--green);}
-  .badge.low-stock{background:var(--amber-bg); color:var(--amber);}
-  .badge.out-stock{background:var(--red-bg); color:var(--red);}
-  .badge.reserved{background:var(--blue-bg); color:var(--blue);}
-
-  .qty-pill{font-weight:700;}
-  .qty-bar-bg{
-    width:80px;
-    height:6px;
-    background:#eceef4;
-    border-radius:4px;
-    margin-top:6px;
-    overflow:hidden;
-  }
-  .qty-bar-fill{
-    height:100%;
-    border-radius:4px;
-    background:linear-gradient(90deg,var(--teal),var(--accent));
-    transition:width .6s ease;
-  }
-
-  .icon{
-    width:19px;
-    height:19px;
-    flex:none;
-    stroke:#9497b8;
-    fill:none;
-    stroke-width:1.9;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-    vertical-align:middle;
-  }
-
-  .empty-state{
-    padding:60px 26px;
-    text-align:center;
-    color:var(--text-muted);
-  }
-  .empty-state svg{
-    width:40px;
-    height:40px;
-    stroke:#c7cadb;
-    fill:none;
-    stroke-width:1.6;
-    margin-bottom:14px;
-  }
-  .empty-state p{margin:0; font-size:14px;}
-  .empty-state span{font-size:12.5px; color:#b7bacb;}
-
-  .filter-bar{
-    display:flex;
-    gap:12px;
-    margin-bottom:20px;
-    flex-wrap:wrap;
-  }
-  .filter-bar input[type="text"],
-  .filter-bar select{
-    padding:11px 14px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    font-family:inherit;
-    font-size:13.5px;
-    background:#fff;
-    color:var(--text-dark);
-  }
-  .filter-bar input[type="text"]{
-    flex:1;
-    min-width:220px;
-  }
-  .filter-bar select{
-    min-width:170px;
-  }
-  .filter-bar input[type="text"]:focus,
-  .filter-bar select:focus{
-    outline:none;
-    border-color:var(--accent);
-  }
-</style>
-@endpush
-
-@section('header')
-  <div>
-    <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Inventory & Warehouse Management</h1>
-    <p class="text-sm text-slate-500 mt-1">{{ count($items) }} stock items across all warehouse locations</p>
-  </div>
-@endsection
-
 @section('content')
+<!-- overflow-y-scroll locks vertical scrollbar to eliminate page layout jump -->
+<main class="flex-1 flex flex-col min-w-0 overflow-y-scroll bg-slate-100/60 p-4 lg:p-6 font-sans antialiased">
+    
+    <!-- Header (Identical to Supplier Management) -->
+    <header class="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-5 bg-white border border-slate-200/80 rounded-2xl shadow-2xs mb-4 shrink-0">
+        <div>
+            <h2 class="text-xl lg:text-2xl font-extrabold text-slate-900 tracking-tight">Inventory & Warehouse Management</h2>
+            <p class="text-xs lg:text-sm text-slate-500 mt-0.5 font-normal">{{ $items->total() }} stock items found</p>
+        </div>
+        <div class="flex items-center shrink-0">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Real-time Stock Synchronization
+            </span>
+        </div>
+    </header>
 
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-label">Total SKUs</div>
-      <div class="stat-value">{{ $stats['total_skus'] }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">In Stock</div>
-      <div class="stat-value accent-blue">{{ $stats['in_stock'] }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Low / Out of Stock</div>
-      <div class="stat-value accent-amber">{{ $stats['low_out_of_stock'] }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Reserved</div>
-      <div class="stat-value accent-teal">{{ $stats['reserved'] }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Inventory Value Total</div>
-      <div class="stat-value currency">₱{{ number_format($stats['inventory_value'], 2) }}</div>
-    </div>
-  </div>
-
-  <div class="filter-bar">
-    <input type="text" id="search-input" placeholder="Search by item code or name...">
-    <select id="category-filter">
-      <option value="">All Categories</option>
-      @foreach ($categories as $category)
-        <option value="{{ $category }}">{{ $category }}</option>
-      @endforeach
-    </select>
-    <select id="status-filter">
-      <option value="">All Statuses</option>
-      <option value="in-stock">In Stock</option>
-      <option value="low-stock">Low Stock</option>
-      <option value="out-stock">Out of Stock</option>
-      <option value="reserved">Reserved</option>
-    </select>
-  </div>
-
-  <div class="ledger-card">
-    <div class="ledger-header">Warehouse Stock Ledger</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Item Code</th>
-          <th>Item Name</th>
-          <th>Warehouse Location</th>
-          <th>Category</th>
-          <th>Quantity On Hand</th>
-          <th>Unit Cost</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="ledger-body">
-        @forelse ($items as $item)
-          <tr data-code="{{ strtolower($item->code) }}" data-name="{{ strtolower($item->name) }}" data-category="{{ $item->category }}" data-status="{{ $item->status }}">
-            <td><span class="item-code">{{ $item->code }}</span></td>
-            <td>{{ $item->name }}</td>
-            <td>{{ $item->location }}</td>
-            <td>{{ $item->category }}</td>
-            <td>
-              <div class="qty-pill">{{ $item->quantity }} {{ $item->unit }}</div>
-              <div class="qty-bar-bg">
-                <div class="qty-bar-fill" style="width: {{ min(100, ($item->quantity / max($item->max_qty, 1)) * 100) }}%"></div>
-              </div>
-            </td>
-            <td>₱{{ number_format($item->cost, 2) }}</td>
-            <td>
-              <span class="badge {{ $item->status }}">
-                {{ ucwords(str_replace('-', ' ', $item->status)) }}
-              </span>
-            </td>
-          </tr>
-        @empty
-          <tr id="empty-row">
-            <td colspan="7">
-              <div class="empty-state">
-                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 22.08V12"/></svg>
-                <p>No inventory data yet</p>
-                <span>Add your first stock item to get started.</span>
-              </div>
-            </td>
-          </tr>
-        @endforelse
-        <tr id="no-results-row" style="display:none;">
-          <td colspan="7">
-            <div class="empty-state">
-              <p>No items match your search or filters</p>
-              <span>Try adjusting the search text or filter selections.</span>
+    <!-- Stat Cards (Supplier Management Typography & Spacing) -->
+    <div class="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4 shrink-0">
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">Total SKUs</p>
+                <p class="text-xl sm:text-2xl font-black text-indigo-600 tracking-tight truncate mt-0.5">{{ $stats['total_skus'] }}</p>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-indigo-50 rounded-lg border border-indigo-100 text-indigo-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            </div>
+        </div>
 
-@endsection
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">In Stock</p>
+                <p class="text-xl sm:text-2xl font-black text-blue-600 tracking-tight truncate mt-0.5">{{ $stats['in_stock'] }}</p>
+            </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-blue-50 rounded-lg border border-blue-100 text-blue-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+        </div>
 
-@push('scripts')
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">Low / Out</p>
+                <p class="text-xl sm:text-2xl font-black text-amber-600 tracking-tight truncate mt-0.5">{{ $stats['low_out_of_stock'] }}</p>
+            </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-amber-50 rounded-lg border border-amber-100 text-amber-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">Reserved</p>
+                <p class="text-xl sm:text-2xl font-black text-teal-600 tracking-tight truncate mt-0.5">{{ $stats['reserved'] }}</p>
+            </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-teal-50 rounded-lg border border-teal-100 text-teal-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0 col-span-2 sm:col-span-1">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">Total Value</p>
+                <p class="text-lg sm:text-xl font-black text-purple-600 tracking-tight truncate mt-0.5">₱{{ number_format($stats['inventory_value'], 0) }}</p>
+            </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-purple-50 rounded-lg border border-purple-100 text-purple-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Container -->
+    <div class="w-full min-w-0 bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden flex flex-col">
+        
+        <!-- Filter Bar with Locked Input Widths -->
+        <form id="ledger-filter-form" method="GET" action="{{ route('inventory.index') }}" class="px-5 py-4 border-b border-slate-200/60 bg-white flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0">
+            <div>
+                <h3 class="text-base font-bold text-slate-900 tracking-tight">Warehouse Stock Ledger</h3>
+                <p class="text-xs text-slate-500 mt-0.5 font-normal">Real-time stock balance across linked warehouses</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                
+                <!-- Category Filter -->
+                <select name="category" onchange="this.form.submit()" class="w-40 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25 shrink-0">
+                    <option value="">All Categories</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
+                            {{ $category }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Status Filter -->
+                <select name="status" onchange="this.form.submit()" class="w-36 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25 shrink-0">
+                    <option value="">All Statuses</option>
+                    <option value="in-stock" {{ request('status') == 'in-stock' ? 'selected' : '' }}>In Stock</option>
+                    <option value="low-stock" {{ request('status') == 'low-stock' ? 'selected' : '' }}>Low Stock</option>
+                    <option value="out-stock" {{ request('status') == 'out-stock' ? 'selected' : '' }}>Out of Stock</option>
+                    <option value="reserved" {{ request('status') == 'reserved' ? 'selected' : '' }}>Reserved</option>
+                </select>
+
+                <!-- Search Input -->
+                <div class="relative w-52 shrink-0">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                    <input type="text" name="search" id="live-search-input" value="{{ request('search') }}" placeholder="Search code, name..." class="w-full pl-8 pr-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25 placeholder:text-slate-400">
+                </div>
+
+                @if(request()->hasAny(['category', 'status', 'search']))
+                    <a href="{{ route('inventory.index') }}" class="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-colors shrink-0">
+                        Reset
+                    </a>
+                @endif
+            </div>
+        </form>
+
+        <!-- Fixed Table Viewport -->
+        <div class="w-full overflow-x-auto min-w-0 min-h-[420px]">
+            <table class="w-full text-xs text-left min-w-[700px]">
+                <thead class="bg-slate-50/80 text-slate-500 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200/60 select-none">
+                    <tr>
+                        <th scope="col" class="px-4 py-3">Item Code</th>
+                        <th scope="col" class="px-4 py-3">Item Name</th>
+                        <th scope="col" class="px-4 py-3">Warehouse Location</th>
+                        <th scope="col" class="px-4 py-3">Category</th>
+                        <th scope="col" class="px-4 py-3">Quantity On Hand</th>
+                        <th scope="col" class="px-4 py-3">Unit Cost</th>
+                        <th scope="col" class="px-4 py-3 text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700">
+                    @forelse ($items as $item)
+                    <tr class="hover:bg-slate-50/75 transition-colors">
+                        <td class="px-4 py-3 font-bold text-indigo-950 whitespace-nowrap">{{ $item->code }}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-900 max-w-[180px] truncate" title="{{ $item->name }}">{{ $item->name }}</td>
+                        <td class="px-4 py-3 text-slate-600 font-normal max-w-[180px] truncate" title="{{ $item->location }}">{{ $item->location }}</td>
+                        <td class="px-4 py-3 text-slate-800 font-medium whitespace-nowrap">{{ $item->category }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <div class="font-bold text-slate-900">{{ $item->quantity }} {{ $item->unit }}</div>
+                            <div class="w-20 h-1 bg-slate-100 rounded-full mt-1 overflow-hidden">
+                                <div class="h-full bg-indigo-500 rounded-full" style="width: {{ min(100, ($item->quantity / max($item->max_qty, 1)) * 100) }}%"></div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">₱{{ number_format($item->cost, 2) }}</td>
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+                            @php
+                                $badgeStyle = 'bg-slate-100 text-slate-700';
+                                if ($item->status === 'in-stock') $badgeStyle = 'bg-emerald-50 text-emerald-700 border border-emerald-200/80';
+                                elseif ($item->status === 'low-stock') $badgeStyle = 'bg-amber-50 text-amber-700 border border-amber-200/80';
+                                elseif ($item->status === 'out-stock') $badgeStyle = 'bg-rose-50 text-rose-700 border border-rose-200/80';
+                                elseif ($item->status === 'reserved') $badgeStyle = 'bg-blue-50 text-blue-700 border border-blue-200/80';
+                            @endphp
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-block {{ $badgeStyle }}">
+                                {{ ucwords(str_replace('-', ' ', $item->status)) }}
+                            </span>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="px-4 py-16 text-center text-slate-400 font-medium">No stock records found matching your filters.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Block (Exact Match with Supplier Management) -->
+        @if($items->hasPages())
+        <div class="flex flex-col sm:flex-row items-center justify-between px-5 py-3.5 border-t border-slate-200/80 bg-white gap-3 text-xs select-none shrink-0">
+            <div class="text-slate-500 font-medium">
+                Showing <span class="font-bold text-slate-800">{{ $items->firstItem() }}</span> to <span class="font-bold text-slate-800">{{ $items->lastItem() }}</span> of <span class="font-bold text-slate-800">{{ $items->total() }}</span> results
+            </div>
+            
+            <div class="flex items-center gap-1.5">
+                @if ($items->onFirstPage())
+                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed font-medium text-xs">Previous</span>
+                @else
+                    <a href="{{ $items->previousPageUrl() }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-xs">Previous</a>
+                @endif
+
+                @foreach ($items->getUrlRange(1, $items->lastPage()) as $page => $url)
+                    @if ($page == $items->currentPage())
+                        <span class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-bold text-xs shadow-xs">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-xs">{{ $page }}</a>
+                    @endif
+                @endforeach
+
+                @if ($items->hasMorePages())
+                    <a href="{{ $items->nextPageUrl() }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-xs">Next</a>
+                @else
+                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed font-medium text-xs">Next</span>
+                @endif
+            </div>
+        </div>
+        @endif
+
+    </div>
+</main>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('search-input');
-    const categoryFilter = document.getElementById('category-filter');
-    const statusFilter = document.getElementById('status-filter');
-    const rows = Array.from(document.querySelectorAll('#ledger-body tr[data-code]'));
-    const noResultsRow = document.getElementById('no-results-row');
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('live-search-input');
+        const form = document.getElementById('ledger-filter-form');
+        let timeout = null;
 
-    function applyFilters() {
-      const search = searchInput.value.trim().toLowerCase();
-      const category = categoryFilter.value;
-      const status = statusFilter.value;
-      let visibleCount = 0;
+        if (searchInput && form) {
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
 
-      rows.forEach(function (row) {
-        const matchesSearch = !search || row.dataset.code.includes(search) || row.dataset.name.includes(search);
-        const matchesCategory = !category || row.dataset.category === category;
-        const matchesStatus = !status || row.dataset.status === status;
-        const isVisible = matchesSearch && matchesCategory && matchesStatus;
-
-        row.style.display = isVisible ? '' : 'none';
-        if (isVisible) visibleCount++;
-      });
-
-      if (noResultsRow) {
-        noResultsRow.style.display = (rows.length > 0 && visibleCount === 0) ? '' : 'none';
-      }
-    }
-
-    if (searchInput) searchInput.addEventListener('input', applyFilters);
-    if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
-    if (statusFilter) statusFilter.addEventListener('change', applyFilters);
-  });
+            searchInput.addEventListener('input', function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    form.submit();
+                }, 350);
+            });
+        }
+    });
 </script>
-@endpush
+@endsection

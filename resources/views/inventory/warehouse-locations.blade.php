@@ -1,369 +1,200 @@
 @extends('layouts.app')
 
-@section('title', 'Warehouse Locations')
-
-@push('styles')
-<style>
-  :root{
-    --accent:#6d5df6;
-    --accent-2:#5b4bdb;
-    --teal:#17c9b0;
-    --text-dark:#1c1f2e;
-    --text-muted:#8b8fa3;
-    --border:#eceef4;
-    --green:#1fae6b;
-    --green-bg:#e6f8ef;
-    --amber:#c9820a;
-    --amber-bg:#fdf1de;
-    --red:#e0483a;
-    --red-bg:#fceceb;
-    --blue:#4b3fd6;
-    --blue-bg:#eceafe;
-  }
-  .add-btn{
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    color:#fff;
-    border:none;
-    padding:14px 22px;
-    border-radius:12px;
-    font-weight:700;
-    font-size:14.5px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    cursor:pointer;
-    box-shadow:0 8px 18px rgba(109,93,246,.35);
-    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-  }
-  .add-btn:hover{
-    transform:translateY(-3px) scale(1.02);
-    box-shadow:0 14px 26px rgba(109,93,246,.45);
-    filter:brightness(1.06);
-  }
-  .add-btn:active{transform:translateY(-1px) scale(.98);}
-
-  .stats-row{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-    margin-bottom:28px;
-  }
-  .stat-card{
-    background:#fff;
-    border-radius:16px;
-    padding:22px 24px;
-    border:1px solid var(--border);
-    transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
-    position:relative;
-    overflow:hidden;
-  }
-  .stat-card:hover{
-    transform:translateY(-6px);
-    box-shadow:0 16px 30px rgba(23,26,52,.08);
-    border-color:#e2e0fb;
-  }
-  .stat-label{
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.06em;
-    color:var(--text-muted);
-    margin-bottom:10px;
-    text-transform:uppercase;
-  }
-  .stat-value{font-size:30px; font-weight:800; color:var(--text-dark);}
-  .stat-value.accent-blue{color:var(--blue);}
-  .stat-value.accent-amber{color:var(--amber);}
-
-  .ledger-card{
-    background:#fff;
-    border-radius:18px;
-    border:1px solid var(--border);
-    overflow:hidden;
-  }
-  .ledger-header{
-    padding:22px 26px;
-    font-size:17px;
-    font-weight:700;
-    border-bottom:1px solid var(--border);
-  }
-  table{width:100%; border-collapse:collapse;}
-  thead th{
-    background:#f6f7fb;
-    text-align:left;
-    font-size:11.5px;
-    font-weight:700;
-    letter-spacing:.05em;
-    color:var(--text-muted);
-    text-transform:uppercase;
-    padding:16px 26px;
-  }
-  tbody tr{
-    border-top:1px solid var(--border);
-    transition:background .16s ease, transform .16s ease;
-  }
-  tbody tr:hover{
-    background:#f8f8ff;
-    transform:scale(1.003);
-  }
-  tbody td{
-    padding:18px 26px;
-    font-size:14px;
-    vertical-align:top;
-  }
-  .item-code{
-    color:var(--accent-2);
-    font-weight:700;
-    cursor:pointer;
-    transition:color .15s ease;
-  }
-  .item-code:hover{color:var(--accent);text-decoration:underline;}
-
-  .badge{
-    display:inline-block;
-    padding:6px 14px;
-    border-radius:20px;
-    font-size:12.5px;
-    font-weight:700;
-    transition:transform .15s ease, box-shadow .15s ease;
-  }
-  tr:hover .badge{transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,0,0,.08);}
-  .badge.in-stock{background:var(--green-bg); color:var(--green);}
-  .badge.low-stock{background:var(--amber-bg); color:var(--amber);}
-  .badge.out-stock{background:var(--red-bg); color:var(--red);}
-  .badge.reserved{background:var(--blue-bg); color:var(--blue);}
-
-  .icon{
-    width:19px;
-    height:19px;
-    flex:none;
-    stroke:#9497b8;
-    fill:none;
-    stroke-width:1.9;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-    vertical-align:middle;
-  }
-
-  .empty-state{
-    padding:60px 26px;
-    text-align:center;
-    color:var(--text-muted);
-  }
-  .empty-state svg{
-    width:40px;
-    height:40px;
-    stroke:#c7cadb;
-    fill:none;
-    stroke-width:1.6;
-    margin-bottom:14px;
-  }
-  .empty-state p{margin:0; font-size:14px;}
-  .empty-state span{font-size:12.5px; color:#b7bacb;}
-
-  .filter-bar{
-    display:flex;
-    gap:12px;
-    margin-bottom:20px;
-    flex-wrap:wrap;
-  }
-  .filter-bar input[type="text"],
-  .filter-bar select{
-    padding:11px 14px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    font-family:inherit;
-    font-size:13.5px;
-    background:#fff;
-    color:var(--text-dark);
-  }
-  .filter-bar input[type="text"]{
-    flex:1;
-    min-width:220px;
-  }
-  .filter-bar select{
-    min-width:170px;
-  }
-  .filter-bar input[type="text"]:focus,
-  .filter-bar select:focus{
-    outline:none;
-    border-color:var(--accent);
-  }
-
-  .modal-overlay{
-    position:fixed; inset:0;
-    background:rgba(23,26,52,.45);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:50;
-  }
-  .modal-overlay.open{display:flex;}
-  .modal-card{
-    background:#fff;
-    border-radius:18px;
-    width:100%;
-    max-width:480px;
-    padding:28px 30px;
-    box-shadow:0 24px 60px rgba(23,26,52,.25);
-  }
-  .modal-card h2{margin:0 0 4px 0; font-size:20px; font-weight:800;}
-  .modal-card p{margin:0 0 20px 0; font-size:13px; color:var(--text-muted);}
-  .form-row{margin-bottom:14px;}
-  .form-row label{display:block; font-size:12.5px; font-weight:700; color:var(--text-dark); margin-bottom:6px;}
-  .form-row input, .form-row select{
-    width:100%;
-    padding:10px 12px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    font-family:inherit;
-    font-size:13.5px;
-    background:#fafafe;
-  }
-  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:0 14px;}
-  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:22px;}
-  .btn-cancel{
-    background:#f1f2f7; color:var(--text-dark); border:none;
-    padding:11px 18px; border-radius:10px; font-weight:700; font-size:13.5px; cursor:pointer;
-  }
-  .btn-submit{
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    color:#fff; border:none;
-    padding:11px 20px; border-radius:10px; font-weight:700; font-size:13.5px; cursor:pointer;
-  }
-</style>
-@endpush
-
-@section('header')
-  <div>
-    <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Warehouse Locations</h1>
-    <p class="text-sm text-slate-500 mt-1">{{ count($warehouses) }} warehouse locations registered</p>
-  </div>
-@endsection
-
 @section('content')
+<!-- overflow-y-scroll locks vertical scrollbar to eliminate page layout jump -->
+<main class="flex-1 flex flex-col min-w-0 overflow-y-scroll bg-slate-100/60 p-4 lg:p-6 font-sans antialiased">
+    
+    <!-- Header (Identical to Supplier Management) -->
+    <header class="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-5 bg-white border border-slate-200/80 rounded-2xl shadow-2xs mb-4 shrink-0">
+        <div>
+            <h2 class="text-xl lg:text-2xl font-extrabold text-slate-900 tracking-tight">Warehouse Locations</h2>
+            <p class="text-xs lg:text-sm text-slate-500 mt-0.5 font-normal">{{ $warehouses->total() }} warehouse locations found</p>
+        </div>
+        <div class="flex items-center shrink-0">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Active Sites
+            </span>
+        </div>
+    </header>
 
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-label">Total Warehouses</div>
-      <div class="stat-value">{{ $stats['total_warehouses'] }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Active</div>
-      <div class="stat-value accent-blue">{{ $stats['active'] }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Inactive</div>
-      <div class="stat-value accent-amber">{{ $stats['inactive'] }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Total Capacity</div>
-      <div class="stat-value">{{ number_format($stats['total_capacity']) }}</div>
-    </div>
-  </div>
-
-  <div class="ledger-card">
-  <div class="filter-bar">
-    <input type="text" id="search-input" placeholder="Search by code or name...">
-    <select id="city-filter">
-      <option value="">All Cities</option>
-      @foreach ($cities as $city)
-        <option value="{{ $city }}">{{ $city }}</option>
-      @endforeach
-    </select>
-    <select id="status-filter">
-      <option value="">All Statuses</option>
-      <option value="active">Active</option>
-      <option value="inactive">Inactive</option>
-    </select>
-  </div>
-
-  <div class="ledger-card">
-    <div class="ledger-header">Warehouse Locations List</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Address</th>
-          <th>City</th>
-          <th>Capacity</th>
-          <th>Manager</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="ledger-body">
-        @forelse ($warehouses as $warehouse)
-          <tr data-code="{{ strtolower($warehouse->code) }}" data-name="{{ strtolower($warehouse->name) }}" data-city="{{ $warehouse->city }}" data-status="{{ $warehouse->status }}">
-            <td><span class="item-code">{{ $warehouse->code }}</span></td>
-            <td>{{ $warehouse->name }}</td>
-            <td>{{ $warehouse->address }}</td>
-            <td>{{ $warehouse->city }}</td>
-            <td>{{ number_format($warehouse->capacity) }}</td>
-            <td>{{ $warehouse->manager_name }}</td>
-            <td>
-              <span class="badge {{ $warehouse->status === 'active' ? 'in-stock' : 'out-stock' }}">
-                {{ ucfirst($warehouse->status) }}
-              </span>
-            </td>
-          </tr>
-        @empty
-          <tr id="empty-row">
-            <td colspan="7">
-              <div class="empty-state">
-                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.27 6.96L12 12.01l8.73-5.05"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 22.08V12"/></svg>
-                <p>No warehouse locations yet</p>
-                <span>Add your first warehouse to get started.</span>
-              </div>
-            </td>
-          </tr>
-        @endforelse
-        <tr id="no-results-row" style="display:none;">
-          <td colspan="7">
-            <div class="empty-state">
-              <p>No warehouses match your search or filters</p>
-              <span>Try adjusting the search text or filter selections.</span>
+    <!-- Stat Cards (Supplier Management Typography & Spacing) -->
+    <div class="w-full grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4 shrink-0">
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">Total Warehouses</p>
+                <p class="text-xl sm:text-2xl font-black text-indigo-600 tracking-tight truncate mt-0.5">{{ $stats['total_warehouses'] }}</p>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-indigo-50 rounded-lg border border-indigo-100 text-indigo-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            </div>
+        </div>
 
-@endsection
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">Active</p>
+                <p class="text-xl sm:text-2xl font-black text-emerald-600 tracking-tight truncate mt-0.5">{{ $stats['active'] }}</p>
+            </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-emerald-50 rounded-lg border border-emerald-100 text-emerald-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </div>
 
-@push('scripts')
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">Inactive</p>
+                <p class="text-xl sm:text-2xl font-black text-amber-600 tracking-tight truncate mt-0.5">{{ $stats['inactive'] }}</p>
+            </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-amber-50 rounded-lg border border-amber-100 text-amber-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase truncate">Capacity</p>
+                <p class="text-lg sm:text-xl font-black text-purple-600 tracking-tight truncate mt-0.5">{{ number_format($stats['total_capacity']) }}</p>
+            </div>
+            <div class="shrink-0 p-2 sm:p-2.5 bg-purple-50 rounded-lg border border-purple-100 text-purple-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8-4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Container -->
+    <div class="w-full min-w-0 bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden flex flex-col">
+        
+        <!-- Filter Bar with Locked Input Widths -->
+        <form id="warehouse-filter-form" method="GET" action="{{ route('inventory.warehouse-locations') }}" class="px-5 py-4 border-b border-slate-200/60 bg-white flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0">
+            <div>
+                <h3 class="text-base font-bold text-slate-900 tracking-tight">Warehouse Locations List</h3>
+                <p class="text-xs text-slate-500 mt-0.5 font-normal">Showing registered storage facilities & contact details</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                
+                <!-- City Filter -->
+                <select name="city" onchange="this.form.submit()" class="w-40 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25 shrink-0">
+                    <option value="">All Cities</option>
+                    @foreach ($cities as $city)
+                        <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                            {{ $city }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Status Filter -->
+                <select name="status" onchange="this.form.submit()" class="w-36 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25 shrink-0">
+                    <option value="">All Statuses</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+
+                <!-- Search Input -->
+                <div class="relative w-52 shrink-0">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                    <input type="text" name="search" id="live-warehouse-search" value="{{ request('search') }}" placeholder="Search code, name..." class="w-full pl-8 pr-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/25 placeholder:text-slate-400">
+                </div>
+
+                @if(request()->hasAny(['city', 'status', 'search']))
+                    <a href="{{ route('inventory.warehouse-locations') }}" class="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-colors shrink-0">
+                        Reset
+                    </a>
+                @endif
+            </div>
+        </form>
+
+        <!-- Fixed Table Viewport -->
+        <div class="w-full overflow-x-auto min-w-0 min-h-[420px]">
+            <table class="w-full text-xs text-left min-w-[700px]">
+                <thead class="bg-slate-50/80 text-slate-500 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200/60 select-none">
+                    <tr>
+                        <th scope="col" class="px-4 py-3">Code</th>
+                        <th scope="col" class="px-4 py-3">Name</th>
+                        <th scope="col" class="px-4 py-3">Address</th>
+                        <th scope="col" class="px-4 py-3">City</th>
+                        <th scope="col" class="px-4 py-3">Capacity</th>
+                        <th scope="col" class="px-4 py-3">Manager</th>
+                        <th scope="col" class="px-4 py-3 text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700">
+                    @forelse ($warehouses as $warehouse)
+                    <tr class="hover:bg-slate-50/75 transition-colors">
+                        <td class="px-4 py-3 font-bold text-indigo-950 whitespace-nowrap">{{ $warehouse->code }}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-900 max-w-[180px] truncate" title="{{ $warehouse->name }}">{{ $warehouse->name }}</td>
+                        <td class="px-4 py-3 text-slate-600 font-normal max-w-[220px] truncate" title="{{ $warehouse->address }}">{{ $warehouse->address }}</td>
+                        <td class="px-4 py-3 text-slate-800 font-medium whitespace-nowrap">{{ $warehouse->city }}</td>
+                        <td class="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">{{ number_format($warehouse->capacity) }}</td>
+                        <td class="px-4 py-3 text-slate-700 whitespace-nowrap">{{ $warehouse->manager_name }}</td>
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-block {{ strtolower($warehouse->status) === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-slate-100 text-slate-700' }}">
+                                {{ ucfirst($warehouse->status) }}
+                            </span>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="px-4 py-16 text-center text-slate-400 font-medium">No warehouse locations found matching your filters.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Block (Exact Match with Supplier Management) -->
+        @if($warehouses->hasPages())
+        <div class="flex flex-col sm:flex-row items-center justify-between px-5 py-3.5 border-t border-slate-200/80 bg-white gap-3 text-xs select-none shrink-0">
+            <div class="text-slate-500 font-medium">
+                Showing <span class="font-bold text-slate-800">{{ $warehouses->firstItem() }}</span> to <span class="font-bold text-slate-800">{{ $warehouses->lastItem() }}</span> of <span class="font-bold text-slate-800">{{ $warehouses->total() }}</span> results
+            </div>
+            
+            <div class="flex items-center gap-1.5">
+                @if ($warehouses->onFirstPage())
+                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed font-medium text-xs">Previous</span>
+                @else
+                    <a href="{{ $warehouses->previousPageUrl() }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-xs">Previous</a>
+                @endif
+
+                @foreach ($warehouses->getUrlRange(1, $warehouses->lastPage()) as $page => $url)
+                    @if ($page == $warehouses->currentPage())
+                        <span class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-bold text-xs shadow-xs">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-xs">{{ $page }}</a>
+                    @endif
+                @endforeach
+
+                @if ($warehouses->hasMorePages())
+                    <a href="{{ $warehouses->nextPageUrl() }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors font-medium text-xs">Next</a>
+                @else
+                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed font-medium text-xs">Next</span>
+                @endif
+            </div>
+        </div>
+        @endif
+
+    </div>
+</main>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('search-input');
-    const cityFilter = document.getElementById('city-filter');
-    const statusFilter = document.getElementById('status-filter');
-    const rows = Array.from(document.querySelectorAll('#ledger-body tr[data-code]'));
-    const noResultsRow = document.getElementById('no-results-row');
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('live-warehouse-search');
+        const form = document.getElementById('warehouse-filter-form');
+        let timeout = null;
 
-    function applyFilters() {
-      const search = searchInput.value.trim().toLowerCase();
-      const city = cityFilter.value;
-      const status = statusFilter.value;
-      let visibleCount = 0;
+        if (searchInput && form) {
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
 
-      rows.forEach(function (row) {
-        const matchesSearch = !search || row.dataset.code.includes(search) || row.dataset.name.includes(search);
-        const matchesCity = !city || row.dataset.city === city;
-        const matchesStatus = !status || row.dataset.status === status;
-        const isVisible = matchesSearch && matchesCity && matchesStatus;
-
-        row.style.display = isVisible ? '' : 'none';
-        if (isVisible) visibleCount++;
-      });
-
-      if (noResultsRow) {
-        noResultsRow.style.display = (rows.length > 0 && visibleCount === 0) ? '' : 'none';
-      }
-    }
-
-    if (searchInput) searchInput.addEventListener('input', applyFilters);
-    if (cityFilter) cityFilter.addEventListener('change', applyFilters);
-    if (statusFilter) statusFilter.addEventListener('change', applyFilters);
-  });
+            searchInput.addEventListener('input', function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    form.submit();
+                }, 350);
+            });
+        }
+    });
 </script>
-@endpush
+@endsection
