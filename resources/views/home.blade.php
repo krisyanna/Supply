@@ -78,6 +78,9 @@
 @push('scripts')
 <script src="{{ asset('js/chart.umd.min.js') }}"></script>
 <script>
+// Expose PHP total suppliers directly to JS safely
+window.PHP_TOTAL_SUPPLIERS = {{ $totalSuppliers ?? 0 }};
+
 const API_BASE_URL = '';
 
 const ENDPOINTS = {
@@ -107,6 +110,7 @@ const DONUT_COLORS = {
 let donutChart = null;
 let globalProductsCache = [];
 let globalSalesCache = [];
+let globalSuppliersCache = [];
 
 function getStock(product) {
     return Number(product?.current_stock ?? product?.stock ?? product?.quantity ?? 0);
@@ -254,21 +258,18 @@ function setupGlobalSearch() {
             return;
         }
 
-        // 1. Search Products
         const matchedProducts = globalProductsCache.filter(p => {
             const name = getProductName(p).toLowerCase();
             const category = String(p.category || p.type || '').toLowerCase();
             return name.includes(query) || category.includes(query);
         }).slice(0, 4);
 
-        // 2. Search Sales / Activities
         const matchedSales = globalSalesCache.filter(s => {
             const prodName = getProductName(s).toLowerCase();
             const time = String(s.sale_date || s.created_at || s.sold_at || '').toLowerCase();
             return prodName.includes(query) || time.includes(query);
         }).slice(0, 4);
 
-        // 3. Search System Modules / Navigation Links as structural matches
         const modules = [
             { name: 'Home Dashboard', url: '/dashboard' },
             { name: 'Procurement & Supplier Management', url: '/procurement/suppliers' },
@@ -286,7 +287,6 @@ function setupGlobalSearch() {
 
         let html = '';
 
-        // Render Matching Modules
         if (matchedModules.length > 0) {
             html += `<div class="px-3 py-1.5 font-bold bg-slate-100 text-slate-500 uppercase text-[10px]">Modules & Pages</div>`;
             matchedModules.forEach(m => {
@@ -297,7 +297,10 @@ function setupGlobalSearch() {
             });
         }
 
-        // Render Matching Products
+        if (matchedProducts.length === 0 && matchedSales.length === 0) {
+            // handled
+        }
+
         if (matchedProducts.length > 0) {
             html += `<div class="px-3 py-1.5 font-bold bg-slate-100 text-slate-500 uppercase text-[10px]">Inventory Products</div>`;
             matchedProducts.forEach(p => {
@@ -308,7 +311,6 @@ function setupGlobalSearch() {
             });
         }
 
-        // Render Matching Sales
         if (matchedSales.length > 0) {
             html += `<div class="px-3 py-1.5 font-bold bg-slate-100 text-slate-500 uppercase text-[10px]">Sales & Transactions</div>`;
             matchedSales.forEach(s => {
@@ -323,7 +325,6 @@ function setupGlobalSearch() {
         resultsContainer.classList.remove('hidden');
     });
 
-    // Hide dropdown when clicking outside
     document.addEventListener('click', function(e) {
         if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
             resultsContainer.classList.add('hidden');
@@ -359,13 +360,14 @@ async function loadDashboardData() {
         const totalProducts = globalProductsCache.length;
         const totalSales = globalSalesCache.reduce((sum, item) => sum + getSoldQty(item), 0);
         const lowStock = globalProductsCache.filter(product => getStock(product) <= 10).length;
+        const totalSuppliers = window.PHP_TOTAL_SUPPLIERS || 0;
 
         renderStatCards({
             stats: [
                 { label: "Total Products", value: totalProducts, note: "Products in inventory", icon: "box" },
                 { label: "Total Sales", value: totalSales, note: "Units sold", icon: "orders" },
                 { label: "Low Stock", value: lowStock, note: "Need attention", icon: "shipment" },
-                { label: "Suppliers", value: "--", note: "From supplier module", icon: "suppliers" }
+                { label: "Suppliers", value: totalSuppliers, note: "From supplier module", icon: "suppliers" }
             ]
         });
     } catch (error) {
