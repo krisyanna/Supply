@@ -2,64 +2,76 @@
 
 @section('content')
 <div class="container-fluid px-4 py-4">
-    <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 font-weight-bold text-gray-800 mb-1">Inventory Management</h1>
-            <p class="text-muted small mb-0">Manage product stock levels, categories, and warehouse allocations.</p>
-        </div>
-        <div>
-            <a href="{{ Route::has('inventory.create') ? route('inventory.create') : '#' }}" class="btn btn-primary btn-sm shadow-sm font-weight-bold">
-                <i class="fas fa-plus fa-sm text-white-50 mr-1"></i> Add Item
-            </a>
-        </div>
-    </div>
 
-    <!-- Search & Filter Card -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body py-3">
-            <form method="GET" action="{{ Route::has('inventory.index') ? route('inventory.index') : url('/inventory') }}" class="form-row align-items-center">
-                <div class="col-md-4 my-1">
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text bg-white border-right-0"><i class="fas fa-search text-gray-400"></i></span>
-                        </div>
-                        <input type="text" name="search" class="form-control border-left-0 pl-0" placeholder="Search by code, item name..." value="{{ request('search') }}">
+    {{-- =========================================================
+         HOME DASHBOARD SECTION
+         (Note: if your top navbar with the "Search everywhere" box
+         and the Admin User avatar already lives in layouts.app,
+         make sure IT contains the #globalSearchInput /
+         #globalSearchResults / #userName elements instead of the
+         ones below — don't duplicate IDs on the same page.)
+    ========================================================== --}}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 mb-6 border-b border-slate-200">
+        <div>
+            <div class="flex items-center flex-wrap gap-3">
+                <h1 class="text-2xl font-extrabold text-slate-900 m-0">Home Dashboard</h1>
+                <span class="text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-full px-2.5 py-1 whitespace-nowrap">
+                    Welcome back, <span id="userName">Admin User!</span>
+                </span>
+            </div>
+            <p class="text-sm text-slate-500 mt-1 mb-0" id="pageSubtitle">Overview of your supply chain, live from database.</p>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+            {{-- Global search --}}
+            <div class="position-relative" style="width: 260px;">
+                <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-full px-3 py-2 focus-within:border-indigo-300 focus-within:ring-2 focus-within:ring-indigo-100 transition">
+                    <i class="fas fa-search text-slate-400 text-xs"></i>
+                    <input type="text" id="globalSearchInput" class="border-0 flex-1 text-sm text-slate-700 focus:outline-none bg-transparent" placeholder="Search everywhere..." autocomplete="off">
+                    <button type="button" id="globalSearchClear" class="hidden text-slate-300 hover:text-slate-500" title="Clear search">
+                        <i class="fas fa-times-circle text-xs"></i>
+                    </button>
+                </div>
+                <div id="globalSearchResults" class="hidden position-absolute bg-white border border-slate-200 rounded-xl shadow-lg mt-2 w-100 overflow-hidden" style="max-height: 320px; overflow-y: auto; z-index: 1000; right: 0;"></div>
+            </div>
+
+            {{-- Profile menu --}}
+            <div class="position-relative shrink-0">
+                <button type="button" id="profileMenuToggle" class="flex items-center gap-2 bg-white border border-slate-200 rounded-full pl-1.5 pr-3 py-1.5 hover:border-slate-300 transition">
+                    <span class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0" id="profileInitials">AD</span>
+                    <span class="d-none d-md-flex flex-column text-left" style="line-height: 1.1;">
+                        <strong class="text-xs text-slate-800" id="profileName">Admin User</strong>
+                        <small class="text-slate-400" style="font-size: 10px;" id="profileRole">System Admin</small>
+                    </span>
+                    <i class="fas fa-chevron-down text-slate-400" style="font-size: 10px;"></i>
+                </button>
+                <div id="profileMenuDropdown" class="hidden position-absolute bg-white border border-slate-200 rounded-xl shadow-lg mt-2 py-1 overflow-hidden" style="right: 0; width: 200px; z-index: 1000;">
+                    <div class="px-3 py-2 border-bottom border-slate-100">
+                        <div class="text-xs font-bold text-slate-800">Admin User</div>
+                        <div class="text-[11px] text-slate-400">admin@company.com</div>
                     </div>
+                    <a href="{{ Route::has('profile.show') ? route('profile.show') : (Route::has('profile.edit') ? route('profile.edit') : '#') }}" class="d-flex align-items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 text-decoration-none">
+                        <i class="fas fa-user text-slate-400" style="width: 14px;"></i> View Profile
+                    </a>
+                    <a href="{{ Route::has('profile.edit') ? route('profile.edit') : '#' }}" class="d-flex align-items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 text-decoration-none">
+                        <i class="fas fa-cog text-slate-400" style="width: 14px;"></i> Account Settings
+                    </a>
+                    <div class="border-top border-slate-100 my-1"></div>
+                    <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}" class="m-0">
+                        @csrf
+                        <button type="submit" class="d-flex align-items-center gap-2 px-3 py-2 text-xs text-danger bg-transparent border-0 w-100 text-left">
+                            <i class="fas fa-sign-out-alt" style="width: 14px;"></i> Log Out
+                        </button>
+                    </form>
                 </div>
-                <div class="col-md-3 my-1">
-                    <select name="category" class="custom-select custom-select-sm">
-                        <option value="">All Categories</option>
-                        @foreach($categories ?? [] as $category)
-                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3 my-1">
-                    <select name="status" class="custom-select custom-select-sm">
-                        <option value="">All Statuses</option>
-                        <option value="in_stock" {{ request('status') == 'in_stock' ? 'selected' : '' }}>In Stock</option>
-                        <option value="low_stock" {{ request('status') == 'low_stock' ? 'selected' : '' }}>Low Stock</option>
-                        <option value="out_of_stock" {{ request('status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
-                    </select>
-                </div>
-                <div class="col-md-2 my-1 d-flex">
-                    <button type="submit" class="btn btn-secondary btn-sm btn-block font-weight-bold">Filter</button>
-                    @if(request()->hasAny(['search', 'category', 'status']))
-                        <a href="{{ Route::has('inventory.index') ? route('inventory.index') : url('/inventory') }}" class="btn btn-light btn-sm ml-2" title="Reset Filters">
-                            <i class="fas fa-undo"></i>
-                        </a>
-                    @endif
-                </div>
-            </form>
+            </div>
         </div>
     </div>
-    {{-- KPI STAT CARDS — rendered entirely from JS via renderStatCards() --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="statsRow"></div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-4" id="moduleSummaryRow">
+    {{-- KPI STAT CARDS — rendered entirely from JS via renderStatCards() --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5" id="statsRow"></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5" id="moduleSummaryRow">
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
             <div class="flex items-start justify-between gap-3">
                 <div>
@@ -84,7 +96,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
         <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
             <h3 class="font-bold text-slate-900 text-sm">Inventory Overview</h3>
             <div class="flex items-center gap-6">
@@ -92,44 +104,133 @@
                 <div class="space-y-2.5 text-xs font-semibold text-slate-700" id="donutLegend"></div>
             </div>
         </div>
+
+        <div class="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+            <h3 class="font-bold text-slate-900 text-sm">Stock Reminders</h3>
+            <table class="w-100 text-xs">
+                <thead>
+                    <tr class="text-left text-slate-400 uppercase text-[10px]">
+                        <th class="pb-2 font-bold">Product</th>
+                        <th class="pb-2 font-bold">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="stockReminderBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Inventory Data Table -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 text-nowrap">
-                    <thead class="bg-light text-muted">
-                        <tr class="small text-uppercase">
-                            <th class="py-3 px-4">Item Code</th>
-                            <th class="py-3 px-4">Item Name</th>
-                            <th class="py-3 px-4">Warehouse Location</th>
-                            <th class="py-3 px-4">Category</th>
-                            <th class="py-3 px-4 text-right">Quantity</th>
-                            <th class="py-3 px-4 text-right">Unit Cost</th>
-                            <th class="py-3 px-4 text-center">Status</th>
-                            <th class="py-3 px-4 text-right">Actions</th>
+    {{-- =========================================================
+         RECENT ACTIVITY (compact) + INVENTORY MANAGEMENT (preview)
+         side by side
+    ========================================================== --}}
+    @php
+        $inventoryPreviewLimit = 6;
+        $inventoryRawItems = $items instanceof \Illuminate\Pagination\LengthAwarePaginator
+            ? $items->getCollection()
+            : collect($items ?? []);
+        $inventoryTotalCount = $items instanceof \Illuminate\Pagination\LengthAwarePaginator
+            ? ($items->total() ?? $inventoryRawItems->count())
+            : $inventoryRawItems->count();
+        $inventoryPreviewItems = $inventoryRawItems->take($inventoryPreviewLimit);
+        $inventoryViewAllUrl = Route::has('inventory.index') ? route('inventory.index') : url('/inventory');
+    @endphp
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5 items-start">
+
+        <!-- Recent Activity: compact, scrollable, doesn't hog space -->
+        <div class="lg:col-span-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+            <h3 class="font-bold text-slate-900 text-sm mb-3">Recent Activity</h3>
+            <div style="max-height: 260px; overflow-y: auto;">
+                <table class="w-100 text-xs mb-0">
+                    <thead>
+                        <tr class="text-left text-slate-400 uppercase" style="font-size: 10px;">
+                            <th class="font-weight-bold pb-2" style="width: 90px;">Time</th>
+                            <th class="font-weight-bold pb-2">Activity</th>
                         </tr>
                     </thead>
-                    <tbody class="text-secondary small">
-                        @forelse($items as $item)
-                            <tr>
-                                <td class="px-4 font-weight-bold text-dark">{{ $item->code ?? $item->sku ?? '-' }}</td>
-                                <td class="px-4 font-weight-bold text-primary">{{ $item->name }}</td>
-                                <td class="px-4">{{ $item->warehouse->name ?? 'N/A' }}</td>
-                                <td class="px-4">{{ $item->category->name ?? 'General' }}</td>
-                                <td class="px-4 text-right font-weight-bold">{{ number_format($item->quantity ?? 0) }}</td>
-                                <td class="px-4 text-right">${{ number_format($item->unit_cost ?? $item->price ?? 0, 2) }}</td>
-                                <td class="px-4 text-center">
-                                    @if(($item->quantity ?? 0) > ($item->low_stock_threshold ?? 10))
-                                        <span class="badge badge-pill badge-soft-success px-3 py-1">In Stock</span>
-                                    @elseif(($item->quantity ?? 0) > 0)
-                                        <span class="badge badge-pill badge-soft-warning px-3 py-1">Low Stock</span>
-                                    @else
-                                        <span class="badge badge-pill badge-soft-danger px-3 py-1">Out of Stock</span>
-                                    @endif
+                    <tbody id="activityBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Inventory Management: compact preview -->
+        <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div class="p-5 pb-3 border-bottom border-slate-100">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-1">
+                    <div class="d-flex align-items-center flex-wrap gap-3">
+                        <h3 class="font-bold text-slate-900 text-sm mb-0">Inventory Management</h3>
+                        <div class="position-relative" style="width: 200px;">
+                            <i class="fas fa-search text-slate-400" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size: 11px;"></i>
+                            <input type="text" id="inventorySearchInput" class="form-control form-control-sm rounded-pill" style="padding-left: 30px; height: 30px;" placeholder="Search items..." autocomplete="off">
+                        </div>
+                    </div>
+                    <a href="{{ $inventoryViewAllUrl }}" id="inventoryViewAllLink" data-base-href="{{ $inventoryViewAllUrl }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 text-decoration-none whitespace-nowrap">
+                        View All &rarr;
+                    </a>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">Manage product stock levels, categories, and warehouse allocations.</p>
+
+                <!-- Filters -->
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <select id="inventoryCategorySelect" class="custom-select custom-select-sm rounded-pill" style="max-width: 150px;">
+                        <option value="">All Categories</option>
+                        @foreach($categories ?? [] as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                    <select id="inventoryStatusSelect" class="custom-select custom-select-sm rounded-pill" style="max-width: 150px;">
+                        <option value="">All Statuses</option>
+                        <option value="in_stock">In Stock</option>
+                        <option value="low_stock">Low Stock</option>
+                        <option value="out_of_stock">Out of Stock</option>
+                    </select>
+                    <button type="button" id="inventoryFilterReset" class="btn btn-sm btn-light rounded-pill font-weight-bold px-3" title="Clear filters">
+                        <i class="fas fa-undo mr-1"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            <!-- Compact Inventory Table -->
+            <div class="table-responsive">
+                <table class="w-100 text-xs mb-0">
+                    <thead>
+                        <tr class="text-left text-slate-400 uppercase bg-slate-50" style="font-size: 10px;">
+                            <th class="font-weight-bold py-2 px-4">Item</th>
+                            <th class="font-weight-bold py-2 px-4 text-right">Quantity</th>
+                            <th class="font-weight-bold py-2 px-4 text-right">Unit Cost</th>
+                            <th class="font-weight-bold py-2 px-4 text-center">Status</th>
+                            <th class="font-weight-bold py-2 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryPreviewBody" class="divide-y divide-slate-100">
+                        @forelse($inventoryPreviewItems as $item)
+                            @php
+                                $statusKey = ($item->quantity ?? 0) > ($item->low_stock_threshold ?? 10)
+                                    ? 'in_stock'
+                                    : (($item->quantity ?? 0) > 0 ? 'low_stock' : 'out_of_stock');
+                                $statusMeta = [
+                                    'in_stock'     => ['label' => 'In Stock', 'bg' => '#ecfdf5', 'color' => '#047857', 'border' => '#a7f3d0'],
+                                    'low_stock'    => ['label' => 'Low Stock', 'bg' => '#fffbeb', 'color' => '#b45309', 'border' => '#fde68a'],
+                                    'out_of_stock' => ['label' => 'Out of Stock', 'bg' => '#fff1f2', 'color' => '#be123c', 'border' => '#fecdd3'],
+                                ][$statusKey];
+                                $searchBlob = strtolower(($item->name ?? '') . ' ' . ($item->code ?? $item->sku ?? '') . ' ' . ($item->category->name ?? '') . ' ' . ($item->warehouse->name ?? ''));
+                            @endphp
+                            <tr class="hover:bg-slate-50/80 transition" data-row
+                                data-search="{{ $searchBlob }}"
+                                data-category="{{ $item->category->id ?? '' }}"
+                                data-status="{{ $statusKey }}">
+                                <td class="py-2.5 px-4">
+                                    <div class="font-weight-bold text-slate-900">{{ $item->name }}</div>
+                                    <div class="text-slate-400" style="font-size: 11px;">
+                                        {{ $item->code ?? $item->sku ?? '-' }} · {{ $item->category->name ?? 'General' }} · {{ $item->warehouse->name ?? 'N/A' }}
+                                    </div>
                                 </td>
-                                <td class="px-4 text-right">
+                                <td class="py-2.5 px-4 text-right font-weight-bold text-slate-900">{{ number_format($item->quantity ?? 0) }}</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">${{ number_format($item->unit_cost ?? $item->price ?? 0, 2) }}</td>
+                                <td class="py-2.5 px-4 text-center">
+                                    <span class="px-2 py-1 rounded-pill font-weight-bold text-uppercase d-inline-block" style="font-size: 10px; background: {{ $statusMeta['bg'] }}; color: {{ $statusMeta['color'] }}; border: 1px solid {{ $statusMeta['border'] }};">{{ $statusMeta['label'] }}</span>
+                                </td>
+                                <td class="py-2.5 px-4 text-right">
                                     @if(Route::has('inventory.edit'))
                                         <a href="{{ route('inventory.edit', $item->id) }}" class="btn btn-sm btn-link text-info p-0 mr-2" title="Edit">
                                             <i class="fas fa-edit"></i>
@@ -148,31 +249,31 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-5 text-muted">
-                                    <i class="fas fa-boxes fa-2x mb-2 text-gray-300"></i>
-                                    <p class="mb-0">No inventory records found.</p>
+                                <td colspan="5" class="text-center py-4 text-slate-400">
+                                    <i class="fas fa-boxes mb-2 d-block" style="font-size: 22px; color: #cbd5e1;"></i>
+                                    No inventory records found.
                                 </td>
                             </tr>
                         @endforelse
+                        <tr id="inventoryPreviewEmptyRow" style="display:none;">
+                            <td colspan="5" class="text-center py-4 text-slate-400">
+                                <i class="fas fa-filter mb-2 d-block" style="font-size: 20px; color: #cbd5e1;"></i>
+                                No items match your filters.
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        <!-- Safe Footer: Works for both Paginator and Collection -->
-        <div class="card-footer bg-white border-0 py-3">
-            @if($items instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted">
-                        Showing {{ $items->firstItem() ?? 0 }} to {{ $items->lastItem() ?? 0 }} of {{ $items->total() ?? 0 }} entries
-                    </small>
-                    <div>
-                        {{ $items->withQueryString()->links() }}
-                    </div>
-                </div>
-            @else
-                <small class="text-muted">Total Records: {{ $items->count() }}</small>
-            @endif
+            <!-- Footer -->
+            <div class="px-5 py-3 border-top border-slate-100 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <small class="text-slate-500" style="font-size: 11px;">
+                    Showing {{ $inventoryPreviewItems->count() }} of {{ number_format($inventoryTotalCount) }} items
+                </small>
+                <a href="{{ $inventoryViewAllUrl }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 text-decoration-none">
+                    View all inventory &rarr;
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -251,7 +352,8 @@ async function fetchJSON(url, options = {}) {
 }
 
 function renderUser(user) {
-    document.getElementById('userName').textContent = (user && user.firstName) ? `${user.firstName}!` : 'Admin User!';
+    const el = document.getElementById('userName');
+    if (el) el.textContent = (user && user.firstName) ? `${user.firstName}!` : 'Admin User!';
 }
 
 function renderStatCards(summary) {
@@ -412,11 +514,14 @@ function escapeHTML(str) {
 function setupGlobalSearch() {
     const searchInput = document.getElementById('globalSearchInput');
     const resultsContainer = document.getElementById('globalSearchResults');
+    const clearBtn = document.getElementById('globalSearchClear');
 
     if (!searchInput || !resultsContainer) return;
 
     searchInput.addEventListener('input', function(e) {
         const query = e.target.value.trim().toLowerCase();
+
+        if (clearBtn) clearBtn.classList.toggle('hidden', query.length === 0);
 
         if (query.length === 0) {
             resultsContainer.innerHTML = '';
@@ -463,10 +568,6 @@ function setupGlobalSearch() {
             });
         }
 
-        if (matchedProducts.length === 0 && matchedSales.length === 0) {
-            // handled
-        }
-
         if (matchedProducts.length > 0) {
             html += `<div class="px-3 py-1.5 font-bold bg-slate-100 text-slate-500 uppercase text-[10px]">Inventory Products</div>`;
             matchedProducts.forEach(p => {
@@ -491,18 +592,146 @@ function setupGlobalSearch() {
         resultsContainer.classList.remove('hidden');
     });
 
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.focus();
+            clearBtn.classList.add('hidden');
+            resultsContainer.innerHTML = '';
+            resultsContainer.classList.add('hidden');
+        });
+    }
+
+    searchInput.addEventListener('focus', function() {
+        if (searchInput.value.trim().length > 0 && resultsContainer.innerHTML.trim().length > 0) {
+            resultsContainer.classList.remove('hidden');
+        }
+    });
+
     document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+        if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target) && (!clearBtn || !clearBtn.contains(e.target))) {
             resultsContainer.classList.add('hidden');
         }
     });
 }
 
+/* ---------------------------------------------------------
+   Profile dropdown menu
+--------------------------------------------------------- */
+function setupProfileMenu() {
+    const toggle = document.getElementById('profileMenuToggle');
+    const dropdown = document.getElementById('profileMenuDropdown');
+    if (!toggle || !dropdown) return;
+
+    toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+    });
+
+    dropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!toggle.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') dropdown.classList.add('hidden');
+    });
+}
+
+/* Populate the profile menu from a user object once you have real auth data available. */
+function renderProfileMenu(user) {
+    const firstName = user?.firstName || user?.name || 'Admin User';
+    const role = user?.role || 'System Admin';
+    const email = user?.email || 'admin@company.com';
+    const initials = firstName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+    const initialsEl = document.getElementById('profileInitials');
+    const nameEl = document.getElementById('profileName');
+    const roleEl = document.getElementById('profileRole');
+    if (initialsEl) initialsEl.textContent = initials;
+    if (nameEl) nameEl.textContent = firstName;
+    if (roleEl) roleEl.textContent = role;
+
+    const dropdown = document.getElementById('profileMenuDropdown');
+    if (dropdown) {
+        const nameNode = dropdown.querySelector('.font-bold');
+        const emailNode = dropdown.querySelector('.text-slate-400');
+        if (nameNode) nameNode.textContent = firstName;
+        if (emailNode) emailNode.textContent = email;
+    }
+}
+
+/* ---------------------------------------------------------
+   Inventory Management preview: live client-side filtering
+--------------------------------------------------------- */
+function setupInventoryPreviewFilter() {
+    const searchInput = document.getElementById('inventorySearchInput');
+    const categorySelect = document.getElementById('inventoryCategorySelect');
+    const statusSelect = document.getElementById('inventoryStatusSelect');
+    const resetBtn = document.getElementById('inventoryFilterReset');
+    const viewAllLink = document.getElementById('inventoryViewAllLink');
+    const rows = document.querySelectorAll('#inventoryPreviewBody tr[data-row]');
+    const emptyRow = document.getElementById('inventoryPreviewEmptyRow');
+
+    if (!searchInput && !categorySelect && !statusSelect) return;
+
+    function syncViewAllLink(query, categoryId, status) {
+        if (!viewAllLink) return;
+        const base = viewAllLink.dataset.baseHref || viewAllLink.getAttribute('href');
+        try {
+            const url = new URL(base, window.location.origin);
+            query ? url.searchParams.set('search', query) : url.searchParams.delete('search');
+            categoryId ? url.searchParams.set('category', categoryId) : url.searchParams.delete('category');
+            status ? url.searchParams.set('status', status) : url.searchParams.delete('status');
+            viewAllLink.href = url.pathname + url.search;
+        } catch (err) {
+            // base href wasn't a valid URL (e.g. "#") — leave it as-is
+        }
+    }
+
+    function applyFilters() {
+        const query = (searchInput?.value || '').trim().toLowerCase();
+        const categoryId = categorySelect?.value || '';
+        const status = statusSelect?.value || '';
+        let anyVisible = false;
+
+        rows.forEach(row => {
+            const matchesQuery = query === '' || (row.dataset.search || '').includes(query);
+            const matchesCategory = categoryId === '' || row.dataset.category === categoryId;
+            const matchesStatus = status === '' || row.dataset.status === status;
+            const visible = matchesQuery && matchesCategory && matchesStatus;
+            row.style.display = visible ? '' : 'none';
+            if (visible) anyVisible = true;
+        });
+
+        if (emptyRow) emptyRow.style.display = (rows.length > 0 && !anyVisible) ? '' : 'none';
+        syncViewAllLink(query, categoryId, status);
+    }
+
+    searchInput?.addEventListener('input', applyFilters);
+    categorySelect?.addEventListener('change', applyFilters);
+    statusSelect?.addEventListener('change', applyFilters);
+
+    resetBtn?.addEventListener('click', function() {
+        if (searchInput) searchInput.value = '';
+        if (categorySelect) categorySelect.value = '';
+        if (statusSelect) statusSelect.value = '';
+        applyFilters();
+    });
+}
+
 async function initDashboard() {
-    document.getElementById('pageSubtitle').textContent =
-        'Overview of your supply chain, live from database.';
+    const subtitleEl = document.getElementById('pageSubtitle');
+    if (subtitleEl) subtitleEl.textContent = 'Overview of your supply chain, live from database.';
 
     setupGlobalSearch();
+    setupProfileMenu();
+    setupInventoryPreviewFilter();
     loadDashboardData();
 }
 
@@ -543,7 +772,8 @@ async function loadDashboardData() {
         renderModuleSummaries({ shipments: globalShipmentsCache, purchaseOrders: globalPurchaseOrdersCache });
     } catch (error) {
         console.error('Dashboard data fetch failed:', error);
-        document.getElementById('pageSubtitle').textContent = 'Failed to load dashboard data.';
+        const subtitleEl = document.getElementById('pageSubtitle');
+        if (subtitleEl) subtitleEl.textContent = 'Failed to load dashboard data.';
         return;
     }
 
